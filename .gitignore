@@ -1,10 +1,14 @@
 # Cmake files
-./build
-./build/*
+build/
+build/*
+*/build/
+*/build/*
 
 # The library release dir
-./lib
-./lib/*
+lib
+lib/*
+*/lib/
+*/lib/*
 
 # The binary dirs
 bin/
