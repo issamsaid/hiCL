@@ -1,5 +1,7 @@
-Copyright (c) 2016, Issam SAID
+Copyright (c) 2013-2016, UPMC
 All rights reserved.
+
+hiCL is a free software owned by UPMC, founded by TOTAL, and written by Issam SAID.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
