@@ -1,3 +1,11 @@
+# Cmake files
+./build
+./build/*
+
+# The library release dir
+./lib
+./lib/*
+
 # Object files
 *.o
 *.ko
