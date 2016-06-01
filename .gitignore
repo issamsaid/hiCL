@@ -6,6 +6,10 @@
 ./lib
 ./lib/*
 
+# The binary dirs
+bin/
+*/bin/
+
 # Object files
 *.o
 *.ko
