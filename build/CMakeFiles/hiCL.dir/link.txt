@@ -1,0 +1,2 @@
+/usr/bin/ar cr libhiCL.a  CMakeFiles/hiCL.dir/src/hicl_base.c.o CMakeFiles/hiCL.dir/src/hicl_timer.c.o CMakeFiles/hiCL.dir/src/hicl_util.c.o CMakeFiles/hiCL.dir/src/hicl_mem.c.o CMakeFiles/hiCL.dir/src/hicl_knl.c.o CMakeFiles/hiCL.dir/src/hicl_dev.c.o
+/usr/bin/ranlib libhiCL.a

@@ -2,7 +2,7 @@
 hiCL is a C/C++ and Fortran wrapper that make it easier to use OpenCL
 for scientific computing.
 
-# Getting starting
+# Getting started
 
 # Examples
 

@@ -23,6 +23,7 @@ else (OPENCL_FOUND)
 			            "Please set OPENCL_INCLUDE_DIRS env variable")
 endif (OPENCL_FOUND)
 
+include_directories(include)
 file(GLOB C_SRCS "src/*.c")
 add_library(hiCL STATIC ${C_SRCS})
 install(TARGETS hiCL ARCHIVE DESTINATION lib)
