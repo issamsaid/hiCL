@@ -46,3 +46,7 @@ bin/
 
 # Debug files
 *.dSYM/
+
+# Doc files
+doc/html
+doc/doxygen.stamp
