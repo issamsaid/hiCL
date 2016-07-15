@@ -1,106 +1,281 @@
 #ifndef HICL_KNL_H_
 #define HICL_KNL_H_
 ///
-/// \copyright Copyright 2012-2013 TOTAL S.A. All rights reserved.
-/// This file is part of \b hicl.
+/// @copyright Copyright (c) 2013-2016, Univrsité Pierre et Marie Curie
+/// All rights reserved.
 ///
-/// \b hicl is free software: you can redistribute it and/or modify
-/// it under the terms of the GNU General Public License as published by
-/// the Free Software Foundation, either version 3 of the License, or
-/// (at your option) any later version.
+/// <b>hiCL</b> is owned by Université Pierre et Marie Curie (UPMC),
+/// funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ///
-/// \b hicl is distributed in the hope that it will be useful,
-/// but WITHOUT ANY WARRANTY; without even the implied warranty of
-/// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-/// GNU General Public License for more details.
+/// Redistribution and use in source and binary forms, with or without
+/// modification, are permetted provided that the following conditions
+/// are met:
 ///
-/// You should have received a copy of the GNU General Public License
-/// along with \b hicl.  If not, see <http://www.gnu.org/licenses/>.
+/// 1. Redistributions of source code must retain the above copyright
+///    notice, this list of conditions and the following disclaimer.
+/// 2. Redistributions in binary form must reproduce the above copyright
+///    notice, this list of conditions and the following disclaimer in the
+///    documentation and/or other materials provided with the distribution.
+/// 3. Neither the name of the UPMC nor the names of its contributors
+///    may be used to endorse or promote products derived from this software
+///    without specific prior written permission.
 ///
-/// \author Issam Said
-/// \file knl.h
-/// \version $Id: knl.h 2412 2014-05-15 22:10:52Z issam $
-/// \brief Set of functions related to an OpenCL kernel.
+/// THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+/// INCLUDING, BUT NOT LIMITED TO, WARRANTIES OF MERCHANTABILITY AND FITNESS
+/// FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE UPMC OR
+/// ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+/// EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+/// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+/// PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+/// LIABILITY, WETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+/// NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+/// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+///
+/// @file hiCL/knl.h
+/// @author Issam SAID
+/// @brief Function prototypes of OpenCL devices manipulation routines.
+///
+/// @details This file describes the library functions used by hiCL to 
+/// initialize, release and manipulate an OpenCL kernel descriptor.
 ///
 #include "hiCL/types.h"
 #include <stdint.h>
 
 CPPGUARD_BEGIN()
 
-knl    hicl_knl_init(cl_kernel id);
-
-void   hicl_knl_release(knl k);
-
-void   hicl_knl_info(knl k);
-
-knl    hicl_knl_find(const char *name);
-
-void   hicl_knl_build(knl k, const char *options);
-
-void   hicl_knl_set_int32(knl k, int index, int32_t i32);
-
-void   hicl_knl_set_int64(knl k, int index, int64_t i64);
-
-void   hicl_knl_set_float(knl k, int index, float f);
-
-void   hicl_knl_set_double(knl k, int index, double d);
-
-void   hicl_knl_set_mem(knl k, int index, address h);
-
-void   hicl_knl_set_args(knl k, ...);
-
-void   hicl_knl_set_wrk(knl k, cl_uint wrk, size_t *gws, size_t *lws);
-
-void   hicl_knl_set_ofs(knl k, size_t *ofs);
-
-void   hicl_knl_set_and_run(knl k, dev d, ...);
-
-void   hicl_knl_set_and_srun(knl k, dev d, ...);
-
-double hicl_knl_set_and_trun(knl k, dev d, ...);
-
-double hicl_knl_flat_trun(knl k, size_t *gws, 
-                            size_t *lws, size_t *ofs, dev d, ...);
-
-void   hicl_knl_run(knl k, dev d);
-
-void   hicl_knl_srun(knl k, dev d);
-
-double hicl_knl_trun(knl k, dev d);
-
+///
+/// @brief Create a hiCL kernel descriptor.
+///
+/// This routine creates a hiCL kernel descriptor, provided an OpenCL cl_kernel,
+/// which contains information about the work size and also the offset, see 
+/// types.h. 
+/// @param id is the OpenCL cl_kernel.
+/// @return a hiCL kernel descriptor.
+///
+hiknl_t hicl_knl_init(cl_kernel id);
 
 ///
-/// Same functions, nicer names
+/// @brief Release a hiCL kernel descriptor.
 ///
-void   hicl_build(const char *name, const char *options);
+/// This routine frees the OpenCL resources related to a given kernel descriptor
+/// identified by a kernel name.
+/// @param name is the string that identifies the kernel descriptor.
+/// @return Nothing.
+///
+void    hicl_knl_release(const char *name);
 
-void   hicl_set_int32(const char *name, int index, int32_t i32);
+///
+/// @brief Show information about a given hiCL kernel descriptor.
+///
+/// This routine prints information about the OpenCL resources associated
+/// to a given kernel descriptor. The information include the kernel name,
+/// the number of arguments, the list of memory objects that the kernel 
+/// manipulates, etc.
+/// @param name is the string that identifies the kernel descriptor.
+/// @return Nothing.
+///
+void    hicl_knl_info(const char *name);
 
-void   hicl_set_int64(const char *name, int index, int64_t i64);
+///
+/// @brief Return a kernel descriptor provided a string.
+///
+/// This routine performs a lookup in the list of hiCL kernel descriptors based 
+/// on a string provided by the user
+/// @param name is the string that identifies the kernel descriptor.
+/// @return
+///
+hiknl_t hicl_knl_find(const char *name);
 
-void   hicl_set_float(const char *name, int index, float f);
+///
+/// @brief Build the OpenCL kernel related to a hiCL descriptor.
+///
+/// This routine invoques the OpenCL compiler in order to build an OpenCL
+/// kernel identified by a string.
+/// @param name is the string that identifies the kernel descriptor.
+/// @param options is a string that contains compilation options to pass
+///        to the OpenCL compiler.
+/// @return Nothing.
+///
+void    hicl_knl_build(const char *name, const char *options);
 
-void   hicl_set_double(const char *name, int index, double d);
+///
+/// @brief Set an integer (32 bits) value for a specific kernel argument.
+///
+/// This routine sets the value of a kernel argument to an integer (32 bits)
+/// of a given OpenCL kernel (identified by a hiCL kernel descriptor).
+/// @param name is the string that identifies the kernel descriptor.
+/// @param index is the position of the argument in the list 
+/// @return Nothing.
+///
+void    hicl_knl_set_int32(const char *name, int index, int32_t i32);
 
-void   hicl_set_mem(const char *name, int index, address h);
+///
+/// @brief Set an integer (64 bits) value for a specific kernel argument.
+///
+/// This routine sets the value of a kernel argument to an integer (64 bits)
+/// of a given OpenCL kernel (identified by a hiCL kernel descriptor).
+/// @param name is the string that identifies the kernel descriptor.
+/// @param index is the position of the argument in the list 
+/// @return Nothing.
+///
+void    hicl_knl_set_int64(const char *name, int index, int64_t i64);
 
-void   hicl_set_args(const char *name, ...);
+///
+/// @brief Set a float value for a specific kernel argument.
+///
+/// This routine sets the value of a kernel argument to a float
+/// of a given OpenCL kernel (identified by a hiCL kernel descriptor).
+/// @param name is the string that identifies the kernel descriptor.
+/// @param index is the position of the argument in the list 
+/// @return Nothing.
+///
+void    hicl_knl_set_float(const char *name, int index, float f);
 
-void   hicl_set_wrk(const char *name, cl_uint wrk, size_t *gws, size_t *lws);
+///
+/// @brief Set a double value for a specific kernel argument.
+///
+/// This routine sets the value of a kernel argument to a double
+/// of a given OpenCL kernel (identified by a hiCL kernel descriptor).
+/// @param name is the string that identifies the kernel descriptor.
+/// @param index is the position of the argument in the list 
+/// @return Nothing.
+///
+void    hicl_knl_set_double(const char *name, int index, double d);
 
-void   hicl_set_ofs(const char *name, size_t *ofs);
+///
+/// @brief Set a memory address for a specific kernel argument.
+///
+/// This routine sets the value of a kernel argument to a memory address
+/// of a given OpenCL kernel (identified by a hiCL kernel descriptor). 
+/// @param name is the string that identifies the kernel descriptor.
+/// @param index is the position of the argument in the list 
+/// @return Nothing.
+///
+void    hicl_knl_set_mem(const char *name, int index, address_t h);
 
-void   hicl_set_and_run(const char *name, dev d, ...);
+///
+/// @brief Set a list of arguments for a given OpenCL kernel.
+///
+/// This routine uses the C variadic functions to set a collection of
+/// arguments for a given OpenCL kernel all at once.
+/// @param name is the string that identifies the kernel descriptor.
+/// @param ... are the kernel arguments.
+/// @return Nothing.
+///
+void    hicl_knl_set_args(const char *name, ...);
 
-void   hicl_set_and_srun(const char *name, dev d, ...);
+///
+/// @brief Set the work sizes and dimension for a given OpenCL kernel.
+///
+/// This routine sets the work size (the global size and the local size) and 
+/// the thread blocks dimensions for a given OpenCL kernel.
+/// @param name is the string that identifies the kernel descriptor.
+/// @param wrk is the work dimension of the kernel.
+/// @param gws is and array of dimension 'wrk' that contains the global sizes.
+/// @param lws is and array of dimension 'wrk' that contains the local sizes.
+/// @return Nothing.
+///
+void    hicl_knl_set_wrk(const char *name, 
+		        		 cl_uint wrk, size_t *gws, size_t *lws);
 
-double hicl_set_and_trun(const char *name, dev d, ...);
+///
+/// @brief Set the offset for a given OpenCL kernel.
+///
+/// This routine sets the thread blocks offset for a given OpenCL kernel.
+/// @param name is the string that identifies the kernel descriptor.
+/// @param ofs is and array that contains the offset values of each work
+///        dimension.
+/// @return
+///
+void    hicl_knl_set_ofs(const char *name, size_t *ofs);
 
-void   hicl_run(const char *name, dev d);
+///
+/// @brief Run (asynchronously) a given OpenCL kernel after synchronizing its 
+///        related memory objects between the host and a given device.
+///
+/// This routine ensures the integrity, between the host and a 
+/// given OpenCL device, of the memory objects being manipulated by 
+/// given OpenCL kernel, and runs the latter on that same device. The
+/// execution is asynchronous which is the default behavior in hiCL.
+/// @param name is the string that identifies the kernel descriptor.
+/// @param d is the device descriptor of the OpenCL device to run the kernel
+///        on.
+/// @param ... is the list of arguments to pass to the kernel.
+/// @return Nothing.
+///
+void    hicl_knl_run(const char *name, hidev_t d, ...);
 
-void   hicl_srun(const char *name, dev d);
+///
+/// @brief Run (synchronously) a given OpenCL kernel after synchronizing its 
+///        related memory objects between the host and a given device.
+///
+/// This routine ensures the integrity, between the host and a 
+/// given OpenCL device, of the memory objects being manipulated by 
+/// given OpenCL kernel, and runs the latter on that same device. Finally
+/// it flushes the command queue relqted to the device.
+/// @param name is the string that identifies the kernel descriptor.
+/// @param d is the device descriptor of the OpenCL device to run the kernel
+///        on.
+/// @param ... is the list of arguments to pass to the kernel.
+/// @return Nothing.
+///
+void    hicl_knl_sync_run(const char *name, hidev_t d, ...);
 
-double hicl_trun(const char *name, dev d);
+///
+/// @brief Run (and time the execution) a given OpenCL kernel after 
+///        synchronizing its related memory objects between the 
+///        host and a given device.
+///
+/// This routine ensures the integrity, between the host and a 
+/// given OpenCL device, of the memory objects being manipulated by 
+/// given OpenCL kernel, and runs the latter on that same device while timing
+/// the execution.
+/// @param name is the string that identifies the kernel descriptor.
+/// @param d is the device descriptor of the OpenCL device to run the kernel
+///        on.
+/// @param ... is the list of arguments to pass to the kernel.
+/// @return Nothing.
+///
+double  hicl_knl_timed_run(const char *name, hidev_t d, ...);
+
+///
+/// @brief Run (synchronously) only a given kernel on a given device.
+///
+/// This routine simply runs (synchronously) a given OpenCL kernel on a given
+/// OpenCL device.
+/// @param name is the string that identifies the kernel descriptor.
+/// @return Nothing.
+///
+void    hicl_knl_exec(const char *name, hidev_t d);
+
+///
+/// @brief Run (asynchronously) only a given kernel on a given device.
+///
+/// This routine simply runs (asynchronously) a given OpenCL kernel on a given
+/// OpenCL device.
+/// @param name is the string that identifies the kernel descriptor.
+/// @return Nothing.
+///
+void    hicl_knl_sync_exec(const char *name, hidev_t d);
+
+///
+/// @brief
+///
+///
+/// @param name is the string that identifies the kernel descriptor.
+/// @return
+///
+
+///
+/// @brief Run (and time the execution) only a given kernel on a given device.
+///
+/// This routine simply runs and times the execution of a given OpenCL kernel 
+/// on a given OpenCL device.
+/// @param name is the string that identifies the kernel descriptor.
+/// @return Nothing.
+///
+double  hicl_knl_timed_exec(const char *name, hidev_t d);
+
 
 CPPGUARD_END()
 

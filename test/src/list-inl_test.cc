@@ -1,5 +1,3 @@
-#ifndef __API_CONFIG_UTIL_H_
-#define __API_CONFIG_UTIL_H_
 ///
 /// @copyright Copyright (c) 2013-2016, Univrsité Pierre et Marie Curie
 /// All rights reserved.
@@ -31,11 +29,57 @@
 /// NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ///
-/// @file config/util.h
+/// @file list-inl_test.cc
 /// @author Issam SAID
-/// @brief The configuration file for the hiCL utilities.
+/// @brief Unit testing file for the generic linked list manipulation routines.
 ///
-#define __API_STR_SIZE     256
-#define __API_BUFFER_SIZE  4096
-#define __API_USE_EVENTS   0
-#endif  // __API_CONFIG_UTIL_H_
+#include <__api/list-inl.h>
+#include <__api/mem-inl.h>
+#include <gtest/gtest.h>
+
+GENERATE_LIST_HEADER(int);
+GENERATE_LIST_BODY(int);
+
+namespace {
+
+    class ListInlTest : public ::testing::Test {
+    protected:
+        virtual void SetUp() {}
+        virtual void TearDown() {}
+    };
+
+    TEST_F(ListInlTest, core_manipulation) {
+    	list_int* list=NULL;
+		list_int* tmp=NULL;
+		unsigned int i = 0;
+		ASSERT_EQ(list_size_int(&list), 0);
+		for (i=0; i<10; i++) {
+			list_insert_int(&list, list_create_int(i));
+			ASSERT_EQ(list_size_int(&list), i+1);
+		}
+		for (i=0; i<10; i++) {
+		    tmp = list_remove_int(&list, 9-i);
+		  	list_delete_int(&tmp);
+		  	ASSERT_EQ(list_size_int(&list), 9-i);
+		  	ASSERT_TRUE(tmp ==  NULL);
+	    }
+		list_insert_int(&tmp, list_create_int(11));
+		ASSERT_EQ(list_size_int(&tmp), 1);
+    }
+
+    TEST_F(ListInlTest, find_entry) {
+    	list_int* list=NULL;
+		list_int* my_entry=NULL;
+		unsigned int i = 0;
+		ASSERT_EQ(list_size_int(&list), 0);
+		for (i=0; i<10; i++) {
+			list_insert_int(&list, list_create_int(i));
+		}
+		my_entry = list_create_int(999);
+		list_insert_int(&list, my_entry);
+		for (i=0; i<10; i++) {
+			list_insert_int(&list, list_create_int(10+i));
+		}
+		ASSERT_EQ(list_find_int(&list, 999), my_entry);
+    }
+}

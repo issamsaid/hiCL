@@ -1,241 +1,139 @@
 #ifndef __API_LIST_INL_H_
 #define __API_LIST_INL_H_
 ///
-/// @copyright Copyright 2013 - 2014 Total S.A. All rights reserved.
+/// @copyright Copyright (c) 2013-2016, Univrsité Pierre et Marie Curie
+/// All rights reserved.
 ///
-/// NOTICE: All information contained herein is, and remains
-/// the property of Total S.A. and its suppliers, if any.
-/// The intellectual and technical concepts contained herein
-/// are proprietary to Total S.A. and its suppliers and may be
-/// covered by U.S. and Foreign Patents, patents in process,
-/// and are protected by trade secret or copyright law.
-/// Dissemination of this information or reproduction of this
-/// material is strictly forbidden unless prior written permission
-/// is obtained from Total S.A.
-/// 
-/// @author Issam Said
-/// @file list-inl.h
-/// @version $Id$
-/// @brief generic list structure.
+/// <b>hiCL</b> is owned by Université Pierre et Marie Curie (UPMC),
+/// funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ///
-#include "__api/config/guard.h"
-
-CPPGUARD_BEGIN()
-
+/// Redistribution and use in source and binary forms, with or without
+/// modification, are permetted provided that the following conditions
+/// are met:
+///
+/// 1. Redistributions of source code must retain the above copyright
+///    notice, this list of conditions and the following disclaimer.
+/// 2. Redistributions in binary form must reproduce the above copyright
+///    notice, this list of conditions and the following disclaimer in the
+///    documentation and/or other materials provided with the distribution.
+/// 3. Neither the name of the UPMC nor the names of its contributors
+///    may be used to endorse or promote products derived from this software
+///    without specific prior written permission.
+///
+/// THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+/// INCLUDING, BUT NOT LIMITED TO, WARRANTIES OF MERCHANTABILITY AND FITNESS
+/// FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE UPMC OR
+/// ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+/// EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+/// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+/// PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+/// LIABILITY, WETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+/// NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+/// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+///
+/// @file __api/list-inl.h
+/// @author Issam SAID
+/// @brief Generic-typed linked list.
+///
 typedef char* string;
 
-#define DEFINE_NODE(type)          \
-    typedef struct _node_##type {  \
-        struct _node_##type *next; \
-        type data;                 \
-    } node_##type;
-
-#define DEFINE_NODE_RELEASE_FUNCTION(type)      \
-    typedef void (*fn_cleaner_node_##type)(type);
-
-#define DEFINE_LIST(type)               \
-    typedef struct _list_##type {       \
-        node_##type *head;              \
-        fn_cleaner_node_##type cleaner; \
-        size_t size;                    \
+#define DEFINE_ENTRY_TYPE(type)     \
+    typedef struct __list_##type {  \
+        struct __list_##type *next; \
+        type data;                  \
     } list_##type;
 
-#define DEFINE_CREATE_LIST(type) \
-    void create_list_##type(list_##type *list, fn_cleaner_node_##type fn);
-#define DEFINE_DELETE_LIST(type) \
-    void delete_list_##type(list_##type *list);
-#define DEFINE_RESET_LIST(type) \
-    void reset_list_##type(list_##type *list);
-#define DEFINE_CREATE_NODE(type) \
-    node_##type *create_node_##type(type data);
-#define DEFINE_DELETE_NODE(type) \
-    void delete_node_##type(node_##type *node);
-#define DEFINE_INSERT_NODE(type) \
-    void insert_node_##type(list_##type *list, type data);
-#define DEFINE_ADD_NODE(type) \
-    void add_node_##type(list_##type *list, node_##type *node);
-#define DEFINE_SKIP_NODE(type) \
-    void skip_node_##type(list_##type *list, type data);
-#define DEFINE_REMOVE_NODE(type) \
-    void remove_node_##type(list_##type *list, type data);
-#define DEFINE_FIND_NODE(type) \
-    node_##type *find_node_##type(list_##type *list, type data);
-#define DEFINE_GET_NODE_DATA(type) \
-    type get_##type(list_##type *list, size_t idx);
+#define DEFINE_CREATE_ENTRY(type)   \
+    list_##type* list_create_##type(type data);
+#define DEFINE_INSERT_ENTRY(type)   \
+    void list_insert_##type(list_##type **head, list_##type* entry);
+#define DEFINE_REMOVE_ENTRY(type)   \
+    list_##type* list_remove_##type(list_##type **head, type data);
+#define DEFINE_FIND_ENTRY(type)     \
+    list_##type* list_find_##type(list_##type **head, type data);
+#define DEFINE_DELETE_ENTRY(type)   \
+    void list_delete_##type(list_##type** entry);
+#define DEFINE_LIST_SIZE(type)   \
+    size_t list_size_##type(list_##type** head);
 
-#define GENERATE_LIST_HEADER(type)     \
-    DEFINE_NODE(type)                  \
-    DEFINE_NODE_RELEASE_FUNCTION(type) \
-    DEFINE_LIST(type)                  \
-    DEFINE_CREATE_LIST(type)           \
-    DEFINE_DELETE_LIST(type)           \
-    DEFINE_RESET_LIST(type)            \
-    DEFINE_CREATE_NODE(type)           \
-    DEFINE_DELETE_NODE(type)           \
-    DEFINE_INSERT_NODE(type)           \
-    DEFINE_ADD_NODE(type)              \
-    DEFINE_REMOVE_NODE(type)           \
-    DEFINE_FIND_NODE(type)             \
-    DEFINE_GET_NODE_DATA(type)
+#define GENERATE_LIST_HEADER(type) \
+    DEFINE_ENTRY_TYPE(type)        \
+    DEFINE_CREATE_ENTRY(type)      \
+    DEFINE_INSERT_ENTRY(type)      \
+    DEFINE_REMOVE_ENTRY(type)      \
+    DEFINE_FIND_ENTRY(type)        \
+    DEFINE_DELETE_ENTRY(type)      \
+    DEFINE_LIST_SIZE(type)        
 
-#define IMPLEMENT_CREATE_LIST(type)                                         \
-    void create_list_##type(list_##type *list, fn_cleaner_node_##type fn) { \
-        list->head    = NULL;                                               \
-        list->size    = 0;                                                  \
-        list->cleaner = fn;                                                 \
+#define IMPLEMENT_CREATE_ENTRY(type)                                     \
+    list_##type* list_create_##type(type data) {                         \
+        list_##type* entry = (list_##type*) malloc(sizeof(list_##type)); \
+        entry->data = data;                                              \
+        entry->next = NULL;                                              \
+        return entry;                                                    \
     }
 
-#define IMPLEMENT_DELETE_LIST(type)                                     \
-    void delete_list_##type(list_##type *list) {                        \
-        node_##type *tmp, *n=list->head;                                \
-        while(n != NULL) {                                              \
-            tmp = n->next;                                              \
-            if (list->cleaner) list->cleaner(n->data);                  \
-            delete_node_##type(n);                                      \
-            list->size--;                                               \
-            n = tmp;                                                    \
-        }                                                               \
-        list = NULL;                                                    \
+#define IMPLEMENT_INSERT_ENTRY(type)                                     \
+    void list_insert_##type(list_##type** head, list_##type* entry) {    \
+        list_##type*  n    = *head;                                      \
+        list_##type** prev =  head;                                      \
+        while(n != NULL) {                                               \
+            prev = &n->next;                                             \
+            n    = n->next;                                              \
+        }                                                                \
+        *prev = entry;                                                   \
     }
 
-#define IMPLEMENT_RESET_LIST(type)                                      \
-    void reset_list_##type(list_##type *list) {                         \
-        node_##type *tmp, *n=list->head;                                \
-        while(n != NULL) {                                              \
-            tmp = n->next;                                              \
-            delete_node_##type(n);                                      \
-            list->size--;                                               \
-            n = tmp;                                                    \
-        }                                                               \
+#define IMPLEMENT_REMOVE_ENTRY(type)                                     \
+    list_##type* list_remove_##type(list_##type** head, type data) {     \
+        list_##type* to_remove;                                          \
+        list_##type*  n    = *head;                                      \
+        list_##type** prev =  head;                                      \
+        while(n != NULL) {                                               \
+            if (n->data == data) {                                       \
+                to_remove = n;                                           \
+                *prev     = n->next;                                     \
+            }                                                            \
+            prev = &n->next;                                             \
+            n    = n->next;                                              \
+        }                                                                \
+        return to_remove;                                                \
     }
 
-#define IMPLEMENT_CREATE_NODE(type)                                      \
-    node_##type *create_node_##type(type data) {                         \
-        node_##type * node = (node_##type*) malloc(sizeof(node_##type)); \
-        node->data = data;                                               \
-        node->next = NULL;                                               \
-        return node;                                                     \
+#define IMPLEMENT_FIND_ENTRY(type)                                       \
+    list_##type* list_find_##type(list_##type** head, type data) {       \
+        list_##type* n = *head;                                          \
+        while(n != NULL) {                                               \
+            if (n->data == data) break;                                  \
+            n=n->next;                                                   \
+        }                                                                \
+        return n;                                                        \
     }
 
-#define IMPLEMENT_DELETE_NODE(type)                      \
-    void delete_node_##type(node_##type *node) {         \
-        free(node);                                      \
-        node = NULL;                                     \
+#define IMPLEMENT_DELETE_ENTRY(type)                                     \
+    void list_delete_##type(list_##type** entry) {                       \
+        (*entry)->next = NULL;                                           \
+        free(*entry);                                                    \
+        *entry = NULL;                                                   \
     }
 
-
-#define IMPLEMENT_INSERT_NODE(type)                         \
-    void insert_node_##type(list_##type *list, type data) { \
-        node_##type *n, *node = create_node_##type(data);   \
-        if (list->size == 0) {                              \
-            list->head = node;                              \
-        } else {                                            \
-            n = list->head;                                 \
-            while(n->next != NULL) n=n->next;               \
-            n->next = node;                                 \
-        }                                                   \
-        list->size++;                                       \
+#define IMPLEMENT_LIST_SIZE(type)                                        \
+    size_t list_size_##type(list_##type** head) {                        \
+        size_t count = 0;                                                \
+        list_##type* n = *head;                                          \
+        while(n != NULL) {                                               \
+            count++;                                                     \
+            n=n->next;                                                   \
+        }                                                                \
+        return count;                                                    \
     }
 
-#define IMPLEMENT_ADD_NODE(type)                                 \
-    void add_node_##type(list_##type *list, node_##type *node) { \
-        node_##type *n;                                          \
-        if (list->size == 0) {                                   \
-            list->head = node;                                   \
-        } else {                                                 \
-            n = list->head;                                      \
-            while(n->next != NULL) n=n->next;                    \
-            n->next = node;                                      \
-        }                                                        \
-        list->size++;                                            \
-    }
-
-#define IMPLEMENT_REMOVE_NODE(type)                               \
-    void remove_node_##type(list_##type *list, type data) {       \
-        node_##type *tmp, *n = list->head;                        \
-        if (list->size == 0) return;                              \
-        if (list->head->data == data) {                           \
-            tmp = list->head->next;                               \
-            if (list->cleaner)                                    \
-                list->cleaner(list->head->data);                  \
-            delete_node_##type(list->head);                       \
-            list->size--;                                         \
-            list->head = tmp;                                     \
-        } else {                                                  \
-            while(n->next != NULL) {                              \
-                if (n->next->data == data) {                      \
-                    tmp     = n->next;                            \
-                    n->next = n->next->next;                      \
-                    if (list->cleaner)                            \
-                        list->cleaner(tmp->data);                 \
-                    delete_node_##type(tmp);                      \
-                    list->size--;                                 \
-                } else {                                          \
-                    n = n->next;                                  \
-                }                                                 \
-            }                                                     \
-        }                                                         \
-    }
-
-#define IMPLEMENT_SKIP_NODE(type)                               \
-    void skip_node_##type(list_##type *list, type data) {       \
-        node_##type *tmp, *n = list->head;                        \
-        if (list->size == 0) return;                              \
-        if (list->head->data == data) {                           \
-            tmp = list->head->next;                               \
-            delete_node_##type(list->head);                       \
-            list->size--;                                         \
-            list->head = tmp;                                     \
-        } else {                                                  \
-            while(n->next != NULL) {                              \
-                if (n->next->data == data) {                      \
-                    tmp     = n->next;                            \
-                    n->next = n->next->next;                      \
-                    delete_node_##type(tmp);                      \
-                    list->size--;                                 \
-                } else {                                          \
-                    n = n->next;                                  \
-                }                                                 \
-            }                                                     \
-        }                                                         \
-    }
-
-#define IMPLEMENT_FIND_NODE(type)                                 \
-    node_##type *find_node_##type(list_##type *list, type data) { \
-        node_##type *n = list->head;                              \
-        while(n != NULL) {                                        \
-            if (n->data == data) break;                           \
-            n=n->next;                                            \
-        }                                                         \
-        return n;                                                 \
-    }
-
-#define IMPLEMENT_GET_NODE_DATA(type)                               \
-    type get_##type(list_##type *list, size_t idx) {                \
-        size_t i;                                                   \
-        node_##type *n;                                             \
-        if (idx > list->size) {                                     \
-            fprintf(stderr, "list error: index out of bound\n");    \
-            exit(EXIT_FAILURE);                                     \
-        } else {                                                    \
-            for (n=list->head, i=0; i!=idx; n=n->next, ++i);        \
-            return n->data;                                         \
-        }                                                           \
-    }
-
-#define GENERATE_LIST_BODY(type)   \
-    IMPLEMENT_CREATE_LIST(type)    \
-    IMPLEMENT_DELETE_LIST(type)    \
-    IMPLEMENT_RESET_LIST(type)     \
-    IMPLEMENT_CREATE_NODE(type)    \
-    IMPLEMENT_DELETE_NODE(type)    \
-    IMPLEMENT_INSERT_NODE(type)    \
-    IMPLEMENT_ADD_NODE(type)       \
-    IMPLEMENT_REMOVE_NODE(type)    \
-    IMPLEMENT_SKIP_NODE(type)      \
-    IMPLEMENT_GET_NODE_DATA(type)  \
-    IMPLEMENT_FIND_NODE(type)
-
-CPPGUARD_END()
+#define GENERATE_LIST_BODY(type)  \
+    IMPLEMENT_CREATE_ENTRY(type)  \
+    IMPLEMENT_INSERT_ENTRY(type)  \
+    IMPLEMENT_REMOVE_ENTRY(type)  \
+    IMPLEMENT_FIND_ENTRY(type)    \
+    IMPLEMENT_DELETE_ENTRY(type)  \
+    IMPLEMENT_LIST_SIZE(type)
 
 #endif  // __API_LIST_INL_H_

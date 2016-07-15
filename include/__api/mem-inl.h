@@ -1,26 +1,39 @@
 #ifndef __API_MEM_INL_H_
 #define __API_MEM_INL_H_
 ///
-/// \copyright Copyright 2012-2013 TOTAL S.A. All rights reserved.
-/// This file is part of \b hicl.
+/// @copyright Copyright (c) 2013-2016, Univrsité Pierre et Marie Curie
+/// All rights reserved.
 ///
-/// \b hicl is free software: you can redistribute it and/or modify
-/// it under the terms of the GNU General Public License as published by
-/// the Free Software Foundation, either version 3 of the License, or
-/// (at your option) any later version.
+/// <b>hiCL</b> is owned by Université Pierre et Marie Curie (UPMC),
+/// funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ///
-/// \b hicl is distributed in the hope that it will be useful,
-/// but WITHOUT ANY WARRANTY; without even the implied warranty of
-/// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-/// GNU General Public License for more details.
+/// Redistribution and use in source and binary forms, with or without
+/// modification, are permetted provided that the following conditions
+/// are met:
 ///
-/// You should have received a copy of the GNU General Public License
-/// along with \b hicl.  If not, see <http://www.gnu.org/licenses/>.
+/// 1. Redistributions of source code must retain the above copyright
+///    notice, this list of conditions and the following disclaimer.
+/// 2. Redistributions in binary form must reproduce the above copyright
+///    notice, this list of conditions and the following disclaimer in the
+///    documentation and/or other materials provided with the distribution.
+/// 3. Neither the name of the UPMC nor the names of its contributors
+///    may be used to endorse or promote products derived from this software
+///    without specific prior written permission.
 ///
-/// \author Issam Said
-/// \file __api_mem.h
-/// \version $Id: mem-inl.h 2396 2014-05-10 12:40:26Z issam $
-/// \brief Defines the private routines for hicl_mem.
+/// THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+/// INCLUDING, BUT NOT LIMITED TO, WARRANTIES OF MERCHANTABILITY AND FITNESS
+/// FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE UPMC OR
+/// ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+/// EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+/// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+/// PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+/// LIABILITY, WETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+/// NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+/// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+///
+/// @file __api/mem-inl.h
+/// @author Issam SAID
+/// @brief Private functions used to implement the hiCL memory descriptor.
 ///
 #include <stdio.h>
 #include "hiCL/flags.h"
@@ -39,13 +52,13 @@
              "failed to query memory info")
 
 #define __API_MEM_INFO_LEVEL_0(fmt, ...) \
-    fprintf(cl->fdout, C_GREEN"\no OpenCL "fmt":\n"C_END, ##__VA_ARGS__)
+    fprintf(hicl->fdout, C_GREEN"\no OpenCL "fmt":\n"C_END, ##__VA_ARGS__)
 
 #define __API_MEM_INFO_LEVEL_1(fmt, ...) \
-    fprintf(cl->fdout, "\to %-20s: "fmt"\n", ##__VA_ARGS__)
+    fprintf(hicl->fdout, "\to %-20s: "fmt"\n", ##__VA_ARGS__)
 
 #define __API_MEM_INFO_LEVEL_2(fmt, ...) \
-    fprintf(cl->fdout, "\t %-22s "fmt"\n", " ", ##__VA_ARGS__)
+    fprintf(hicl->fdout, "\t %-22s "fmt"\n", " ", ##__VA_ARGS__)
 
 #define __API_MEM_READ_ONLY(flags)        (flags & READ_ONLY)
 #define __API_MEM_WRITE_ONLY(flags)       (flags & WRITE_ONLY)
@@ -172,34 +185,34 @@ __api_mem_map_flags(flags_t flags, cl_bool reverse) {
 }
 
 PRIVATE void
-__api_mem_map(mem m, cl_map_flags flags, cl_bool blocking) {
+__api_mem_map(himem_t m, cl_map_flags flags, cl_bool blocking) {
     cl_int cl_ret;
+    HICL_DEBUG("attempt to map @ %p %s(%12.5f MB)",
+               __API_MEM_PINNED(m->flags) ? m->pinned : m->id,
+               __API_MEM_PINNED(m->flags) ? "pinned " : "",
+               (double)m->size*m->unit_size/1024./1024.);
     m->h = clEnqueueMapBuffer(m->queue, 
                               __API_MEM_PINNED(m->flags) ? m->pinned : m->id,
                               blocking,
                               flags, 0, m->size*m->unit_size, 0,
                               NULL, NULL, &cl_ret);
     HICL_CHECK(cl_ret, "failed to map memory region");
-    HICL_DEBUG("map    @ %p %s(%12.5f MB)",
-             __API_MEM_PINNED(m->flags) ? m->pinned : m->id,
-             __API_MEM_PINNED(m->flags) ? "pinned " : "",
-             (double)m->size*m->unit_size/1024./1024.);
 }
 
 PRIVATE void
-__api_mem_unmap(mem m, cl_bool blocking) {
+__api_mem_unmap(himem_t m, cl_bool blocking) {
+    HICL_DEBUG("attempt to unmap  @ %p (%12.5f MB)", 
+               m->id, (double)m->size*m->unit_size/1024./1024.);
     HICL_CHECK(clEnqueueUnmapMemObject(m->queue,
-                                     __API_MEM_PINNED(m->flags) ? 
-                                     m->pinned : m->id, 
-                                     m->h, 0, NULL, NULL),
+                                       __API_MEM_PINNED(m->flags) ? 
+                                       m->pinned : m->id, 
+                                       m->h, 0, NULL, NULL),
              "failed to unmap memory region");
     if (blocking) clFinish(m->queue);
-    HICL_DEBUG("unmap  @ %p (%12.5f MB)", 
-             m->id, (double)m->size*m->unit_size/1024./1024.);
 }
 
 PRIVATE void
-__api_mem_htod(mem m, cl_bool blocking) {
+__api_mem_htod(himem_t m, cl_bool blocking) {
     HICL_CHECK(clEnqueueWriteBuffer(m->queue, m->id, blocking, 0,
                                   m->size*m->unit_size, m->h, 0, NULL, NULL),
              "failed to write into OpenCL memory");
@@ -208,7 +221,7 @@ __api_mem_htod(mem m, cl_bool blocking) {
 }
 
 PRIVATE void 
-__api_mem_dtoh(mem m, cl_bool blocking) { 
+__api_mem_dtoh(himem_t m, cl_bool blocking) { 
     HICL_CHECK(clEnqueueReadBuffer(m->queue, m->id, blocking, 0,
                                  m->size*m->unit_size, m->h, 0, NULL, NULL),
              "failed to read from OpenCL memory");
@@ -218,7 +231,7 @@ __api_mem_dtoh(mem m, cl_bool blocking) {
 
 /* This is bugy on AMD discrete GPU */
 PRIVATE void 
-__api_mem_dtoh_rect3d(mem m, 
+__api_mem_dtoh_rect3d(himem_t m, 
                       int ix, int ex,
                       int iy, int ey,
                       int iz, int ez,
@@ -242,7 +255,7 @@ __api_mem_dtoh_rect3d(mem m,
 
 /* This is bugy on AMD discrete GPU */
 PRIVATE void 
-__api_mem_htod_rect3d(mem m, 
+__api_mem_htod_rect3d(himem_t m, 
                       int ix, int ex,
                       int iy, int ey,
                       int iz, int ez,
@@ -265,7 +278,7 @@ __api_mem_htod_rect3d(mem m,
 }
 
 PRIVATE void
-__api_mem_copy(mem src, mem dst, cl_bool blocking) {
+__api_mem_copy(himem_t src, himem_t dst, cl_bool blocking) {
     if (__API_MEM_ZERO_COPY(src->flags)) {
         dst->flags     = src->flags;
         dst->h         = src->h;
@@ -288,7 +301,7 @@ __api_mem_copy(mem src, mem dst, cl_bool blocking) {
 }
 
 PRIVATE void
-__api_mem_touch(mem m) {
+__api_mem_touch(himem_t m) {
     if (!__API_MEM_READ_ONLY(m->flags)) {
         __API_MEM_TOUCH_DEVICE(m->flags);
         HICL_DEBUG("touch  @ %p", m->id);
@@ -296,7 +309,7 @@ __api_mem_touch(mem m) {
 }
 
 PRIVATE void
-__api_mem_sync(mem m) {
+__api_mem_sync(himem_t m) {
     if (__API_MEM_ZERO_COPY(m->flags)) {
         if (__API_MEM_HOST_DIRTY(m->flags) &&
             !__API_MEM_WRITE_ONLY(m->flags)) {
@@ -316,27 +329,32 @@ __api_mem_sync(mem m) {
     __api_mem_touch(m);
 }
 
-PRIVATE mem
-__api_mem_find(address h) {
-    return find_rbn_address_mem(&cl->mems, h)->value;
+PRIVATE himem_t
+__api_mem_find(address_t h) {
+    return find_rbn_address_t_himem_t(&hicl->mems, h)->value;
 }
 
 PRIVATE void
-__api_mem_release(mem m) {
+__api_mem_release(himem_t m) {
     if (m != NULL) {
-        HICL_DEBUG("free   @ %p (id=%p, knl size = %lu)", m, m->id, m->knls.size);
+        HICL_DEBUG("himem_t release @ %p (id=%p, hiknl_t size = %lu)", 
+                    m, m->id, m->knls.size);
         if (__API_MEM_CPU(m->flags)) {
             if (__API_MEM_ZERO_COPY(m->flags)) {
-                __api_mem_unmap(m, CL_TRUE);
-                if (clReleaseMemObject(m->id) != CL_SUCCESS)
-                HICL_WARN("failed to release OpenCL memory");
+                HICL_ABORT(clEnqueueUnmapMemObject(m->queue,
+                                                     __API_MEM_PINNED(m->flags) ? 
+                                                     m->pinned : m->id, 
+                                                     m->h, 0, NULL, NULL), 
+                           "failed to unmap host zero-copy memory");
+                HICL_ABORT(clReleaseMemObject(m->id),
+                           "failed to release OpenCL memory");
             } else {
                 free(m->h);
             }
         } else if (__API_MEM_HWA(m->flags)) {
             if (__API_MEM_PINNED(m->flags)) {
-                if (clReleaseMemObject(m->pinned) != CL_SUCCESS)
-                    HICL_WARN("failed to release pinned memory object");
+                HICL_ABORT(clReleaseMemObject(m->pinned),
+                           "failed to release pinned memory object");
             } else if (__API_MEM_ZERO_COPY(m->flags)) {
                 __api_mem_unmap(m, CL_TRUE);
             } else {
@@ -344,40 +362,39 @@ __api_mem_release(mem m) {
                     free(m->h);
                 }
             }
-            if (clReleaseMemObject(m->id) != CL_SUCCESS)
-                HICL_WARN("failed to release OpenCL memory");
+            HICL_ABORT(clReleaseMemObject(m->id), "failed to release OpenCL memory");
         }
         free(m); m = NULL;
     }
 }
 
 PRIVATE void
-__api_mem_skip_from_knl(knl k, int index) {
+__api_mem_skip_from_knl(hiknl_t k, int index) {
     HICL_DEBUG("skip arg %d of kernel %p", index, k->id);
-    skip_rbn_int_mem(&k->mems, index);
+    skip_rbn_int_himem_t(&k->mems, index);
 }
 
 PRIVATE void
-__api_mem_stdalone_release(mem m) {
+__api_mem_stdalone_release(himem_t m) {
     if (m != NULL) {
-        walk_key_value_rbt_knl_int(&m->knls, __api_mem_skip_from_knl);
-        delete_rbt_knl_int(&m->knls);
+        walk_key_value_rbt_hiknl_t_int(&m->knls, __api_mem_skip_from_knl);
+        delete_rbt_hiknl_t_int(&m->knls);
         __api_mem_release(m);
     }
 }
 
 PRIVATE void
-__api_mem_knl_release(mem m) {
+__api_mem_knl_release(himem_t m) {
     if (m != NULL) {
-        walk_key_value_rbt_knl_int(&m->knls, __api_mem_skip_from_knl);
-        delete_rbt_knl_int(&m->knls);
-        skip_rbn_address_mem(&cl->mems, m->h);
+        walk_key_value_rbt_hiknl_t_int(&m->knls, __api_mem_skip_from_knl);
+        delete_rbt_hiknl_t_int(&m->knls);
+        skip_rbn_address_t_himem_t(&hicl->mems, m->h);
         __api_mem_release(m);
     }
 }
 
 PRIVATE void
-__api_mem_info(mem m) {
+__api_mem_info(himem_t m) {
     __API_MEM_INFO_LEVEL_0("memory @ %p (%#lx)", m->id, m->flags);
     __API_MEM_INFO_LEVEL_1("%-12.5f %s", "size", 
                            (double)m->size*m->unit_size/1024./1024., "MB");

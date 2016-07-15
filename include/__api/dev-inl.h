@@ -1,26 +1,39 @@
 #ifndef __API_DEV_INL_H_
 #define __API_DEV_INL_H_
 ///
-/// \copyright Copyright 2012-2013 TOTAL S.A. All rights reserved.
-/// This file is part of \b hicl.
+/// @copyright Copyright (c) 2013-2016, Univrsité Pierre et Marie Curie
+/// All rights reserved.
 ///
-/// \b hicl is free software: you can redistribute it and/or modify
-/// it under the terms of the GNU General Public License as published by
-/// the Free Software Foundation, either version 3 of the License, or
-/// (at your option) any later version.
+/// <b>hiCL</b> is owned by Université Pierre et Marie Curie (UPMC),
+/// funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ///
-/// \b hicl is distributed in the hope that it will be useful,
-/// but WITHOUT ANY WARRANTY; without even the implied warranty of
-/// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-/// GNU General Public License for more details.
+/// Redistribution and use in source and binary forms, with or without
+/// modification, are permetted provided that the following conditions
+/// are met:
 ///
-/// You should have received a copy of the GNU General Public License
-/// along with \b hicl.  If not, see <http://www.gnu.org/licenses/>.
+/// 1. Redistributions of source code must retain the above copyright
+///    notice, this list of conditions and the following disclaimer.
+/// 2. Redistributions in binary form must reproduce the above copyright
+///    notice, this list of conditions and the following disclaimer in the
+///    documentation and/or other materials provided with the distribution.
+/// 3. Neither the name of the UPMC nor the names of its contributors
+///    may be used to endorse or promote products derived from this software
+///    without specific prior written permission.
 ///
-/// \author Issam Said
-/// \file dev-inl.h
-/// \version $Id: dev-inl.h 2396 2014-05-10 12:40:26Z issam $
-/// \brief Private routines for easyhicl_dev.
+/// THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+/// INCLUDING, BUT NOT LIMITED TO, WARRANTIES OF MERCHANTABILITY AND FITNESS
+/// FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE UPMC OR
+/// ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+/// EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+/// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+/// PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+/// LIABILITY, WETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+/// NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+/// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+///
+/// @file __api/dev-inl.h
+/// @author Issam SAID
+/// @brief Private functions used to implement the hiCL device descriptor.
 ///
 #include <stdio.h>
 #include <string.h>
@@ -36,17 +49,78 @@
 
 CPPGUARD_BEGIN()
 
-#define __API_DEV_TYPE_MASK ALL | CPU | GPU | ACCELERATOR
+#define __API_DEV_TYPE_MASK DEFAULT | ALL | CPU | GPU | ACCELERATOR
 
-#define __API_DEV_INDEX_MASK FIRST | SECOND | THIRD   | FOURTH |\
-                             FIFTH | SIXTH  | SEVENTH | EIGHTH
+#define __API_DEV_INDEX_MASK DEFAULT | FIRST | SECOND | THIRD   |\
+                             FOURTH  | FIFTH | SIXTH  | SEVENTH | EIGHTH
+
+#define __API_DEV_CHECK_TYPE_FLAGS(flags)       \
+   ((! __API_FLAGS_HAVE(flags, DEFAULT)      && \
+     ! __API_FLAGS_HAVE(flags, ALL)          && \
+     ! __API_FLAGS_HAVE(flags, CPU)          && \
+     ! __API_FLAGS_HAVE(flags, GPU)          && \
+     ! __API_FLAGS_HAVE(flags, ACCELERATOR)) || \
+     ( __API_FLAGS_HAVE(flags, DEFAULT)      && \
+     ! __API_FLAGS_HAVE(flags, ALL)          && \
+     ! __API_FLAGS_HAVE(flags, CPU)          && \
+     ! __API_FLAGS_HAVE(flags, GPU)          && \
+     ! __API_FLAGS_HAVE(flags, ACCELERATOR)) || \
+     ( __API_FLAGS_HAVE(flags, ALL)          && \
+     ! __API_FLAGS_HAVE(flags, DEFAULT)      && \
+     ! __API_FLAGS_HAVE(flags, CPU)          && \
+     ! __API_FLAGS_HAVE(flags, GPU)          && \
+     ! __API_FLAGS_HAVE(flags, ACCELERATOR)) || \
+     ( __API_FLAGS_HAVE(flags, CPU)          && \
+     ! __API_FLAGS_HAVE(flags, ALL)          && \
+     ! __API_FLAGS_HAVE(flags, DEFAULT)      && \
+     ! __API_FLAGS_HAVE(flags, GPU)          && \
+     ! __API_FLAGS_HAVE(flags, ACCELERATOR)) || \
+     ( __API_FLAGS_HAVE(flags, GPU)          && \
+     ! __API_FLAGS_HAVE(flags, ALL)          && \
+     ! __API_FLAGS_HAVE(flags, CPU)          && \
+     ! __API_FLAGS_HAVE(flags, DEFAULT)      && \
+     ! __API_FLAGS_HAVE(flags, ACCELERATOR)) || \
+     ( __API_FLAGS_HAVE(flags, ACCELERATOR)  && \
+     ! __API_FLAGS_HAVE(flags, ALL)          && \
+     ! __API_FLAGS_HAVE(flags, CPU)          && \
+     ! __API_FLAGS_HAVE(flags, GPU)          && \
+     ! __API_FLAGS_HAVE(flags, DEFAULT)))
+
+#define __API_DEV_CHECK_INDEX_FLAGS(flags)      \
+   ((! __API_FLAGS_HAVE(flags, DEFAULT)      && \
+     ! __API_FLAGS_HAVE(flags, FIRST)        && \
+     ! __API_FLAGS_HAVE(flags, SECOND)       && \
+     ! __API_FLAGS_HAVE(flags, THIRD)        && \
+     ! __API_FLAGS_HAVE(flags, FOURTH)       && \
+     ! __API_FLAGS_HAVE(flags, FIFTH)        && \
+     ! __API_FLAGS_HAVE(flags, SIXTH)        && \
+     ! __API_FLAGS_HAVE(flags, SEVENTH)      && \
+     ! __API_FLAGS_HAVE(flags, EIGHTH))      || \
+     ( __API_FLAGS_HAVE(flags, DEFAULT)      && \
+     ! __API_FLAGS_HAVE(flags, FIRST)        && \
+     ! __API_FLAGS_HAVE(flags, SECOND)       && \
+     ! __API_FLAGS_HAVE(flags, THIRD)        && \
+     ! __API_FLAGS_HAVE(flags, FOURTH)       && \
+     ! __API_FLAGS_HAVE(flags, FIFTH)        && \
+     ! __API_FLAGS_HAVE(flags, SIXTH)        && \
+     ! __API_FLAGS_HAVE(flags, SEVENTH)      && \
+     ! __API_FLAGS_HAVE(flags, EIGHTH))      || \
+   ((! __API_FLAGS_HAVE(flags, DEFAULT))     && \
+    ( __API_FLAGS_HAVE(flags, FIRST)         || \
+      __API_FLAGS_HAVE(flags, SECOND)        || \
+      __API_FLAGS_HAVE(flags, THIRD)         || \
+      __API_FLAGS_HAVE(flags, FOURTH)        || \
+      __API_FLAGS_HAVE(flags, FIFTH)         || \
+      __API_FLAGS_HAVE(flags, SIXTH)         || \
+      __API_FLAGS_HAVE(flags, SEVENTH)       || \
+      __API_FLAGS_HAVE(flags, EIGHTH))))
 
 #define __API_DEV_GET(id, device_info, value)                                 \
-    HICL_CHECK(clGetDeviceInfo(id, device_info, sizeof(value), &value, NULL), \
+    HICL_ABORT(clGetDeviceInfo(id, device_info, sizeof(value), &value, NULL), \
                "failed to query device info")
 
 #define __API_DEV_GET_PTR(id, device_info, value)                            \
-    HICL_CHECK(clGetDeviceInfo(id, device_info, sizeof(value), value, NULL), \
+    HICL_ABORT(clGetDeviceInfo(id, device_info, sizeof(value), value, NULL), \
                "failed to query device info")
 
 #define __API_DEV_TYPE_STR(t)                                        \
@@ -57,21 +131,24 @@ CPPGUARD_BEGIN()
      t == CL_DEVICE_TYPE_DEFAULT     ? "CL_DEVICE_TYPE_DEFAULT"     :\
      "BAD DEVICE TYPE")
 
-#define __API_DEV_INFO_LEVEL_0(fmt, ...) fprintf(cl->fdout, \
+#define __API_DEV_INFO_LEVEL_0(fdout, fmt, ...) fprintf(fdout, \
 C_GREEN"\n\to OpenCL "fmt"\n"C_END, ##__VA_ARGS__)
 
 #ifdef __API_DEV_LONG_INFO_ENABLED
-#define __API_DEV_INFO_LEVEL_1(fmt, ...) fprintf(cl->fdout, \
+#define __API_DEV_INFO_LEVEL_1(fdout, fmt, ...) fprintf(fdout, \
 "\t\to %-30s: "fmt"\n", ##__VA_ARGS__)
-#define __API_DEV_INFO_LEVEL_2(fmt, ...) fprintf(cl->fdout, \
+
+#define __API_DEV_INFO_LEVEL_2(fdout, fmt, ...) fprintf(fdout, \
 "\t\t %32s "fmt"\n", " ", ##__VA_ARGS__)
-/// \brief Convert OpenCl device global mem cache type to a string constant
+
+/// \brief Convert OpenCl device global himem_t cache type to a string constant
 #define __API_DEV_GLOBAL_MEM_CACHE_TYPE_STR(c)               \
     (c == CL_NONE             ? "CL_NONE"             :      \
      c == CL_READ_ONLY_CACHE  ? "CL_READ_ONLY_CACHE"  :      \
      c == CL_READ_WRITE_CACHE ? "CL_READ_WRITE_CACHE" :      \
       "BAD DEVICE GLOBAL CACHE TYPE")
-/// \brief Convert OpenCl device local mem type to a string constant
+
+/// \brief Convert OpenCl device local himem_t type to a string constant
 #define __API_DEV_LOCAL_MEM_TYPE_STR(l) \
     (l == CL_NONE   ? "CL_NONE"     :   \
      l == CL_GLOBAL ? "CL_GLOBAL"   :   \
@@ -79,28 +156,41 @@ C_GREEN"\n\to OpenCL "fmt"\n"C_END, ##__VA_ARGS__)
      "BAD DEVICE LOCAL MEM TYPE")
 
 #else
-#define __API_DEV_INFO_LEVEL_1(fmt, ...) fprintf(cl->fdout, \
+#define __API_DEV_INFO_LEVEL_1(fdout, fmt, ...) fprintf(fdout, \
 "\t\to %-20s: "fmt"\n", ##__VA_ARGS__)
-#define __API_DEV_INFO_LEVEL_2(fmt, ...) fprintf(cl->fdout, \
+
+#define __API_DEV_INFO_LEVEL_2(fdout, fmt, ...) fprintf(fdout, \
 "\t\t %22s "fmt"\n", " ", ##__VA_ARGS__)
 #endif  // __API_DEV_LONG_INFO_ENABLED
 
 PRIVATE cl_device_type
 __api_dev_flags_to_type(flags_t flags) {
-    HICL_DEBUG("flags to type %#016lx", flags);
     if (__API_FLAGS_HAVE(flags, DEFAULT))     return CL_DEVICE_TYPE_DEFAULT;
     if (__API_FLAGS_HAVE(flags, CPU))         return CL_DEVICE_TYPE_CPU;
     if (__API_FLAGS_HAVE(flags, GPU))         return CL_DEVICE_TYPE_GPU;
     if (__API_FLAGS_HAVE(flags, ACCELERATOR)) return CL_DEVICE_TYPE_ACCELERATOR;
     if (__API_FLAGS_HAVE(flags, ALL))         return CL_DEVICE_TYPE_ALL;
-    HICL_EXIT("unable to identify type from hiCL flags");
 }
 
 PRIVATE cl_uint
 __api_dev_flags_to_index(flags_t flags) {
-    HICL_DEBUG("flags to index %#016lx", flags);
     if (__API_FLAGS_HAVE(flags, DEFAULT)) return 0;
-    else return (cl_uint)(log2(flags));
+    else return ((cl_uint)(log2(flags)))-1;
+}
+
+PRIVATE cl_uint
+__api_dev_count(cl_platform_id plt) {
+    cl_uint nb_devices;
+    HICL_ABORT(clGetDeviceIDs(plt, CL_DEVICE_TYPE_ALL, 0, NULL, &nb_devices),
+               "failed to query the number of OpenCL devices");
+    return nb_devices;
+}
+
+PRIVATE void
+__api_dev_query(cl_platform_id plt, cl_device_id *dev_ids, cl_uint nb_devices) {
+    HICL_ABORT(clGetDeviceIDs(plt, 
+                              CL_DEVICE_TYPE_ALL, nb_devices, dev_ids, NULL),
+               "failed to query OpenCL devices");
 }
 
 PRIVATE cl_uint
@@ -109,15 +199,17 @@ __api_dev_select_by_type(cl_device_id *ids, cl_uint in_devices, flags_t flags) {
     cl_device_id tmp_id;
     cl_device_type ftype, type;
     unsigned int f, i;
-    flags_t dev_types[]  = {ALL, CPU, GPU, ACCELERATOR};
-    if (__API_FLAGS_HAVE(flags, DEFAULT)) return 1;
-    
-    for (f = 0; f < sizeof(dev_types)/sizeof(*dev_types); ++f) {
-        if ((flags & dev_types[f]) == dev_types[f]) {
-            ftype = __api_dev_flags_to_type(dev_types[f]);
+    flags_t hidev_types[]     = {ALL, CPU, GPU, ACCELERATOR};
+    flags_t hidev_type_flags  = flags & (__API_DEV_TYPE_MASK);
+    HICL_FAIL_IF(!__API_DEV_CHECK_TYPE_FLAGS(hidev_type_flags), 
+                 "invalid hiCL device type flags");
+    if(hidev_type_flags == 0) return in_devices;
+    for (f = 0; f < sizeof(hidev_types)/sizeof(*hidev_types); ++f) {
+        if (__API_FLAGS_HAVE(hidev_type_flags, hidev_types[f])) {
+            ftype = __api_dev_flags_to_type(hidev_types[f]);
             for (i = out_devices; i < in_devices; ++i) {
                 __API_DEV_GET(ids[i], CL_DEVICE_TYPE, type);
-                if (ftype & type) {
+                if (type & ftype) {
                     tmp_id             = ids[out_devices];
                     ids[out_devices++] = ids[i];
                     ids[i]             = tmp_id;
@@ -125,22 +217,23 @@ __api_dev_select_by_type(cl_device_id *ids, cl_uint in_devices, flags_t flags) {
             }
         }
     }
-    return out_devices ? out_devices : in_devices;
+    return out_devices;
 }
 
 PRIVATE cl_uint
 __api_dev_select_by_index(cl_device_id *ids, 
                           cl_uint in_devices, flags_t flags) {
-    cl_device_id tmp_ids[in_devices];
-    flags_t dev_indices[] = {FIRST,  SECOND,  THIRD, FOURTH,
-                             FIFTH, SIXTH, SEVENTH, EIGHTH};
     cl_uint f, i, findex, out_devices = 0;
-    if (__API_FLAGS_HAVE(flags, DEFAULT)) return 1;
-   
+    cl_device_id tmp_ids[in_devices];
+    flags_t dev_indices[]   = {FIRST, SECOND,  THIRD, FOURTH,
+                               FIFTH, SIXTH, SEVENTH, EIGHTH};
+    flags_t dev_index_flags = flags & (__API_DEV_INDEX_MASK);
+    HICL_FAIL_IF(!__API_DEV_CHECK_INDEX_FLAGS(dev_index_flags), 
+                 "invalid hiCL device index flags");
     for (f = 0; f < sizeof(dev_indices)/sizeof(*dev_indices); ++f) {
-        if ((flags & dev_indices[f]) == dev_indices[f]) {
+        if (__API_FLAGS_HAVE(dev_index_flags, dev_indices[f])) {
             findex = __api_dev_flags_to_index(dev_indices[f]);
-            HICL_EXIT_IF(findex > in_devices,
+            HICL_FAIL_IF(findex > in_devices,
                          "OpenCL device index (%u) out of bound (%u)",
                          findex, in_devices);
             tmp_ids[out_devices++] = ids[findex];
@@ -151,29 +244,17 @@ __api_dev_select_by_index(cl_device_id *ids,
 }
 
 PRIVATE cl_uint
-__api_dev_count(cl_platform_id plt) {
-    cl_uint nb_devices;
-    HICL_CHECK(clGetDeviceIDs(plt, CL_DEVICE_TYPE_ALL, 0, NULL, &nb_devices),
-               "failed to query the number of OpenCL devices");
-    HICL_EXIT_IF(nb_devices == 0, "no OpenCL devices found");
-    return nb_devices;
-}
-
-PRIVATE void
-__api_dev_query(cl_platform_id plt, cl_device_id *dev_ids, cl_uint nb_devices) {
-    HICL_CHECK(clGetDeviceIDs(plt, 
-                              CL_DEVICE_TYPE_ALL, nb_devices, dev_ids, NULL),
-               "failed to query OpenCL devices");
-}
-
-PRIVATE cl_uint
-__api_dev_select(cl_platform_id plt, 
-                 cl_device_id *ids, cl_uint nb_devices, flags_t flags) {
-    cl_uint n;
-    n = __api_dev_select_by_type(ids, n, flags & __API_DEV_TYPE_MASK);
-    n = __api_dev_select_by_index(ids, n, flags & __API_DEV_INDEX_MASK);
-    HICL_EXIT_IF(n == 0, "failed to load the desired OpenCL devices");
-    return n;
+__api_dev_select(cl_device_id *ids, cl_uint nb_devices, flags_t flags) {
+    cl_uint n = 0;
+    flags_t hidev_type_flags  = flags & (__API_DEV_TYPE_MASK);
+    flags_t dev_index_flags = flags & (__API_DEV_INDEX_MASK);
+    if ((__API_FLAGS_HAVE(flags, DEFAULT)) ||
+        ((hidev_type_flags == 0) && (dev_index_flags == 0))) return 1;
+    if ((n = __api_dev_select_by_type(ids, nb_devices, hidev_type_flags)) == 0) {
+        return 0;
+    } else {
+        return __api_dev_select_by_index(ids, n, dev_index_flags);
+    }
 }
 
 PRIVATE cl_bool 
@@ -200,87 +281,91 @@ __api_dev_compiler_available(cl_device_id id) {
 #ifdef __API_DEV_LONG_INFO_ENABLED
 /// \brief Convert OpenCl device single fp config value to a string constant
 PRIVATE void 
-__api_dev_single_fp_config_str(cl_device_fp_config fc) {
-    __API_DEV_INFO_LEVEL_1("%s", "execution capabilities",
-                               fc & CL_FP_ROUND_TO_NEAREST ?
-                               "CL_FP_ROUND_TO_NEAREST" : " ");
+__api_dev_single_fp_config_str(cl_device_fp_config fc, FILE* fdout) {
+    __API_DEV_INFO_LEVEL_1(fdout, "%s", "execution capabilities",
+                           fc & CL_FP_ROUND_TO_NEAREST ?
+                           "CL_FP_ROUND_TO_NEAREST" : " ");
     if (fc & CL_FP_DENORM)
-        __API_DEV_INFO_LEVEL_2("%s", "CL_FP_DENORM");
+        __API_DEV_INFO_LEVEL_2(fdout, "%s", "CL_FP_DENORM");
     if (fc & CL_FP_INF_NAN)
-        __API_DEV_INFO_LEVEL_2("%s", "CL_FP_INF_NAN");
+        __API_DEV_INFO_LEVEL_2(fdout, "%s", "CL_FP_INF_NAN");
     if (fc & CL_FP_ROUND_TO_ZERO)
-        __API_DEV_INFO_LEVEL_2("%s", "CL_FP_ROUND_TO_ZERO");
+        __API_DEV_INFO_LEVEL_2(fdout, "%s", "CL_FP_ROUND_TO_ZERO");
     if (fc & CL_FP_ROUND_TO_INF)
-        __API_DEV_INFO_LEVEL_2("%s", "CL_FP_ROUND_TO_INF");
+        __API_DEV_INFO_LEVEL_2(fdout, "%s", "CL_FP_ROUND_TO_INF");
     if (fc & CL_FP_FMA)
-        __API_DEV_INFO_LEVEL_2("%s", "CL_FP_FMA");
+        __API_DEV_INFO_LEVEL_2(fdout, "%s", "CL_FP_FMA");
     if (fc & CL_FP_SOFT_FLOAT)
-        __API_DEV_INFO_LEVEL_2("%s", "CL_FP_SOFT_FLOAT");
+        __API_DEV_INFO_LEVEL_2(fdout, "%s", "CL_FP_SOFT_FLOAT");
 #ifdef CL_VERSION_1_2
     if (fc & CL_FP_CORRECTLY_ROUNDED_DIVIDE_SQRT)
-        __API_DEV_INFO_LEVEL_2("%s", "CL_FP_CORRECTLY_ROUNDED_DIVIDE_SQRT");
+        __API_DEV_INFO_LEVEL_2(fdout, "%s", "CL_FP_CORRECTLY_ROUNDED_DIVIDE_SQRT");
 #endif  // CL_VERSION_1_2
 }
 
 /// \brief Convert OpenCl device single fp config value to a string constant
 PRIVATE void 
-__api_dev_execution_capabilities_str(cl_device_exec_capabilities ec) {
+__api_dev_execution_capabilities_str(cl_device_exec_capabilities ec, 
+                                     FILE* fdout) {
     if (ec & CL_EXEC_KERNEL) {
-        __API_DEV_INFO_LEVEL_1("%s", "exec capabilities", "CL_EXEC_KERNEL");
+        __API_DEV_INFO_LEVEL_1(fdout, 
+                               "%s", "exec capabilities", "CL_EXEC_KERNEL");
         if (ec & CL_EXEC_NATIVE_KERNEL)
-            __API_DEV_INFO_LEVEL_2("%s", "CL_EXEC_NATIVE_KERNEL");
+            __API_DEV_INFO_LEVEL_2(fdout, "%s", "CL_EXEC_NATIVE_KERNEL");
     } else {
         if (ec & CL_EXEC_NATIVE_KERNEL)
-            __API_DEV_INFO_LEVEL_1("%s", "exec capabilities",
-                                       "CL_EXEC_NATIVE_KERNEL");
+            __API_DEV_INFO_LEVEL_1(fdout, "%s", "exec capabilities",
+                                   "CL_EXEC_NATIVE_KERNEL");
     }
 }
 
 /// \brief Convert OpenCl device single fp config value to a string constant
 PRIVATE void 
-__api_dev_queue_properties_str(cl_command_queue_properties qp) {
+__api_dev_queue_properties_str(cl_command_queue_properties qp, FILE* fdout) {
     if (qp & CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE) {
-        __API_DEV_INFO_LEVEL_1("%s", "queue properties",
-                                   "CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE");
+        __API_DEV_INFO_LEVEL_1(fdout, "%s", "queue properties",
+                               "CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE");
         if (qp & CL_QUEUE_PROFILING_ENABLE)
-            __API_DEV_INFO_LEVEL_2("%s", "CL_QUEUE_PROFILING_ENABLE");
+            __API_DEV_INFO_LEVEL_2(fdout, "%s", "CL_QUEUE_PROFILING_ENABLE");
 
     } else {
         if (qp & CL_QUEUE_PROFILING_ENABLE)
-            __API_DEV_INFO_LEVEL_1("%s", "queue properties",
-                                       "CL_QUEUE_PROFILING_ENABLE");
+            __API_DEV_INFO_LEVEL_1(fdout, "%s", "queue properties",
+                                   "CL_QUEUE_PROFILING_ENABLE");
     }
 }
 #endif  // __API_DEV_LONG_INFO_ENABLED
 
 PRIVATE void 
-__api_dev_info(cl_device_id id) {
+__api_dev_info(cl_device_id id, FILE* fdout) {
     cl_device_type device_type;
     char name[__API_STR_SIZE];
     char vendor[__API_STR_SIZE];
     char driver_version[__API_STR_SIZE];
     char profile[__API_STR_SIZE];
     char extensions[__API_BUFFER_SIZE];
+    char *marker;
     __API_DEV_GET(id, CL_DEVICE_TYPE, device_type);
     __API_DEV_GET_PTR(id, CL_DEVICE_NAME, name);
     __API_DEV_GET_PTR(id, CL_DEVICE_VENDOR, vendor);
     __API_DEV_GET_PTR(id, CL_DRIVER_VERSION, driver_version);
     __API_DEV_GET_PTR(id, CL_DEVICE_PROFILE, profile);
     __API_DEV_GET_PTR(id, CL_DEVICE_EXTENSIONS, extensions);
-    __API_DEV_INFO_LEVEL_0("Device @ %p", id);
-    __API_DEV_INFO_LEVEL_1("%s", "type",
+    __API_DEV_INFO_LEVEL_0(fdout, "Device @ %p", id);
+    __API_DEV_INFO_LEVEL_1(fdout, "%s", "type",
                               __API_DEV_TYPE_STR(device_type));
-    __API_DEV_INFO_LEVEL_1("%s", "name", name);
-    __API_DEV_INFO_LEVEL_1("%s", "vendor", vendor);
-    __API_DEV_INFO_LEVEL_1("%s", "driver version", driver_version);
-    __API_DEV_INFO_LEVEL_1("%s", "profile", profile);
+    __API_DEV_INFO_LEVEL_1(fdout, "%s", "name", name);
+    __API_DEV_INFO_LEVEL_1(fdout, "%s", "vendor", vendor);
+    __API_DEV_INFO_LEVEL_1(fdout, "%s", "driver version", driver_version);
+    __API_DEV_INFO_LEVEL_1(fdout, "%s", "profile", profile);
     if (strlen(extensions) != 0) {
         char ext[__API_STR_SIZE];
-        __api_strstep(ext, extensions, " ");
-        __API_DEV_INFO_LEVEL_1("%s", "extensions", ext);
-        while(!__api_strstep(ext, extensions, " ")) {
-            __API_DEV_INFO_LEVEL_2("%s", ext);
-        }
+        marker = __api_strstep(ext, extensions, " ");
+        __API_DEV_INFO_LEVEL_1(fdout, "%s", "extensions", ext);
+        do {
+            marker = __api_strstep(ext, marker, " ");
+            __API_DEV_INFO_LEVEL_2(fdout, "%s", ext);
+        } while(marker != NULL);
     }
 #ifdef __API_DEV_LONG_INFO_ENABLED
     unsigned int i;
@@ -297,7 +382,7 @@ __api_dev_info(cl_device_id id) {
     cl_uint preferred_vector_width_float;
     cl_uint preferred_vector_width_double;
     cl_uint max_clock_frequency;
-    cl_uint address_bits;
+    cl_uint address_t_bits;
     cl_ulong max_mem_alloc_size;
     cl_bool image_support;
     cl_uint max_read_image_args;
@@ -354,7 +439,7 @@ __api_dev_info(cl_device_id id) {
     __API_DEV_GET(id, CL_DEVICE_MAX_CLOCK_FREQUENCY,
                      max_clock_frequency);
     __API_DEV_GET(id, CL_DEVICE_ADDRESS_BITS,
-                     address_bits);
+                     address_t_bits);
     __API_DEV_GET(id, CL_DEVICE_MAX_MEM_ALLOC_SIZE,
                      max_mem_alloc_size);
     __API_DEV_GET(id, CL_DEVICE_IMAGE_SUPPORT,
@@ -412,101 +497,97 @@ __api_dev_info(cl_device_id id) {
     __API_DEV_GET(id, CL_DEVICE_PLATFORM,
                      platform_id);
 
-    __API_DEV_INFO_LEVEL_1("%s", "device version",
+    __API_DEV_INFO_LEVEL_1(fdout, "%s", "device version",
                               device_version);
-    __API_DEV_INFO_LEVEL_1("%u", "vendor id",
+    __API_DEV_INFO_LEVEL_1(fdout, "%u", "vendor id",
                               vendor_id);
-    __API_DEV_INFO_LEVEL_1("%u", "max compute units",
+    __API_DEV_INFO_LEVEL_1(fdout, "%u", "max compute units",
                               max_compute_units);
-    __API_DEV_INFO_LEVEL_1("%u", "max work item dimensions",
+    __API_DEV_INFO_LEVEL_1(fdout, "%u", "max work item dimensions",
                               max_work_item_dimensions);
-    __API_DEV_INFO_LEVEL_1("dimension[0] = %ld", "max work sizes",
+    __API_DEV_INFO_LEVEL_1(fdout, "dimension[0] = %ld", "max work sizes",
                               max_work_item_sizes[0]);
     for (i = 1; i < sizeof(max_work_item_sizes)/sizeof(size_t); ++i)
-        __API_DEV_INFO_LEVEL_2("dimension[%d] = %ld",
+        __API_DEV_INFO_LEVEL_2(fdout, "dimension[%d] = %ld",
                                   i, max_work_item_sizes[i]);
-    __API_DEV_INFO_LEVEL_1("%lu", "max work group size",
+    __API_DEV_INFO_LEVEL_1(fdout, "%lu", "max work group size",
                               max_work_group_size);
-    __API_DEV_INFO_LEVEL_1("%u", "preferred vector width char",
+    __API_DEV_INFO_LEVEL_1(fdout, "%u", "preferred vector width char",
                               preferred_vector_width_char);
-    __API_DEV_INFO_LEVEL_1("%u", "preferred vector width short",
+    __API_DEV_INFO_LEVEL_1(fdout, "%u", "preferred vector width short",
                               preferred_vector_width_short);
-    __API_DEV_INFO_LEVEL_1("%u", "preferred vector width int",
+    __API_DEV_INFO_LEVEL_1(fdout, "%u", "preferred vector width int",
                               preferred_vector_width_int);
-    __API_DEV_INFO_LEVEL_1("%u", "preferred vector width long",
+    __API_DEV_INFO_LEVEL_1(fdout, "%u", "preferred vector width long",
                               preferred_vector_width_long);
-    __API_DEV_INFO_LEVEL_1("%u", "preferred vector width float",
+    __API_DEV_INFO_LEVEL_1(fdout, "%u", "preferred vector width float",
                               preferred_vector_width_float);
-    __API_DEV_INFO_LEVEL_1("%u", "preferred vector width double",
+    __API_DEV_INFO_LEVEL_1(fdout, "%u", "preferred vector width double",
                               preferred_vector_width_double);
-    __API_DEV_INFO_LEVEL_1("%u", "max clock frequency",
+    __API_DEV_INFO_LEVEL_1(fdout, "%u", "max clock frequency",
                               max_clock_frequency);
-    __API_DEV_INFO_LEVEL_1("%u", "address bits",
-                              address_bits);
-    __API_DEV_INFO_LEVEL_1("%s", "image support",
+    __API_DEV_INFO_LEVEL_1(fdout, "%u", "address_t bits",
+                              address_t_bits);
+    __API_DEV_INFO_LEVEL_1(fdout, "%s", "image support",
                               image_support ? "yes" : "no");
     if (image_support) {
-        __API_DEV_INFO_LEVEL_1("%u", "max read image args",
+        __API_DEV_INFO_LEVEL_1(fdout, "%u", "max read image args",
                                   max_read_image_args);
-        __API_DEV_INFO_LEVEL_1("%u", "max write image args",
+        __API_DEV_INFO_LEVEL_1(fdout, "%u", "max write image args",
                                   max_write_image_args);
-        __API_DEV_INFO_LEVEL_1("%lu", "image2d max width",
+        __API_DEV_INFO_LEVEL_1(fdout, "%lu", "image2d max width",
                                   image2d_max_width);
-        __API_DEV_INFO_LEVEL_1("%lu", "image2d max height",
+        __API_DEV_INFO_LEVEL_1(fdout, "%lu", "image2d max height",
                                   image2d_max_height);
-        __API_DEV_INFO_LEVEL_1("%lu", "image3d max width",
+        __API_DEV_INFO_LEVEL_1(fdout, "%lu", "image3d max width",
                                   image3d_max_width);
-        __API_DEV_INFO_LEVEL_1("%lu", "image3d max height",
+        __API_DEV_INFO_LEVEL_1(fdout, "%lu", "image3d max height",
                                   image3d_max_height);
-        __API_DEV_INFO_LEVEL_1("%lu", "image3d max depth",
+        __API_DEV_INFO_LEVEL_1(fdout, "%lu", "image3d max depth",
                                   image3d_max_depth);
-        __API_DEV_INFO_LEVEL_1("%u", "max samplers",
+        __API_DEV_INFO_LEVEL_1(fdout, "%u", "max samplers",
                                   max_samplers);
     }
-    __API_DEV_INFO_LEVEL_1("%ld", "max paramater size",
+    __API_DEV_INFO_LEVEL_1(fdout, "%ld", "max paramater size",
                               max_parameter_size);
-    __API_DEV_INFO_LEVEL_1("%u", "mem base addr align",
+    __API_DEV_INFO_LEVEL_1(fdout, "%u", "himem_t base addr align",
                               mem_base_addr_align);
-    __API_DEV_INFO_LEVEL_1("%u", "min data type align size",
+    __API_DEV_INFO_LEVEL_1(fdout, "%u", "min data type align size",
                               min_data_type_align_size);
-    __API_DEV_INFO_LEVEL_1("", "single fp cpnfig");
-    __api_dev_single_fp_config_str(single_fp_config);
-    __API_DEV_INFO_LEVEL_1("%s", "global mem cache type",
+    __API_DEV_INFO_LEVEL_1(fdout, "", "single fp cpnfig");
+    __api_dev_single_fp_config_str(single_fp_config, fdout);
+    __API_DEV_INFO_LEVEL_1(fdout, "%s", "global himem_t cache type",
           __API_DEV_GLOBAL_MEM_CACHE_TYPE_STR(global_mem_cache_type));
-    __API_DEV_INFO_LEVEL_1("%u Bytes", "global mem cacheline size",
+    __API_DEV_INFO_LEVEL_1(fdout, "%u Bytes", "global himem_t cacheline size",
                               global_mem_cacheline_size);
-    __API_DEV_INFO_LEVEL_1("%lu"" Bytes", "global mem cache size",
+    __API_DEV_INFO_LEVEL_1(fdout, "%lu"" Bytes", "global himem_t cache size",
                               global_mem_cache_size);
-    __API_DEV_INFO_LEVEL_1("%lu"" MB", "global mem size",
+    __API_DEV_INFO_LEVEL_1(fdout, "%lu"" MB", "global himem_t size",
                               global_mem_size/1024/1024);
-    __API_DEV_INFO_LEVEL_1("%lu"" MB", "global mem max alloc",
-			      max_mem_alloc_size/1024/1024);	
-    __API_DEV_INFO_LEVEL_1("%lu"" KB", "max constant buffer size",
+    __API_DEV_INFO_LEVEL_1(fdout, "%lu"" MB", "global himem_t max alloc",
+			               max_mem_alloc_size/1024/1024);	
+    __API_DEV_INFO_LEVEL_1(fdout, "%lu"" KB", "max constant buffer size",
                               max_constant_buffer_size/1024);
-    __API_DEV_INFO_LEVEL_1("%u", "max constant args",
+    __API_DEV_INFO_LEVEL_1(fdout, "%u", "max constant args",
                               max_constant_args);
-    __API_DEV_INFO_LEVEL_1("%s", "local mem type",
+    __API_DEV_INFO_LEVEL_1(fdout, "%s", "local himem_t type",
                               __API_DEV_LOCAL_MEM_TYPE_STR(local_mem_type));
-    __API_DEV_INFO_LEVEL_1("%lu"" KB", "local mem size",
+    __API_DEV_INFO_LEVEL_1(fdout, "%lu"" KB", "local himem_t size",
                               local_mem_size/1024);
-    __API_DEV_INFO_LEVEL_1("%s", "error correction support",
+    __API_DEV_INFO_LEVEL_1(fdout, "%s", "error correction support",
                               error_correction_support ? "yes" : "no");
-    __API_DEV_INFO_LEVEL_1("%lu", "profiling timer resolution",
+    __API_DEV_INFO_LEVEL_1(fdout, "%lu", "profiling timer resolution",
                               profiling_timer_resolution);
-    __API_DEV_INFO_LEVEL_1("%s", "endian little",
+    __API_DEV_INFO_LEVEL_1(fdout, "%s", "endian little",
                               endian_little ? "yes" : "no");
-    __api_dev_execution_capabilities_str(execution_capabilities);
+    __api_dev_execution_capabilities_str(execution_capabilities, fdout);
 #endif  // _CL_DEVICE_LONG_INFO_ENABLED
 }
 
 PRIVATE void
-__api_dev_release(dev d) {
-    if(d) {
-        HICL_DEBUG("releasing OpenCL device @ %p", d->id);
-        if (clReleaseCommandQueue(d->queue) != CL_SUCCESS)
-            HICL_WARN("failed to release OpenCL command queue");
-        free(d); d = NULL;
-    }
+__api_dev_release_queues(cl_command_queue queue) {
+    if (clReleaseCommandQueue(queue) != CL_SUCCESS) 
+        HICL_FAIL("failed to release OpenCL command queue");
 }
 
 CPPGUARD_END()

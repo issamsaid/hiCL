@@ -29,41 +29,75 @@
 /// NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ///
-/// @file flags_test.cc
+/// @file plt-inl_test.cc
 /// @author Issam SAID
-/// @brief Unit testing file for the hiCL bitwise flags manipulation.
+/// @brief Unit testing file for OpenCL platforms manipulation private routines.
 ///
 #include "hiCL/flags.h"
 #include "__api/plt-inl.h"
-#include "__api/dev-inl.h"
 #include "gtest/gtest.h"
-
-extern hienv_t hicl;
 
 namespace {
 
-    class FlagsTest : public ::testing::Test {
+    class PltInlTest : public ::testing::Test {
     protected:
+        cl_platform_id plt_ids[8];
+        unsigned int nb_plts;
         virtual void SetUp() { }
         virtual void TearDown() { }
     };
 
-    TEST_F(FlagsTest, flags_have) {
+    TEST_F(PltInlTest, check_plt_flags) {
         flags_t flags = DEFAULT;
-        ASSERT_TRUE(__API_FLAGS_HAVE(flags, DEFAULT));
+        ASSERT_TRUE(__API_PLT_CHECK_FLAGS(flags));
         flags = AMD;
-        ASSERT_TRUE(__API_FLAGS_HAVE(flags, AMD));
+        ASSERT_TRUE(__API_PLT_CHECK_FLAGS(flags));
         flags = APPLE;
-        ASSERT_TRUE(__API_FLAGS_HAVE(flags, APPLE));
-        flags = NVIDIA;
-        ASSERT_TRUE(__API_FLAGS_HAVE(flags, NVIDIA));
+        ASSERT_TRUE(__API_PLT_CHECK_FLAGS(flags));
         flags = INTEL;
-        ASSERT_TRUE(__API_FLAGS_HAVE(flags, INTEL));
-        flags = AMD | NVIDIA | INTEL | APPLE;
-        ASSERT_TRUE(__API_FLAGS_HAVE(flags, AMD));
-        ASSERT_TRUE(__API_FLAGS_HAVE(flags, NVIDIA));
-        ASSERT_TRUE(__API_FLAGS_HAVE(flags, APPLE));
-        ASSERT_TRUE(__API_FLAGS_HAVE(flags, INTEL));
+        ASSERT_TRUE(__API_PLT_CHECK_FLAGS(flags));
+        flags = NVIDIA;
+        ASSERT_TRUE(__API_PLT_CHECK_FLAGS(flags));
+        flags = AMD | NVIDIA;
+        ASSERT_FALSE(__API_PLT_CHECK_FLAGS(flags));
+    }
+
+    TEST_F(PltInlTest, __api_plt_count) {
+        ASSERT_GE((nb_plts = __api_plt_count()), 1);
+    }
+
+    TEST_F(PltInlTest, __api_plt_query) {
+        __api_plt_query(plt_ids, nb_plts);
+        ASSERT_TRUE(plt_ids[0] != NULL);
+    }
+
+    TEST_F(PltInlTest, __api_plt_select_default) {
+        cl_platform_id id = __api_plt_select(plt_ids, nb_plts, DEFAULT);
+        ASSERT_EQ(id, plt_ids[0]);
+    }
+
+    TEST_F(PltInlTest, __api_plt_select_no_flags) {
+        cl_platform_id id = __api_plt_select(plt_ids, nb_plts, ALL);
+        ASSERT_EQ(id, plt_ids[0]);
+    }
+
+    TEST_F(PltInlTest, __api_plt_select_by_vendor) {
+        unsigned int f;
+        char vendor[__API_STR_SIZE];
+        flags_t plt_vendors[] = {AMD, APPLE, INTEL, NVIDIA};
+        cl_platform_id id = __api_plt_select(plt_ids, nb_plts, DEFAULT);
+        __API_PLT_GET_PTR(id, CL_PLATFORM_VENDOR, vendor);
+        __api_strupper(vendor);
+        for (f = 0; f < sizeof(plt_vendors)/sizeof(*plt_vendors); ++f) {
+            if (strstr(vendor, __API_PLT_TYPE_STR(plt_vendors[f]))) {
+                //printf("Test select %s\n", __API_PLT_TYPE_STR(plt_vendors[f]));
+                ASSERT_FALSE(__api_plt_select(plt_ids, nb_plts, f) == NULL);
+            }
+        } 
+    }
+
+    TEST_F(PltInlTest, __api_plt_info) {
+        __api_plt_info(plt_ids[0], stdout);
     }
 
 }  // namespace

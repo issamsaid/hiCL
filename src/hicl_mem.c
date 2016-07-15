@@ -1,24 +1,37 @@
 ///
-/// \copyright Copyright 2012-2013 TOTAL S.A. All rights reserved.
-/// This file is part of \b hicl.
+/// @copyright Copyright (c) 2013-2016, Univrsité Pierre et Marie Curie
+/// All rights reserved.
 ///
-/// \b hicl is free software: you can redistribute it and/or modify
-/// it under the terms of the GNU General Public License as published by
-/// the Free Software Foundation, either version 3 of the License, or
-/// (at your option) any later version.
+/// <b>hiCL</b> is owned by Université Pierre et Marie Curie (UPMC),
+/// funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ///
-/// \b hicl is distributed in the hope that it will be useful,
-/// but WITHOUT ANY WARRANTY; without even the implied warranty of
-/// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-/// GNU General Public License for more details.
+/// Redistribution and use in source and binary forms, with or without
+/// modification, are permetted provided that the following conditions
+/// are met:
 ///
-/// You should have received a copy of the GNU General Public License
-/// along with \b hicl.  If not, see <http://www.gnu.org/licenses/>.
+/// 1. Redistributions of source code must retain the above copyright
+///    notice, this list of conditions and the following disclaimer.
+/// 2. Redistributions in binary form must reproduce the above copyright
+///    notice, this list of conditions and the following disclaimer in the
+///    documentation and/or other materials provided with the distribution.
+/// 3. Neither the name of the UPMC nor the names of its contributors
+///    may be used to endorse or promote products derived from this software
+///    without specific prior written permission.
 ///
-/// \author Issam Said
-/// \file hicl_mem.c
-/// \version $Id$
-/// \brief Implements an OpenCL memory wrapper.
+/// THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+/// INCLUDING, BUT NOT LIMITED TO, WARRANTIES OF MERCHANTABILITY AND FITNESS
+/// FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE UPMC OR
+/// ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+/// EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+/// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+/// PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+/// LIABILITY, WETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+/// NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+/// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+///
+/// @file hicl_mem.c
+/// @author Issam SAID
+/// @brief The implementation of the hiCL memory objects manipulation routines.
 ///
 #include "hiCL/mem.h"
 #include <stdio.h>
@@ -27,12 +40,12 @@
 #include "__api/rbt-inl.h"
 #include "__api/list-inl.h"
 
-GENERATE_RBT_BODY(address, mem);
-GENERATE_RBT_BODY(knl, int);
-
-address hicl_mem_allocate(dev d, size_t size, flags_t flags) {
+GENERATE_RBT_BODY(address_t, himem_t);
+GENERATE_RBT_BODY(hiknl_t, int);
+/*
+address_t hicl_mem_allocate(hidev_t d, size_t size, flags_t flags) {
     cl_int cl_ret;
-    mem m;
+    himem_t m;
     HICL_EXIT_IF(d    == NULL, "invalid device");
     HICL_EXIT_IF(size ==    0, "invalid memory size");
     m = (mem) malloc(sizeof(mem_desc));
@@ -52,7 +65,7 @@ address hicl_mem_allocate(dev d, size_t size, flags_t flags) {
             HICL_EXIT("invalid memory flags combination for CPU buffers");
         }
         if (__API_MEM_ZERO_COPY(m->flags)) {
-            m->id = clCreateBuffer(cl->context,
+            m->id = clCreateBuffer(hicl->context,
                                    CL_MEM_ALLOC_HOST_PTR | 
                                    __api_mem_update_flags(m->flags),
                                    m->size*m->unit_size, NULL, &cl_ret);
@@ -72,7 +85,7 @@ address hicl_mem_allocate(dev d, size_t size, flags_t flags) {
         }
         /// zero-copy buffers in the device memory.
         if (__API_MEM_ZERO_COPY(m->flags)) {
-            m->id = clCreateBuffer(cl->context,
+            m->id = clCreateBuffer(hicl->context,
                                    CL_MEM_USE_PERSISTENT_MEM_AMD |
                                    __api_mem_update_flags(m->flags),
                                    m->size*m->unit_size, NULL, &cl_ret);
@@ -84,11 +97,11 @@ address hicl_mem_allocate(dev d, size_t size, flags_t flags) {
             if (__API_MEM_ZERO_COPY(m->flags)) {
                 HICL_EXIT("invalid memory flags combination for PINNED buffers");
             }
-            m->id = clCreateBuffer(cl->context,
+            m->id = clCreateBuffer(hicl->context,
                                    __api_mem_update_flags(m->flags),
                                    m->size*m->unit_size, NULL, &cl_ret);
             HICL_CHECK(cl_ret, "failed to allocate device memory");
-            m->pinned = clCreateBuffer(cl->context,
+            m->pinned = clCreateBuffer(hicl->context,
                                        CL_MEM_ALLOC_HOST_PTR |
                                        __api_mem_update_flags(m->flags),
                                        m->size*m->unit_size, NULL, &cl_ret);
@@ -96,7 +109,7 @@ address hicl_mem_allocate(dev d, size_t size, flags_t flags) {
             __api_mem_map(m, __api_mem_map_flags(m->flags, CL_TRUE), CL_TRUE);
         /// regular buffers in the  HWA memory with duplicates in the CPU memory.
         } else {
-            m->id = clCreateBuffer(cl->context,
+            m->id = clCreateBuffer(hicl->context,
                                    __api_mem_update_flags(m->flags),
                                    m->size*m->unit_size, NULL, &cl_ret);
             HICL_CHECK(cl_ret, "failed to allocate device memory");    
@@ -111,34 +124,38 @@ address hicl_mem_allocate(dev d, size_t size, flags_t flags) {
         HICL_EXIT("failed to allocate memory objects, flags should include CPU or HWA");
     }
     __API_MEM_CLEAR(m->flags);
-    insert_rbn_address_mem(&cl->mems, m->h, m);
+    insert_rbn_address_t_mem(&hicl->mems, m->h, m);
     create_rbt_knl_int(&m->knls, __api_knl_cmp, NULL);
     HICL_DEBUG("alloc  @ %p, h: %p, pinned: %p", m->id, m->h, m->pinned);
     return m->h;
 }
-
-mem hicl_mem_wrap(dev d, void *h, size_t size, flags_t flags) {
+*/
+himem_t hicl_mem_wrap(hidev_t d, void *h, size_t size, flags_t flags) {
     cl_int cl_ret;
-    mem m;
+    himem_t m;
     HICL_EXIT_IF(d    == NULL, "invalid device");
     HICL_EXIT_IF(size ==    0, "invalid memory size");
     HICL_EXIT_IF(h    == NULL, "invalid memory pointer");
-    m = (mem) malloc(sizeof(mem_desc));
+    m = (himem_t) malloc(sizeof(struct __himem_t));
     __API_MEM_SET_DEFAULTS(flags);
     m->flags     = flags | HOST_ALLOCATED;
     m->pinned    = NULL;
     m->queue     = d->queue;
     m->size      = size;
     m->unit_size = __api_mem_unit_size(m->flags);
-    __API_MEM_PRINT_FLAGS(m->flags);
+    //__API_MEM_PRINT_FLAGS(m->flags);
+    HICL_DEBUG("attempt to wrap @ %p, size: %12.5f MB", 
+               h, (double)m->size*m->unit_size/1024./1024.);
     if (__API_MEM_ZERO_COPY(m->flags)) {
         /// wrap zero-copy buffers in the CPU memory.
         if (__API_MEM_CPU(m->flags)) {
-            m->id = clCreateBuffer(cl->context,
+            m->id = clCreateBuffer(hicl->context,
                                    CL_MEM_USE_HOST_PTR | 
                                    __api_mem_update_flags(m->flags),
                                    m->size*m->unit_size, h, &cl_ret);
             HICL_CHECK(cl_ret, "failed to wrap device memory object");
+            // needed by NVIDIA
+            __api_mem_map(m, __api_mem_map_flags(m->flags, CL_TRUE), CL_TRUE);
         /// wrap zero-copy buffers in the HWA memory.
         } else if (__API_MEM_HWA(m->flags)) {
             HICL_EXIT("device zero copy objects are not wrappable yet");
@@ -153,7 +170,7 @@ mem hicl_mem_wrap(dev d, void *h, size_t size, flags_t flags) {
         /// regular HWA buffers.
         } else if (__API_MEM_HWA(m->flags)) {
             if (__API_MEM_PINNED(m->flags)) {
-                m->pinned = clCreateBuffer(cl->context,
+                m->pinned = clCreateBuffer(hicl->context,
                                           CL_MEM_USE_HOST_PTR | 
                                           __api_mem_update_flags(m->flags),
                                           m->size*m->unit_size, h, &cl_ret);
@@ -162,7 +179,7 @@ mem hicl_mem_wrap(dev d, void *h, size_t size, flags_t flags) {
             } else {
                 m->h  = h;
             }
-            m->id = clCreateBuffer(cl->context,
+            m->id = clCreateBuffer(hicl->context,
                                    __api_mem_update_flags(m->flags),
                                    m->size*m->unit_size, NULL, &cl_ret);
             HICL_CHECK(cl_ret, "failed to allocate device memory object");
@@ -172,19 +189,17 @@ mem hicl_mem_wrap(dev d, void *h, size_t size, flags_t flags) {
         }
     }
     __API_MEM_CLEAR(m->flags);
-    insert_rbn_address_mem(&cl->mems, h, m);
-    create_rbt_knl_int(&m->knls, __api_knl_cmp, NULL);
-    HICL_DEBUG("wrap   @ %p (%p), h: %p, pinned: %p, size: %12.5f MB", 
-	         m->id, h, m->h, m->pinned, (double)m->size*m->unit_size/1024./1024.);
+    insert_rbn_address_t_himem_t(&hicl->mems, h, m);
+    create_rbt_hiknl_t_int(&m->knls, __api_knl_cmp, NULL);
     return m;
 }
 
-void hicl_mem_release(address h) {
-    remove_rbn_address_mem(&cl->mems, h);
+void hicl_mem_release(address_t h) {
+    remove_rbn_address_t_himem_t(&hicl->mems, h);
 }
 
-void hicl_mem_update(address h, flags_t f) {
-    mem m = find_rbn_address_mem(&cl->mems, h)->value;
+void hicl_mem_update(address_t h, flags_t f) {
+    himem_t m = find_rbn_address_t_himem_t(&hicl->mems, h)->value;
     if (__API_MEM_ZERO_COPY(m->flags)) {
         if (__API_MEM_DEVICE_DIRTY(m->flags)) {
             __api_mem_map(m, __api_mem_map_flags(f, CL_FALSE), CL_TRUE);
@@ -199,10 +214,10 @@ void hicl_mem_update(address h, flags_t f) {
     if (__API_MEM_READ_WRITE_OR_WRITE_ONLY(f)) __API_MEM_TOUCH_HOST(m->flags);
 }
 
-void hicl_mem_pop(address h, int ix, int ex, 
+void hicl_mem_pop(address_t h, int ix, int ex, 
                     int iy, int ey, int iz, int ez, 
                     int xpitch, int ypitch, cl_bool blocking) {
-    mem m = find_rbn_address_mem(&cl->mems, h)->value;
+    himem_t m = find_rbn_address_t_himem_t(&hicl->mems, h)->value;
     if (__API_MEM_ZERO_COPY(m->flags)) {
         if (__API_MEM_DEVICE_DIRTY(m->flags)) {
             __api_mem_map(m, CL_MAP_READ, CL_TRUE);
@@ -218,10 +233,10 @@ void hicl_mem_pop(address h, int ix, int ex,
     //if (__API_MEM_READ_WRITE_OR_WRITE_ONLY(f)) __API_MEM_TOUCH_HOST(m->flags);
 }
 
-void hicl_mem_push(address h, int ix, int ex, 
+void hicl_mem_push(address_t h, int ix, int ex, 
                      int iy, int ey, int iz, int ez, 
                      int xpitch, int ypitch, cl_bool blocking) {
-    mem m = find_rbn_address_mem(&cl->mems, h)->value;
+    himem_t m = find_rbn_address_t_himem_t(&hicl->mems, h)->value;
     if (__API_MEM_ZERO_COPY(m->flags)) {
         if (__API_MEM_DEVICE_DIRTY(m->flags)) {
             __api_mem_map(m, CL_MAP_READ, CL_TRUE);
@@ -237,8 +252,8 @@ void hicl_mem_push(address h, int ix, int ex,
     //if (__API_MEM_READ_WRITE_OR_WRITE_ONLY(f)) __API_MEM_TOUCH_HOST(m->flags);
 }
 
-void hicl_mem_dtoh(address h, cl_bool blocking) {
-    mem m = find_rbn_address_mem(&cl->mems, h)->value;
+void hicl_mem_dtoh(address_t h, cl_bool blocking) {
+    himem_t m = find_rbn_address_t_himem_t(&hicl->mems, h)->value;
     if (__API_MEM_ZERO_COPY(m->flags)) {
         if (__API_MEM_DEVICE_DIRTY(m->flags)) {
             __api_mem_map(m, CL_MAP_READ, CL_TRUE);
@@ -252,8 +267,8 @@ void hicl_mem_dtoh(address h, cl_bool blocking) {
     }
 }
 
-void hicl_mem_htod(address h, cl_bool blocking) {
-    mem m = find_rbn_address_mem(&cl->mems, h)->value;
+void hicl_mem_htod(address_t h, cl_bool blocking) {
+    himem_t m = find_rbn_address_t_himem_t(&hicl->mems, h)->value;
     if (__API_MEM_ZERO_COPY(m->flags)) {
         //if (__API_MEM_HOST_DIRTY(m->flags) &&
         //    !__API_MEM_WRITE_ONLY(m->flags)) {
@@ -273,25 +288,6 @@ void hicl_mem_htod(address h, cl_bool blocking) {
     //__api_mem_touch(m);
 }
 
-void hicl_mem_info(address h) {
-    __api_mem_info(find_rbn_address_mem(&cl->mems, h)->value);
-}
-
-double hicl_mem_b(address h) {
-    mem m = find_rbn_address_mem(&cl->mems, h)->value;
-    return (double)m->size*m->unit_size;
-}
-double hicl_mem_kb(address h) {
-    mem m = find_rbn_address_mem(&cl->mems, h)->value;
-    return (double)(m->size*m->unit_size)/1024.;
-}
-
-double hicl_mem_mb(address h) {
-    mem m = find_rbn_address_mem(&cl->mems, h)->value;
-    return (double)(m->size*m->unit_size)/1024./1024.;
-}
-
-double hicl_mem_gb(address h) { 
-    mem m = find_rbn_address_mem(&cl->mems, h)->value;
-    return (double)(m->size*m->unit_size)/1024./1024./1024.;
+void hicl_mem_info(address_t h) {
+    __api_mem_info(find_rbn_address_t_himem_t(&hicl->mems, h)->value);
 }

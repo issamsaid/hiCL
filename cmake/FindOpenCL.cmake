@@ -4,8 +4,8 @@
 ##  
 ## It currently supports: 
 ## 		- AMD APP SDK 
-##      - NVIDIA SDK
-##      - Apple SDK
+##    - NVIDIA SDK
+##    - Apple SDK
 ## 
 ## It defines the following variables:
 ##      - OPENCL_FOUND (found the OPENCL framework)
@@ -15,7 +15,7 @@
 ##      - OPENCL_LIBRARIES libOpenCL
 ##
 ## It accepts the following variables as input:
-## @param OPENCL_ROOT the root directory of the OpenCL implementation found
+## @param OPENCL_INCLUDE_DIR the root directory of the OpenCL implementation found
 ## @param FIND_LIBRARY_USE_LIB64_PATHS findOpenCL should search for 32 or 64 
 ##     
 function(_FIND_OPENCL_VERSION)
@@ -56,7 +56,7 @@ endfunction()
 find_path(OPENCL_INCLUDE_DIRS
     NAMES OpenCL/cl.h CL/cl.h
     HINTS
-        ${OPENCL_ROOT}/include
+        ${OpenCL_INCLUDE_DIR}/
         $ENV{AMDAPPSDKROOT}/include
         $ENV{CUDA_PATH}/include
         $ENV{AMDAPPSDKROOT}/include

@@ -1,6 +1,40 @@
 #ifndef __API_UTIL_INL_H_
 #define __API_UTIL_INL_H_
-
+///
+/// @copyright Copyright (c) 2013-2016, Univrsité Pierre et Marie Curie
+/// All rights reserved.
+///
+/// <b>hiCL</b> is owned by Université Pierre et Marie Curie (UPMC),
+/// funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
+///
+/// Redistribution and use in source and binary forms, with or without
+/// modification, are permetted provided that the following conditions
+/// are met:
+///
+/// 1. Redistributions of source code must retain the above copyright
+///    notice, this list of conditions and the following disclaimer.
+/// 2. Redistributions in binary form must reproduce the above copyright
+///    notice, this list of conditions and the following disclaimer in the
+///    documentation and/or other materials provided with the distribution.
+/// 3. Neither the name of the UPMC nor the names of its contributors
+///    may be used to endorse or promote products derived from this software
+///    without specific prior written permission.
+///
+/// THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+/// INCLUDING, BUT NOT LIMITED TO, WARRANTIES OF MERCHANTABILITY AND FITNESS
+/// FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE UPMC OR
+/// ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+/// EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+/// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+/// PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+/// LIABILITY, WETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+/// NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+/// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+///
+/// @file __api/util-inl.h
+/// @author Issam SAID
+/// @brief Private functions used by the hiCL utilities.    
+///
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,25 +46,24 @@
 #include "__api/config/guard.h"
 #include "__api/config/log.h"
 
-// OpenCL macros and helpers.
 #ifdef  __API_DEBUG
-#define HICL_DEBUG(fmt,...)                                               \
-    fprintf(cl->fdout, C_PURPLE"[HICL DBG]: "fmt".\n"C_END, ##__VA_ARGS__)
+#define HICL_DEBUG(fmt,...)                                              \
+    fprintf(hicl->fdout, C_PURPLE"[HICL DBG]: "fmt".\n"C_END, ##__VA_ARGS__)
 #else 
 #define HICL_DEBUG(fmt,...) 
 #endif  // __API_DEBUG
 
 #ifdef __API_VERBOSE                             
-#define HICL_PRINT(fmt,...)                                               \
-    fprintf(cl->fdout,                                                  \
+#define HICL_PRINT(fmt,...)                                             \
+    fprintf(hicl->fdout,                                                  \
             C_GREEN"[HICL MSG]: "fmt".\n"C_END, ##__VA_ARGS__)
-#define HICL_WARN(fmt,...)                                                \
-    fprintf(cl->fdout,                                                  \
+#define HICL_WARN(fmt,...)                                              \
+    fprintf(hicl->fdout,                                                  \
             C_YELLOW"[HICL WRN]: "fmt".\n"C_END, ##__VA_ARGS__)
-#define HICL_WARN_IF(predicate, fmt,...)                                  \
+#define HICL_WARN_IF(predicate, fmt,...)                                \
     if (predicate) {                                                    \
-        fprintf(cl->fdout,                                              \
-                C_YELLOW"[HICL WRN]: "fmt".\n"C_END, ##__VA_ARGS__);  \
+        fprintf(hicl->fdout,                                              \
+                C_YELLOW"[HICL WRN]: "fmt".\n"C_END, ##__VA_ARGS__);    \
     }
 #else 
 #define HICL_PRINT(fmt,...) 
@@ -38,71 +71,77 @@
 #define HICL_WARN_IF(fmt,...) 
 #endif  // __API_VERBOSE 
 
-#define HICL_EXIT(fmt,...)                                                \
-    if(cl != NULL) {                                                    \
-        fprintf(cl->fderr, C_RED"[HICL ERR]: "fmt" @%s:%d.\n"C_END,   \
-                ##__VA_ARGS__, __FILE__, __LINE__);                     \
-        hicl_release();                                               \
-        exit(EXIT_FAILURE);                                             \
-    } else {                                                            \
-        fprintf(stderr, C_RED"[HICL ERR]: "fmt" @%s:%d.\n"C_END,      \
-                ##__VA_ARGS__, __FILE__, __LINE__);                     \
-        exit(EXIT_FAILURE);                                             \
-    }
-
-#define HICL_EXIT_IF(predicate, fmt,...)                                  \
-    if (predicate) {                                                    \
-        fprintf(cl->fderr, C_RED"[HICL ERR]: "fmt" @%s:%d.\n"C_END,   \
-                ##__VA_ARGS__, __FILE__, __LINE__);                     \
-        hicl_release();                                               \
-        exit(EXIT_FAILURE);                                             \
-    }
-
-
-#define CL_FAIL(status, fmt,...)                                        \
+#define HICL_FAIL(fmt,...)                                              \
     {                                                                   \
-        fprintf(cl->fderr,                                              \
-                C_RED"[HICL ERR(%s)]: "fmt" @%s:%d.\n"C_END,          \
-                __api_error_msg(status),                                \
+        fprintf(stderr, C_RED"[HICL FATAL]: "fmt" @%s:%d.\n"C_END,      \
                 ##__VA_ARGS__, __FILE__, __LINE__);                     \
-        hicl_release();                                               \
         exit(EXIT_FAILURE);                                             \
     }
 
-#define HICL_CHECK(status, fmt,...)                                       \
+#define HICL_FAIL_IF(predicate, fmt,...)                                \
+    if (predicate) {                                                    \
+        fprintf(stderr, C_RED"[HICL FATAL]: "fmt" @%s:%d.\n"C_END,      \
+                ##__VA_ARGS__, __FILE__, __LINE__);                     \
+        exit(EXIT_FAILURE);                                             \
+    }
+
+#define HICL_ABORT(status, fmt,...)                                     \
     {                                                                   \
         if(status != CL_SUCCESS) {                                      \
-            fprintf(cl->fderr,                                          \
-                    C_RED"[HICL ERR(%s)]: "fmt" @%s:%d.\n"C_END,      \
+            fprintf(stderr,                                             \
+                    C_RED"[HICL ABORT(%s)]: "fmt" @%s:%d.\n"C_END,      \
                     __api_error_msg(status),                            \
                     ##__VA_ARGS__, __FILE__, __LINE__);                 \
-            hicl_release();                                           \
+            exit(EXIT_FAILURE);                                         \
+        }                                                               \
+    }
+
+#define HICL_EXIT(fmt,...)                                              \
+    {                                                                   \
+        fprintf(hicl->fderr, C_RED"[HICL ERR]: "fmt" @%s:%d.\n"C_END,     \
+            ##__VA_ARGS__, __FILE__, __LINE__);                         \
+        hicl_release();                                                 \
+        exit(EXIT_FAILURE);                                             \
+    }
+
+#define HICL_EXIT_IF(predicate, fmt,...)                                \
+    if (predicate) {                                                    \
+        fprintf(hicl->fderr, C_RED"[HICL ERR]: "fmt" @%s:%d.\n"C_END,     \
+                ##__VA_ARGS__, __FILE__, __LINE__);                     \
+        hicl_release();                                                 \
+        exit(EXIT_FAILURE);                                             \
+    }
+
+#define HICL_CHECK(status, fmt,...)                                     \
+    {                                                                   \
+        if(status != CL_SUCCESS) {                                      \
+            fprintf(hicl->fderr,                                          \
+                    C_RED"[HICL ERR(%s)]: "fmt" @%s:%d.\n"C_END,        \
+                    __api_error_msg(status),                            \
+                    ##__VA_ARGS__, __FILE__, __LINE__);                 \
+            hicl_release();                                             \
             exit(EXIT_FAILURE);                                         \
         }                                                               \
     }
 
 #define __API_CONTEXT_GET(context, context_info, value)                 \
-    HICL_CHECK(clGetContextInfo(context,                                  \
+    HICL_CHECK(clGetContextInfo(context,                                \
                               context_info, sizeof(value),              \
                               &value, NULL),                            \
              "failed to query context info")
 
 #define __API_CONTEXT_GET_PTR(context, context_info, value)             \
-    HICL_CHECK(clGetContextInfo(context, context_info, sizeof(value),     \
+    HICL_CHECK(clGetContextInfo(context, context_info, sizeof(value),   \
                               value, NULL),                             \
              "failed to query context info")
-
-#define __API_FLAGS_HAVE_DEV(flags) ((flags & DEVICE) == DEVICE)
-#define __API_FLAGS_HAVE_MEM(flags) ((flags & MEMORY) == MEMORY)
-#define __API_FLAGS_HAVE_KNL(flags) ((flags & KERNEL) == KERNEL)
 
 CPPGUARD_BEGIN()
 
 extern void hicl_release();
-extern agt cl;
+extern hienv_t hicl;
 
 PRIVATE int
-__api_address_cmp(address cur_ptr, address otr_ptr) {
+__api_address_cmp(address_t cur_ptr, address_t otr_ptr) {
     return (int64_t)cur_ptr - (int64_t)otr_ptr;
 }
 
@@ -112,7 +151,7 @@ __api_int_cmp(int cur, int otr) {
 }
 
 PRIVATE int
-__api_knl_cmp(knl cur, knl otr) {
+__api_knl_cmp(hiknl_t cur, hiknl_t otr) {
     return (int64_t)cur - (int64_t)otr;
 }
 
@@ -128,20 +167,13 @@ __api_generate_filename(char *filename) {
     printf("%s\n", filename);
 }
 
-PRIVATE int
-__api_strstep(char *dest, char *src, char *delimiter) {
-    static char *saved_src = NULL;
-    size_t len;
-    if (saved_src == NULL) saved_src = src;
-    if ((len=strcspn(saved_src, delimiter))) {
-        memcpy(dest, saved_src, len);
-        dest[len]='\0';
-        saved_src += len+1;
-        return 0;
-    } else {
-        saved_src = NULL;
-        return 1;
-    }
+PRIVATE char*
+__api_strstep(char *dest, char *src, const char *delim) {
+    size_t src_len = strlen(src);
+    size_t dst_len = strcspn(src, delim);
+    snprintf(dest, dst_len+1, "%s", src);
+    if(src_len == dst_len) return NULL;
+    else return src + dst_len + 1;
 }
 
 PRIVATE void

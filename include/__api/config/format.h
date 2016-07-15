@@ -1,29 +1,44 @@
-#ifndef CODE_OMNICL_TRUNK_INCLUDE_OMNICL_CONFIG_FORMAT_H_
-#define CODE_OMNICL_TRUNK_INCLUDE_OMNICL_CONFIG_FORMAT_H_
+#ifndef __API_CONFIG_FORMAT_H_
+#define __API_CONFIG_FORMAT_H_
 ///
-/// \copyright Copyright 2012-2013 TOTAL S.A. All rights reserved.
-/// This file is part of \b omnicl.
+/// @copyright Copyright (c) 2013-2016, Univrsité Pierre et Marie Curie
+/// All rights reserved.
 ///
-/// \b omnicl is free software: you can redistribute it and/or modify
-/// it under the terms of the GNU General Public License as published by
-/// the Free Software Foundation, either version 3 of the License, or
-/// (at your option) any later version.
+/// <b>hiCL</b> is owned by Université Pierre et Marie Curie (UPMC),
+/// funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ///
-/// \b omnicl is distributed in the hope that it will be useful,
-/// but WITHOUT ANY WARRANTY; without even the implied warranty of
-/// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-/// GNU General Public License for more details.
+/// Redistribution and use in source and binary forms, with or without
+/// modification, are permetted provided that the following conditions
+/// are met:
 ///
-/// You should have received a copy of the GNU General Public License
-/// along with \b omnicl.  If not, see <http://www.gnu.org/licenses/>.
+/// 1. Redistributions of source code must retain the above copyright
+///    notice, this list of conditions and the following disclaimer.
+/// 2. Redistributions in binary form must reproduce the above copyright
+///    notice, this list of conditions and the following disclaimer in the
+///    documentation and/or other materials provided with the distribution.
+/// 3. Neither the name of the UPMC nor the names of its contributors
+///    may be used to endorse or promote products derived from this software
+///    without specific prior written permission.
 ///
-/// \author Issam Said
-/// \file format.h
-/// \version $Id: format.h 2383 2014-05-05 01:09:12Z issam $
-/// \brief Portable formatting config file
+/// THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+/// INCLUDING, BUT NOT LIMITED TO, WARRANTIES OF MERCHANTABILITY AND FITNESS
+/// FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE UPMC OR
+/// ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+/// EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+/// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+/// PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+/// LIABILITY, WETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+/// NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+/// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+///
+/// @file config/format.h
+/// @author Issam SAID
+/// @brief Configuration file for formatting in hiCL.
 ///
 
-/// \brief Portable formatters
+///
+/// @brief Portable formatters.
+///
 #if defined(__APPLE__) || defined(__MACOSX)
 #define FHEX   "%#016llx"
 #define FULONG "%llu"
@@ -34,4 +49,4 @@
 #define FSIZET "%zu"
 #endif  // defined(__APPLE__) || defined(__MACOSX)
 
-#endif  // CODE_OMNICL_TRUNK_INCLUDE_OMNICL_CONFIG_FORMAT_H_
+#endif  // __API_CONFIG_FORMAT_H_

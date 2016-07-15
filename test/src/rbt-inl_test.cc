@@ -1,24 +1,37 @@
 ///
-/// \copyright Copyright 2012-2013 TOTAL S.A. All rights reserved.
-/// This file is part of \b hicl.
+/// @copyright Copyright (c) 2013-2016, Univrsité Pierre et Marie Curie
+/// All rights reserved.
 ///
-/// \b hicl is free software: you can redistribute it and/or modify
-/// it under the terms of the GNU General Public License as published by
-/// the Free Software Foundation, either version 3 of the License, or
-/// (at your option) any later version.
+/// <b>hiCL</b> is owned by Université Pierre et Marie Curie (UPMC),
+/// funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ///
-/// \b hicl is distributed in the hope that it will be useful,
-/// but WITHOUT ANY WARRANTY; without even the implied warranty of
-/// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-/// GNU General Public License for more details.
+/// Redistribution and use in source and binary forms, with or without
+/// modification, are permetted provided that the following conditions
+/// are met:
 ///
-/// You should have received a copy of the GNU General Public License
-/// along with \b hicl.  If not, see <http://www.gnu.org/licenses/>.
+/// 1. Redistributions of source code must retain the above copyright
+///    notice, this list of conditions and the following disclaimer.
+/// 2. Redistributions in binary form must reproduce the above copyright
+///    notice, this list of conditions and the following disclaimer in the
+///    documentation and/or other materials provided with the distribution.
+/// 3. Neither the name of the UPMC nor the names of its contributors
+///    may be used to endorse or promote products derived from this software
+///    without specific prior written permission.
 ///
-/// \author Issam Said
-/// \file memory_test.cc
-/// \version $Id$
-/// \brief Defines a unit test for the hicl memory management routines.
+/// THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+/// INCLUDING, BUT NOT LIMITED TO, WARRANTIES OF MERCHANTABILITY AND FITNESS
+/// FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE UPMC OR
+/// ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+/// EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+/// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+/// PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+/// LIABILITY, WETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+/// NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+/// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+///
+/// @file rbt-inl_test.cc
+/// @author Issam SAID
+/// @brief Unit testing file for the generic red-black tree routines.
 ///
 #include <hiCL/base.h>
 #include <hiCL/mem.h>
@@ -546,27 +559,30 @@ namespace {
 
     TEST_F(RbtTest, memory_tree) {
         hicl_init(DEFAULT);
-        dev d    = hicl_dev_find(DEFAULT);
+        hidev_t d    = hicl_dev_find(DEFAULT);
         size_t N = 64;
-        rbt_address_mem rbt;
+        rbt_address_t_himem_t rbt;
+        int ret;
         unsigned int i, T=1000;
         float *h[T];
-        mem    m[T];
-        ASSERT_EQ(create_rbt_address_mem(&rbt, __api_address_cmp, NULL), RB_SUCCESS);
+        himem_t    m[T];
+        ASSERT_EQ(create_rbt_address_t_himem_t(&rbt, __api_address_cmp, NULL), 
+                                               RB_SUCCESS);
         for (i=0; i<T; ++i)
-            posix_memalign((void**)(&h[i]), MEM_ALIGN, N*sizeof(float));
+            ret = posix_memalign((void**)(&h[i]), MEM_ALIGN, N*sizeof(float));
         for (i=0; i<T; ++i)
             m[i] = hicl_mem_wrap(d, h[i], N, HWA);
         for (i=0; i<T; ++i) {
-            ASSERT_EQ(insert_rbn_address_mem(&rbt, (address)h[i], m[i]), RB_SUCCESS);
+            ASSERT_EQ(insert_rbn_address_t_himem_t(&rbt, (address_t)h[i], m[i]), 
+                                                   RB_SUCCESS);
             ASSERT_EQ(m[i]->size*m[i]->unit_size, N*sizeof(float));
             ASSERT_TRUE(__API_MEM_HWA(m[i]->flags));
             ASSERT_TRUE(__API_MEM_FLOAT(m[i]->flags));
         }
-        chk_invariants_rbt_address_mem(&rbt);
+        chk_invariants_rbt_address_t_himem_t(&rbt);
         for (i=0; i<T; ++i)
-            ASSERT_EQ(find_rbn_address_mem(&rbt, h[i])->value, m[i]);
-        ASSERT_EQ(delete_rbt_address_mem(&rbt), RB_SUCCESS);
+            ASSERT_EQ(find_rbn_address_t_himem_t(&rbt, h[i])->value, m[i]);
+        ASSERT_EQ(delete_rbt_address_t_himem_t(&rbt), RB_SUCCESS);
         for (i=0; i<T; ++i)
             free(h[i]);
         hicl_release();

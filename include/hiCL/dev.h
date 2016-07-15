@@ -1,42 +1,108 @@
 #ifndef HICL_DEV_H_
 #define HICL_DEV_H_
 ///
-/// \copyright Copyright 2012-2013 TOTAL S.A. All rights reserved.
-/// This file is part of \b hicl.
+/// @copyright Copyright (c) 2013-2016, Univrsité Pierre et Marie Curie
+/// All rights reserved.
 ///
-/// \b hicl is free software: you can redistribute it and/or modify
-/// it under the terms of the GNU General Public License as published by
-/// the Free Software Foundation, either version 3 of the License, or
-/// (at your option) any later version.
+/// <b>hiCL</b> is owned by Université Pierre et Marie Curie (UPMC),
+/// funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ///
-/// \b hicl is distributed in the hope that it will be useful,
-/// but WITHOUT ANY WARRANTY; without even the implied warranty of
-/// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-/// GNU General Public License for more details.
+/// Redistribution and use in source and binary forms, with or without
+/// modification, are permetted provided that the following conditions
+/// are met:
 ///
-/// You should have received a copy of the GNU General Public License
-/// along with \b hicl.  If not, see <http://www.gnu.org/licenses/>.
+/// 1. Redistributions of source code must retain the above copyright
+///    notice, this list of conditions and the following disclaimer.
+/// 2. Redistributions in binary form must reproduce the above copyright
+///    notice, this list of conditions and the following disclaimer in the
+///    documentation and/or other materials provided with the distribution.
+/// 3. Neither the name of the UPMC nor the names of its contributors
+///    may be used to endorse or promote products derived from this software
+///    without specific prior written permission.
 ///
-/// \author Issam Said
-/// \file dev.h
-/// \version $Id: dev.h 2383 2014-05-05 01:09:12Z issam $
-/// \brief Defines a descriptor of an OpenCL device.
+/// THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+/// INCLUDING, BUT NOT LIMITED TO, WARRANTIES OF MERCHANTABILITY AND FITNESS
+/// FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE UPMC OR
+/// ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+/// EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+/// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+/// PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+/// LIABILITY, WETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+/// NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+/// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+///
+/// @file hiCL/dev.h
+/// @author Issam SAID
+/// @brief Function prototypes of OpenCL devices manipulation routines.
+///
+/// @details This file describes the library functions used by hiCL to 
+/// initialize, release and manipulate an OpenCL device descriptor.
 ///
 #include "hiCL/types.h"
 
 CPPGUARD_BEGIN()
 
-dev  hicl_dev_init(cl_device_id id);
+///
+/// @brief Initialize a device descriptor.
+///
+/// This routine creates a hiCL device descriptor, provided an OpenCL device id,
+/// which contains an OpenCL command queue that is associated to the device id,
+/// see types.h.
+/// @param id the OpenCL device id of the descriptor to create.
+/// @return A hiCL device descriptor.
+///
+hidev_t  hicl_dev_init(cl_device_id id);
 
-void hicl_dev_release(dev d);
+///
+/// @brief Release the resources associated to a given hiCL device descriptor.
+///
+/// This routine mainly released the OpenCL command queue related to the hiCL
+/// device descriptor.
+/// @param dptr a pointer to the hiCL device descriptor to release.
+/// @return Nothing.
+///
+void hicl_dev_release(hidev_t *dptr);
 
-bool hicl_dev_support(dev d, char* extension);
+///
+/// @brief Select a device descriptor from those initialized by hiCL.
+///
+/// This routine selects a hiCL device, based on bitwise flags, from a list of 
+/// the OpenCL devices initially created when launching the hiCL library.
+/// @param flags the bitwise flags provided by the user.
+/// @return The device descriptor corresponding to the user request.
+///
+hidev_t  hicl_dev_find(flags_t flags);
 
-void hicl_dev_info(dev d);
+///
+/// @brief Wait until a given device finishes all its operations.
+///
+/// This routine is used to synchronize with the command queue related to a 
+/// hiCL device descriptor.
+/// @param d the hiCL device descriptor.
+/// @return Nothing.
+///
+void hicl_dev_wait(hidev_t d);
 
-dev  hicl_dev_find(flags_t flags);
+///
+/// @brief Check whether a given device supports an extension.
+///
+/// This routine query a given OpenCL device extensions string and checks if 
+/// it contains a user provided extension.
+/// @param d the hiCL device descriptor.
+/// @param extension is the string describing the OpenCL extension.
+/// @return A boolean to inform if the extension is supported.
+///
+bool hicl_dev_support(hidev_t d, char* extension);
 
-void hicl_dev_wait(dev d);
+///
+/// @brief Show information about a given hiCL device.
+///
+/// This routine prints information about the hiCL device,
+/// which includes the vendor, the driver, the extensions, etc.
+/// @param d the hiCL device descriptor.
+/// @return Nothing.
+///
+void hicl_dev_info(hidev_t d);
 
 CPPGUARD_END()
 

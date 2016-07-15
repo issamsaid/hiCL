@@ -1,26 +1,39 @@
 #ifndef __API_KNL_INL_H_
 #define __API_KNL_INL_H_
 ///
-/// \copyright Copyright 2012-2013 TOTAL S.A. All rights reserved.
-/// This file is part of \b hicl.
+/// @copyright Copyright (c) 2013-2016, Univrsité Pierre et Marie Curie
+/// All rights reserved.
 ///
-/// \b hicl is free software: you can redistribute it and/or modify
-/// it under the terms of the GNU General Public License as published by
-/// the Free Software Foundation, either version 3 of the License, or
-/// (at your option) any later version.
+/// <b>hiCL</b> is owned by Université Pierre et Marie Curie (UPMC),
+/// funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ///
-/// \b hicl is distributed in the hope that it will be useful,
-/// but WITHOUT ANY WARRANTY; without even the implied warranty of
-/// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-/// GNU General Public License for more details.
+/// Redistribution and use in source and binary forms, with or without
+/// modification, are permetted provided that the following conditions
+/// are met:
 ///
-/// You should have received a copy of the GNU General Public License
-/// along with \b hicl.  If not, see <http://www.gnu.org/licenses/>.
+/// 1. Redistributions of source code must retain the above copyright
+///    notice, this list of conditions and the following disclaimer.
+/// 2. Redistributions in binary form must reproduce the above copyright
+///    notice, this list of conditions and the following disclaimer in the
+///    documentation and/or other materials provided with the distribution.
+/// 3. Neither the name of the UPMC nor the names of its contributors
+///    may be used to endorse or promote products derived from this software
+///    without specific prior written permission.
 ///
-/// \author Issam Said
-/// \file knl-inl.h
-/// \version $Id: knl-inl.h 2412 2014-05-15 22:10:52Z issam $
-/// \brief Defines the private routines for an OpenCL kernel.
+/// THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+/// INCLUDING, BUT NOT LIMITED TO, WARRANTIES OF MERCHANTABILITY AND FITNESS
+/// FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE UPMC OR
+/// ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+/// EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+/// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+/// PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+/// LIABILITY, WETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+/// NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+/// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+///
+/// @file __api/knl-inl.h
+/// @author Issam SAID
+/// @brief Private functions used to implement the hiCL kernel descriptor.
 ///
 #include <stdarg.h>
 #include "hiCL/types.h"
@@ -31,56 +44,58 @@
 #include "__api/config/log.h"
 #include "__api/util-inl.h"
 
-#define __API_PROGRAM_GET(program, program_info, value)       \
-    HICL_CHECK(clGetProgramInfo(program, program_info,       \
-                              sizeof(value), &value, NULL),\
-             "failed to query OpenCL program info")
-
-#define __API_PROGRAM_GET_PTR(program, program_info, value)  \
+#define __API_PROGRAM_GET(program, program_info, value)     \
     HICL_CHECK(clGetProgramInfo(program, program_info,      \
-                              sizeof(value), value, NULL),\
-             "failed to query OpenCL program info")
+                              sizeof(value), &value, NULL), \
+               "failed to query OpenCL program info")
 
-#define __API_KNL_GET(kernel, kernel_info, value)                              \
-    HICL_CHECK(clGetKernelInfo(kernel, kernel_info, sizeof(value), &value, NULL),\
-             "failed to query OpenCL kernel info")
+#define __API_PROGRAM_GET_PTR(program, program_info, value) \
+    HICL_CHECK(clGetProgramInfo(program, program_info,      \
+                              sizeof(value), value, NULL),  \
+               "failed to query OpenCL program info")
 
-#define __API_KNL_GET_PTR(kernel, kernel_info, value)                         \
-    HICL_CHECK(clGetKernelInfo(kernel, kernel_info, sizeof(value), value, NULL),\
-             "failed to query OpenCL kernel info")
+#define __API_KNL_GET(kernel, kernel_info, value)           \
+    HICL_CHECK(clGetKernelInfo(kernel, kernel_info,         \
+                               sizeof(value), &value, NULL),\
+               "failed to query OpenCL kernel info")
+
+#define __API_KNL_GET_PTR(kernel, kernel_info, value)       \
+    HICL_CHECK(clGetKernelInfo(kernel, kernel_info,         \
+                               sizeof(value), value, NULL), \
+               "failed to query OpenCL kernel info")
 
 #ifdef CL_VERSION_1_2
 
-#define __API_KNL_ARG_GET(kernel, idx, arg_info, value)      \
+#define __API_KNL_ARG_GET(kernel, idx, arg_info, value)        \
     HICL_CHECK(clGetKernelArgInfo(kernel, idx, arg_info,       \
-                                sizeof(value), &value, NULL),\
-             "failed to query OpenCL kernel arg info")
+                                  sizeof(value), &value, NULL),\
+               "failed to query OpenCL kernel arg info")
 
-#define __API_KNL_ARG_GET_PTR(kernel, idx, arg_info, value) \
+#define __API_KNL_ARG_GET_PTR(kernel, idx, arg_info, value)   \
     HICL_CHECK(clGetKernelArgInfo(kernel, idx, arg_info,      \
-                                sizeof(value), value, NULL),\
-             "failed to query OpenCL kernel arg info")
+                                  sizeof(value), value, NULL),\
+               "failed to query OpenCL kernel arg info")
 
 #endif  // CL_VERSION_1_2
 
 #define __API_KNL_WGP_GET(kernel, device, info, value)             \
-    HICL_CHECK(clGetKernelWorkGroupInfo(kernel, device, info,        \
+    HICL_CHECK(clGetKernelWorkGroupInfo(kernel, device, info,      \
                                       sizeof(value), value, NULL), \
-             "failed to query OpenCL kernel work group info")
+               "failed to query OpenCL kernel work group info")
 
 #define __API_KNL_WGP_GET_PTR(kernel, device, info, value)         \
-    HICL_CHECK(clGetKernelWorkGroupInfo(kernel, device, info,        \
+    HICL_CHECK(clGetKernelWorkGroupInfo(kernel, device, info,      \
                                       sizeof(value), &value, NULL),\
-             "failed to query OpenCL kernel work group info")
+               "failed to query OpenCL kernel work group info")
 
 
-#define __API_KNL_INFO_LEVEL_0(fmt, ...) fprintf(cl->fdout,\
+#define __API_KNL_INFO_LEVEL_0(fmt, ...) fprintf(hicl->fdout,\
 C_GREEN"\no OpenCL "fmt":\n"C_END, ##__VA_ARGS__)
 
-#define __API_KNL_INFO_LEVEL_1(fmt, ...) fprintf(cl->fdout,\
+#define __API_KNL_INFO_LEVEL_1(fmt, ...) fprintf(hicl->fdout,\
 "\to %-20s: "fmt"\n", ##__VA_ARGS__)
 
-#define __API_KNL_INFO_LEVEL_2(fmt, ...) fprintf(cl->fdout,\
+#define __API_KNL_INFO_LEVEL_2(fmt, ...) fprintf(hicl->fdout,\
 "\t %-22s "fmt"\n", " ", ##__VA_ARGS__)
 
 CPPGUARD_BEGIN()
@@ -94,8 +109,8 @@ __api_knl_name(cl_kernel kernel) {
 
 PRIVATE cl_kernel*
 __api_knl_create_from_program(cl_program program,
-                                 const char *options,
-                                 size_t *num_kernels) {
+                              const char *options,
+                              size_t *num_kernels) {
     char buffer[__API_BUFFER_SIZE];
     cl_kernel *ids;
     cl_int cl_ret = clBuildProgram(program, 0, NULL, options, NULL, NULL);
@@ -115,20 +130,23 @@ __api_knl_create_from_program(cl_program program,
                      "failed to load program build info");
             HICL_WARN("build info for OpenCL device %p:\n%s", ids[idx], buffer);
         }
-        CL_FAIL(cl_ret, "failed to build OpenCL program");
+        HICL_CHECK(cl_ret, "failed to build OpenCL program");
     }
 #ifdef CL_VERSION_1_2
     size_t i;
-    char tmp[__API_STR_SIZE];
+    char tmp[__API_STR_SIZE], *marker;
     __API_PROGRAM_GET(program, CL_PROGRAM_NUM_KERNELS, i);
     ids = (cl_kernel*) malloc(sizeof(cl_kernel)*i);
     *num_kernels = i; i = 0;
     __API_PROGRAM_GET_PTR(program, CL_PROGRAM_KERNEL_NAMES, buffer);
-    while(!__api_strstep(tmp, buffer, ";")) {
-        HICL_DEBUG("creating OpenCL kernel: %s", tmp);
+    marker = buffer;
+    HICL_DEBUG("building OpenCL kernels: '%s'", marker);
+    do {
+        marker = __api_strstep(tmp, marker, ";");
+        HICL_DEBUG("building OpenCL kernel: '%s'", tmp);
         ids[i++] = clCreateKernel(program, tmp, &cl_ret);
         HICL_CHECK(cl_ret, "failed to create OpenCL kernel object");
-    }
+    } while(marker != NULL);    
 #else
     cl_ret = clCreateKernelsInProgram(program, 0, NULL, &idx);
     HICL_CHECK(cl_ret, "failed to query OpenCL kernels");
@@ -203,7 +221,7 @@ __api_knl_get_arg_types(cl_kernel k, int n,
 #endif // ! CL_VERSION_1_2
 
 PRIVATE void
-__api_knl_set_args_valist(knl k, va_list list) {
+__api_knl_set_args_valist(hiknl_t k, va_list list) {
     cl_uint a;
     char tmp[__API_STR_SIZE];
     cl_kernel kernel = k->id;
@@ -211,14 +229,14 @@ __api_knl_set_args_valist(knl k, va_list list) {
     for (a = 0; a < k->num_args; ++a) {
         __API_KNL_ARG_GET_PTR(kernel, a, CL_KERNEL_ARG_TYPE_NAME, tmp);
         if (strstr(tmp, "*")) {
-            mem m = find_rbn_address_mem(&cl->mems, 
-                                         va_arg(list, address))->value;
-            rbn_int_mem *n;
-            if ((n = find_rbn_int_mem(&k->mems, a)) == k->mems.nil) {
+            himem_t m = find_rbn_address_t_himem_t(&hicl->mems, 
+                                         va_arg(list, address_t))->value;
+            rbn_int_himem_t *n;
+            if ((n = find_rbn_int_himem_t(&k->mems, a)) == k->mems.nil) {
                 HICL_DEBUG("insert @ %p for kernel %s", 
                          m->id, __api_knl_name(k->id));
-                insert_rbn_int_mem(&k->mems, a, m);
-                insert_rbn_knl_int(&m->knls, k, a);
+                insert_rbn_int_himem_t(&k->mems, a, m);
+                insert_rbn_hiknl_t_int(&m->knls, k, a);
                 __api_knl_set_arg_cl_mem(k->id, a, &m->id);
             } else {
                 if (m != n->value) {
@@ -268,14 +286,14 @@ __api_knl_set_args_valist(knl k, va_list list) {
     __api_knl_get_arg_types(kernel, k->num_args, tmp, types);
     for (a = 0; a < k->num_args; ++a) {
         if (strstr(types[a], "*")) {
-            mem m = find_rbn_address_mem(&cl->mems, 
-                                         va_arg(list, address))->value;
-            rbn_int_mem *n;
-            if ((n = find_rbn_int_mem(&k->mems, index)) == k->mems.nil) {
+            himem_t m = find_rbn_address_t_himem_t(&hicl->mems, 
+                                         va_arg(list, address_t))->value;
+            rbn_int_himem_t *n;
+            if ((n = find_rbn_int_himem_t(&k->mems, index)) == k->mems.nil) {
                 HICL_DEBUG("insert @ %p for kernel %s", 
                          m->id, __api_knl_name(k->id));
-                insert_rbn_int_mem(&k->mems, a, m);
-                insert_rbn_knl_int(&m->knls, k, a);
+                insert_rbn_int_himem_t(&k->mems, a, m);
+                insert_rbn_hiknl_t_int(&m->knls, k, a);
                 __api_knl_set_arg_cl_mem(k->id, a, &m->id);
             } else {
                 if (m != n->value) {
@@ -379,15 +397,9 @@ __api_knl_info(cl_kernel kernel, cl_uint num_args) {
 }
 
 PRIVATE void
-__api_knl_release(knl k) {
-    if (k) {
-        HICL_DEBUG("releasing OpenCL kernel @ %p (%s, mem size = %lu)", 
-                 k->id, __api_knl_name(k->id), k->mems.size);
-        delete_rbt_int_mem(&k->mems);
-        if (clReleaseKernel(k->id) != CL_SUCCESS)
-            HICL_WARN("failed to release OpenCL kernel");
-        free(k); k = NULL;
-    }
+__api_knl_release(cl_kernel kernel) {
+    if (clReleaseKernel(kernel) != CL_SUCCESS)
+        HICL_FAIL("failed to release OpenCL kernel");
 }
 
 CPPGUARD_END()
