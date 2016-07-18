@@ -11,7 +11,7 @@ accelerators for scientific computing.
 
 # Getting started
 `git clone https://github.com/issamsaid/hiCL.git
-cd hiCL
+cd hiCL<br/>
 mkdir build
 cd build
 cmake -G"Unix Makefiles" ../`
