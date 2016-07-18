@@ -10,7 +10,7 @@ of functionalities in C/C++ and Fortran to help efficiently exploit hardware
 accelerators for scientific computing.<br/>
 A [paper](http://dl.acm.org/citation.cfm?id=2909453) about hiCL was published
 at the International OpenCL Workshop (IWOCL 2016) in Vienna, Austria on late
-April 2016.
+April'16.
 
 # Getting started
 To get started, you can clone the hiCL repository and build it using cmake like
