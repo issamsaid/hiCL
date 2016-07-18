@@ -15,6 +15,8 @@ accelerators for scientific computing.
 `mkdir build`<br/>
 `cd build`<br/>
 `cmake -G"Unix Makefiles" ../`<br/>
+
+>cmake -G"Unix Makefiles" ../
 # Testing
 
 # Examples
