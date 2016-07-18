@@ -10,6 +10,7 @@ of functionalities in C/C++ and Fortran to help efficiently exploit hardware
 accelerators for scientific computing.
 
 # Getting started
+To get started, you can clone the hiCL repository and build it using 
 ```
 git clone https://github.com/issamsaid/hiCL.git
 cd hiCL
