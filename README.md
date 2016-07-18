@@ -10,7 +10,7 @@ of functionalities in C/C++ and Fortran to help efficiently exploit hardware
 accelerators for scientific computing.
 
 # Getting started
-
+`git clone https://github.com/issamsaid/hiCL.git`
 # Testing
 
 # Examples
