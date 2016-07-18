@@ -7,7 +7,10 @@ together the host code rather than focusing on accelerating their workloads
 on GPUs or other OpenCL capable hardware.<br/>
 hiCL extensively reduces the need to focus on the host code and offers a set
 of functionalities in C/C++ and Fortran to help efficiently exploit hardware
-accelerators for scientific computing.
+accelerators for scientific computing.<br/>
+A [paper](http://dl.acm.org/citation.cfm?id=2909453) about hiCL was published
+at the International OpenCL Workshop (IWOCL 2016) in Vienna, Austria on late
+April 2016.
 
 # Getting started
 To get started, you can clone the hiCL repository and build it using cmake like
@@ -36,9 +39,19 @@ version of OpenCL that we support).
 If you want to work with the latest build, you are invited to fetch from the 
 **develop** branch, which also includes a set of unit tests and performance 
 tests (on top of the [googletest](https://github.com/google/googletest/) 
-Framework) to validate the behavior of the library.
-# Testing
+Framework) to validate the behavior of the library.<br/>
+In order to build the core C/C++ library of hiCL you may run:
+```
+make hiCL
+```
+This will build the static library libhiCL.a from the C/C++ source files in 
+[src](https://github.com/issamsaid/hiCL/tree/master/src).
+```
+make hiCL_fortran
+```
 
+# Testing
+A testing framework is of no good if itself is not thoroughly tested. Tests should be written for any new code, and changes should be verified to not break existing tests before they are submitted for review. To perform the tests, follow the instructions in README and verify that there are no failures.
 # Examples
 
 # How to contribute
