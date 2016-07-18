@@ -28,7 +28,7 @@ If your installed OpenCL implementation is not found by the cmake script you
 can help setting it manually as follows:
 ```
 export OPENCL_INCLUDE_DIR="YOUR_OPENCL_HEADERS_PATH"
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH"YOUR_OPENCL_LIBRARY_PATH"
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"YOUR_OPENCL_LIBRARY_PATH"
 ```
 The repository contains two git branches: **master** and **develop**. 
 The **master** branch
@@ -44,14 +44,25 @@ In order to build the core C/C++ library of hiCL you may run:
 ```
 make hiCL
 ```
-This will build the static library libhiCL.a from the C/C++ source files in 
-[src](https://github.com/issamsaid/hiCL/tree/master/src).
+This Makefile target will build the static library libhiCL.a from the C/C++ 
+source files in the [src](https://github.com/issamsaid/hiCL/tree/master/src)
+directory. 
+If instead you would like to build the Fortran interface, you can do so as
+ follows:
 ```
 make hiCL_fortran
 ```
-
+This target will build another static library libhiCL_fortran.a from the Fortran
+source files present in the 
+[fortran_interface](https://github.com/issamsaid/hiCL/tree/master/fortran_interface)
+directory.
 # Testing
-A testing framework is of no good if itself is not thoroughly tested. Tests should be written for any new code, and changes should be verified to not break existing tests before they are submitted for review. To perform the tests, follow the instructions in README and verify that there are no failures.
+A testing framework is of no good if itself is not thoroughly tested. 
+Tests should be written for any new code, and changes should be verified to not 
+break existing tests before they are submitted for review. 
+To perform the tests, follow the instructions in README and verify that 
+there are no failures.
+
 # Examples
 
 # How to contribute
