@@ -10,11 +10,11 @@ of functionalities in C/C++ and Fortran to help efficiently exploit hardware
 accelerators for scientific computing.
 
 # Getting started
-`git clone https://github.com/issamsaid/hiCL.git
-cd hiCL<br/>
-mkdir build
-cd build
-cmake -G"Unix Makefiles" ../`
+`git clone https://github.com/issamsaid/hiCL.git`<br/>
+`cd hiCL`<br/>
+`mkdir build`<br/>
+`cd build`<br/>
+`cmake -G"Unix Makefiles" ../`<br/>
 # Testing
 
 # Examples
