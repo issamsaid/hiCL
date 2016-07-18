@@ -27,15 +27,16 @@ can help setting it manually as follows:
 export OPENCL_INCLUDE_DIR="YOUR_OPENCL_HEADERS_PATH"
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH"YOUR_OPENCL_LIBRARY_PATH"
 ```
-The repository contains two git branches: ##master## and ##develop##. 
-The ##master## branch
+The repository contains two git branches: **master** and **develop**. 
+The **master** branch
 only covers the tagged releases of the library, we recommend to clone from this 
 branch if you would like to use the latest stable version. 
 The current version of the software is 1.2 (which is inline with the highest 
 version of OpenCL that we support).
 If you want to work with the latest build, you are invited to fetch from the 
-develop branch, which also includes a set of unit tests and performance tests
-(on top of the @googletest Framework) to validate the behavior of the library.
+**develop** branch, which also includes a set of unit tests and performance 
+tests (on top of the [googletest](https://github.com/google/googletest/) 
+Framework) to validate the behavior of the library.
 # Testing
 
 # Examples
