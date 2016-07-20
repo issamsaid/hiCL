@@ -8,6 +8,9 @@ on GPUs or other OpenCL capable hardware.<br/>
 hiCL extensively reduces the need to focus on the host code and offers a set
 of functionalities in C/C++ and Fortran to help efficiently exploit hardware
 accelerators for scientific computing.<br/>
+hiCL offers a transparent way to manage memory objects on different hardware 
+accelerators with different memory models thanks to a set of bitwise 
+flags.
 A [paper](http://dl.acm.org/citation.cfm?id=2909453) about hiCL was published
 at the International OpenCL Workshop (IWOCL 2016) in Vienna, Austria on late
 April' 16.
@@ -19,7 +22,8 @@ on your machine.
 
 ## Branches and cloning
 The project contains two git main branches: **master** and **develop**. 
-The **master** branch only contains the major releases and stable versions.
+The **master** branch only contains the major releases and stable versions, and 
+is intended to use the library as is.
 The releases are tagged on the master branch and each version has a major
 number and a minor number which are used as the tagging string (.e.g. the 
 first release is tagged 1.0 on the master branch).
@@ -27,10 +31,15 @@ first release is tagged 1.0 on the master branch).
 Cloning the master branch and checking out the first release can
 be done as follows:
 ```
-git -b master clone https://github.com/issamsaid/hiCL.git
+git clone -b master https://github.com/issamsaid/hiCL.git
 git checkout 1.0
 ```
 
+On the other hand, the **develop** branch contains the latest builds and is
+intended to be used by the developers who are willing to contribute or improve 
+the library. To get started, you can clone this branch as follows:
+```
+git clone -b develop https://github.com/issamsaid/hiCL.git
 ```
 mkdir build
 cd build

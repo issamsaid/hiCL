@@ -35,7 +35,7 @@
 /// @author Issam SAID
 /// @brief A general header file that groups the most important hiCL headers.
 ///
-#define HICL_VERSION_1_2
+#define HICL_VERSION_1_0
 
 #include "hiCL/timer.h"
 #include "hiCL/flags.h"
