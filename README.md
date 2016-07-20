@@ -127,8 +127,9 @@ If you are willing to contribute please visit the contributors guide
 or feel free to contact us.
 
 # License
-hiCL is a free software licensed under BSD. The project was 
-initially funded by [Total](www.total.com).
+hiCL is a free software licensed under BSD and was put together in a computer
+science laboratory at the [UPMC](www.upmc.fr). The project was 
+initially funded by [Total](www.total.com) which is acknoledged.
 
 # Contact
 For bug report, feature requests or if you willing to contribute please 
