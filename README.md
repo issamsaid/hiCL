@@ -98,6 +98,8 @@ by simply running:
 ```
 make doc
 ```
+It is now up to you to read the documentation and check the examples in order 
+to use hiCL to write your own OpenCL codes for scientific purposes.
 
 # Examples
 The library come with an [examples](https://github.com/issamsaid/hiCL/tree/master/examples)
@@ -107,15 +109,15 @@ If you want to work with the latest build, you are invited to fetch from the
 **develop** branch, which also includes a set of unit tests and performance 
 tests (on top of the [googletest](https://github.com/google/googletest/) 
 Framework) to validate the behavior of the library.<br/>
-In order to build the core C/C++ library of hiCL you may run:
-
-A testing framework is of no good if itself is not thoroughly tested. 
+The testing framework is used to thoroughly test hiCL in C/C++ and Fortran. 
 Tests should be written for any new code, and changes should be verified to not 
 break existing tests before they are submitted for review. 
-To perform the tests, follow the instructions in README and verify that 
-there are no failures.
+To perform the tests (which are automatically built if you are using the 
+**develop** branch) you can run:
 ```
-make install
+cd test
+./bin/hiCL_test         // for C/C++
+./bin/hiCL_test_fortran // for Fortran
 ```
 
 # How to contribute
