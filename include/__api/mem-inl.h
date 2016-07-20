@@ -229,7 +229,7 @@ __api_mem_dtoh(himem_t m, cl_bool blocking) {
              m->id, m->h, (double)m->size*m->unit_size/1024./1024.);
 }
 
-/* This is bugy on AMD discrete GPU */
+/// @todo This is bugy on AMD discrete GPU 
 PRIVATE void 
 __api_mem_dtoh_rect3d(himem_t m, 
                       int ix, int ex,
@@ -237,8 +237,9 @@ __api_mem_dtoh_rect3d(himem_t m,
                       int iz, int ez,
                       int xpitch, int ypitch, 
                       cl_bool blocking) {
-    size_t origin[3] = {ix*m->unit_size, iy, iz};  
-    size_t region[3] = {(ex-ix+1)*m->unit_size, (ey-iy+1), (ez-iz+1)};
+    size_t origin[3] = {ix*m->unit_size, (size_t)iy, (size_t)iz};  
+    size_t region[3] = {(ex-ix+1)*m->unit_size, 
+                        (size_t)(ey-iy+1), (size_t)(ez-iz+1)};
     HICL_CHECK(clEnqueueReadBufferRect(m->queue, m->id, blocking,
                                      origin,
                                      origin,
@@ -253,7 +254,7 @@ __api_mem_dtoh_rect3d(himem_t m,
              m->id, m->h, (double)region[0]*region[1]*region[2]/1024./1024.);
 }
 
-/* This is bugy on AMD discrete GPU */
+/// @todo This is bugy on AMD discrete GPU 
 PRIVATE void 
 __api_mem_htod_rect3d(himem_t m, 
                       int ix, int ex,
@@ -261,8 +262,9 @@ __api_mem_htod_rect3d(himem_t m,
                       int iz, int ez,
                       int xpitch, int ypitch, 
                       cl_bool blocking) {
-    size_t origin[3] = {ix*m->unit_size, iy, iz};  
-    size_t region[3] = {(ex-ix+1)*m->unit_size, (ey-iy+1), (ez-iz+1)};
+    size_t origin[3] = {ix*m->unit_size, (size_t)iy, (size_t)iz};  
+    size_t region[3] = {(ex-ix+1)*m->unit_size,
+                        (size_t)(ey-iy+1), (size_t)(ez-iz+1)};
     HICL_CHECK(clEnqueueWriteBufferRect(m->queue, m->id, blocking,
                                       origin,
                                       origin,

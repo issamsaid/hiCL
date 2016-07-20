@@ -57,7 +57,7 @@ hienv_t hicl = NULL;
 void hicl_init(flags_t flags) {
     cl_int  cl_ret;
     unsigned int nb_platforms, nb_devices;
-    unsigned int i, f;
+    unsigned int i;
     char tmp_0[__API_STR_SIZE];
     char tmp_1[__API_STR_SIZE];
     char stime[__API_STR_SIZE];
@@ -112,8 +112,6 @@ void hicl_init(flags_t flags) {
     HICL_DEBUG("hicl_init: flags = %#016lx", flags);
 
     // prepare OpenCL resources lists.
-    //create_list_dev(&hicl->devs, __api_dev_release);
-    //create_list_knl(&hicl->knls, __api_knl_release);
     create_rbt_address_t_himem_t(&hicl->mems, 
                                __api_address_cmp, __api_mem_stdalone_release);
 
@@ -156,7 +154,8 @@ void hicl_init(flags_t flags) {
     
     // setup devices.
     for (i=0; i<nb_devices; ++i) {
-        list_insert_hidev_t(&hicl->devs, list_create_hidev_t(hicl_dev_init(dev_ids[i])));
+        list_insert_hidev_t(&hicl->devs, 
+                            list_create_hidev_t(hicl_dev_init(dev_ids[i])));
     }
     // setup timer.
     hicl_timer_uset(__API_TIMER_UNIT);
@@ -210,16 +209,22 @@ void hicl_release() {
     free(hicl); hicl = NULL;
 }
 
-void hicl_load(const char *filename, const char *options) {
+void hicl_load(const char *filename, const char *options_format, ...) {
     cl_program program;
     cl_int cl_ret;
-    size_t idx, nb_kernels, code_size = __api_tell_file(filename);
-    char code[code_size];
+    size_t idx, nb_kernels, code_size;
+    char *code;
     cl_kernel *knl_ids;
-    __api_read_from_file(code, code_size, filename);
-    const char *const_code = code;
+    char options[__API_STR_SIZE];
+    va_list args;
+    va_start(args, options_format);
+    vsprintf(options, options_format, args);
+    va_end(args);
+    code_size = __api_tell_file(filename);
+    code      = (char*)malloc(code_size+1);
+    __api_read_from_file(code, code_size+1, filename);
     program = clCreateProgramWithSource(hicl->context, 1,
-                                        &const_code, NULL, &cl_ret);
+                                        (const char**)&code, NULL, &cl_ret);
     HICL_CHECK(cl_ret, "failed to create OpenCL program");
     HICL_DEBUG("loading filename '%s' with options '%s' (program @ %p)",
                filename, options, program);
@@ -228,6 +233,7 @@ void hicl_load(const char *filename, const char *options) {
         list_insert_hiknl_t(&hicl->knls, 
                         list_create_hiknl_t(hicl_knl_init(knl_ids[idx])));
     free(knl_ids);
+    free(code);
     HICL_CHECK(clReleaseProgram(program), "failed to release OpenCL program");
 }
 

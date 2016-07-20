@@ -37,11 +37,17 @@ project (hiCL_test CXX)
 cmake_minimum_required (VERSION 2.8)
 
 set (CMAKE_CXX_FLAGS_DEBUG 
-	"${CMAKE_CXX_FLAGS_DEBUG} -D__API_DEBUG -Wall")
-set (CMAKE_CXX_FLAGS_DEBUG   
-	"${CMAKE_CXX_FLAGS_DEBUG} -D__API_VERBOSE -O0 -g")
+	"${CMAKE_CXX_FLAGS_DEBUG} -Wall -O0 -g")
 set (CMAKE_CXX_FLAGS_RELEASE 
 	"${CMAKE_CXX_FLAGS_RELEASE} -fmerge-constants -O3")
+
+## Add the OpenMP headers
+find_package(OpenMP)
+if (OPENMP_FOUND)
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+else (OPENMP_FOUND)
+	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wunknown-pragmas")
+endif (OPENMP_FOUND)
 
 ## Include the hiCL and the googletest headers
 include_directories(${CMAKE_SOURCE_DIR}/include)

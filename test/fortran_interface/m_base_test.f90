@@ -49,29 +49,6 @@ module m_base_test
     
 contains
     
-    subroutine setup()
-    end subroutine setup
-
-    subroutine teardown()
-    end subroutine teardown
-
-    subroutine base_test()
-        call run(setup, teardown, get_default, &
-              "base_test.get_default")
-        call run(setup, teardown, get_explicit_default, &
-              "base_test.get_explicit_default")
-        call run(setup, teardown, get_amd, &
-               "base_test.get_amd")
-        call run(setup, teardown, get_apple, &
-               "base_test.get_apple")
-        call run(setup, teardown, get_nvidia, &
-               "base_test.get_nvidia")
-        call run(setup, teardown, get_first_cpu, &
-               "base_test.get_first_cpu")
-        call run(setup, teardown, get_first_gpu, &
-               "base_test.get_first_gpu")
-    end subroutine base_test
-
     logical function get_default() result(status)
         implicit none
         call hicl_init()
@@ -130,14 +107,28 @@ contains
         end if
         status = .true.
     end function get_first_gpu
+    
+    subroutine setup()
+    end subroutine setup
 
-    logical function get_undefined_with_types() result(status)
-        implicit none
-        !if (hicl_has(DEFAULT).eqv. .true.) then
-            call hicl_init(ior(GPU, CPU))
-            call hicl_release()
-        !end if
-        status = .true. ! todo
-    end function get_undefined_with_types
+    subroutine teardown()
+    end subroutine teardown
+
+    subroutine base_test()
+        call run(setup, teardown, get_default, &
+              "base_test.get_default")
+        call run(setup, teardown, get_explicit_default, &
+              "base_test.get_explicit_default")
+        call run(setup, teardown, get_amd, &
+               "base_test.get_amd")
+        call run(setup, teardown, get_apple, &
+               "base_test.get_apple")
+        call run(setup, teardown, get_nvidia, &
+               "base_test.get_nvidia")
+        call run(setup, teardown, get_first_cpu, &
+               "base_test.get_first_cpu")
+        call run(setup, teardown, get_first_gpu, &
+               "base_test.get_first_gpu")
+    end subroutine base_test
 
 end module m_base_test

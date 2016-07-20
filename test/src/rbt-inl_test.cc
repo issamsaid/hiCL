@@ -234,7 +234,6 @@ namespace {
 
     TEST_F(RbtTest, skip) {
          rbt_int_int rbt;
-         rbn_int_int *n, *l, *r;
          ASSERT_EQ(create_rbt_int_int(&rbt, rbt_cmp, rbt_dst), RB_SUCCESS);
          ASSERT_EQ(insert_rbn_int_int(&rbt,  8,  8), RB_SUCCESS);
          ASSERT_EQ(insert_rbn_int_int(&rbt,  5,  5), RB_SUCCESS);         
@@ -288,7 +287,6 @@ namespace {
 
     TEST_F(RbtTest, remove) {
          rbt_int_int rbt;
-         rbn_int_int *n, *l, *r;
          ASSERT_EQ(create_rbt_int_int(&rbt, rbt_cmp, rbt_dst), RB_SUCCESS);
          ASSERT_EQ(insert_rbn_int_int(&rbt,  8,  8), RB_SUCCESS);
          ASSERT_EQ(insert_rbn_int_int(&rbt,  5,  5), RB_SUCCESS);         
@@ -419,7 +417,7 @@ namespace {
     
     TEST_F(RbtTest, mix_rotate_root) {
          rbt_int_int rbt;
-         rbn_int_int *n, *l, *r;
+         rbn_int_int *n;
          ASSERT_EQ(create_rbt_int_int(&rbt, rbt_cmp, rbt_dst), RB_SUCCESS);
          ASSERT_EQ(insert_rbn_int_int(&rbt,  8,  8), RB_SUCCESS);
          ASSERT_EQ(insert_rbn_int_int(&rbt,  5,  5), RB_SUCCESS);         
@@ -460,7 +458,6 @@ namespace {
  
     TEST_F(RbtTest, ordered) {
          rbt_int_int rbt;
-         rbn_int_int *n;
          int i, T = 6;
          ASSERT_EQ(create_rbt_int_int(&rbt, rbt_cmp, rbt_dst), RB_SUCCESS);
          for (i=1; i<=T; ++i)
@@ -558,34 +555,36 @@ namespace {
     }
 
     TEST_F(RbtTest, memory_tree) {
-        hicl_init(DEFAULT);
-        hidev_t d    = hicl_dev_find(DEFAULT);
-        size_t N = 64;
-        rbt_address_t_himem_t rbt;
-        int ret;
-        unsigned int i, T=1000;
-        float *h[T];
-        himem_t    m[T];
-        ASSERT_EQ(create_rbt_address_t_himem_t(&rbt, __api_address_cmp, NULL), 
+         hicl_init(DEFAULT);
+         hidev_t d    = hicl_dev_find(DEFAULT);
+         size_t N = 64;
+         rbt_address_t_himem_t rbt;
+         int ret;
+         unsigned int i, T=1000;
+         float *h[T];
+         himem_t    m[T];
+         ASSERT_EQ(create_rbt_address_t_himem_t(&rbt, __api_address_cmp, NULL), 
                                                RB_SUCCESS);
-        for (i=0; i<T; ++i)
+         for (i=0; i<T; ++i) {
             ret = posix_memalign((void**)(&h[i]), MEM_ALIGN, N*sizeof(float));
-        for (i=0; i<T; ++i)
+            if (ret) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
+         }
+         for (i=0; i<T; ++i)
             m[i] = hicl_mem_wrap(d, h[i], N, HWA);
-        for (i=0; i<T; ++i) {
+         for (i=0; i<T; ++i) {
             ASSERT_EQ(insert_rbn_address_t_himem_t(&rbt, (address_t)h[i], m[i]), 
                                                    RB_SUCCESS);
             ASSERT_EQ(m[i]->size*m[i]->unit_size, N*sizeof(float));
             ASSERT_TRUE(__API_MEM_HWA(m[i]->flags));
             ASSERT_TRUE(__API_MEM_FLOAT(m[i]->flags));
-        }
-        chk_invariants_rbt_address_t_himem_t(&rbt);
-        for (i=0; i<T; ++i)
+         }
+         chk_invariants_rbt_address_t_himem_t(&rbt);
+         for (i=0; i<T; ++i)
             ASSERT_EQ(find_rbn_address_t_himem_t(&rbt, h[i])->value, m[i]);
-        ASSERT_EQ(delete_rbt_address_t_himem_t(&rbt), RB_SUCCESS);
-        for (i=0; i<T; ++i)
+         ASSERT_EQ(delete_rbt_address_t_himem_t(&rbt), RB_SUCCESS);
+         for (i=0; i<T; ++i)
             free(h[i]);
-        hicl_release();
+         hicl_release();
     }
 
 }  // namespace

@@ -40,6 +40,8 @@ set (CMAKE_Fortran_FLAGS_DEBUG
 	"${CMAKE_Fortran_FLAGS_DEBUG} -Wall -O0 -g")
 set (CMAKE_Fortran_FLAGS_RELEASE 
 	"${CMAKE_Fortran_FLAGS_RELEASE} -funroll-all-loops -fno-f2c -O3")
+set (CMAKE_Fortran_FLAGS 
+	"${CMAKE_Fortran_FLAGS} -fbackslash")
 
 include_directories(${CMAKE_SOURCE_DIR}/modules)
 file(GLOB F_SRCS "*.f90")

@@ -52,6 +52,86 @@ module m_dev_test
 
 contains
     
+    logical function find() result(status)
+        type(hidev_t), pointer :: dev0
+        call hicl_dev_find(DEFAULT, dev0)
+        status = associated(dev0)
+    end function find
+
+    logical function all_devs() result(status)
+        type(hidev_t), pointer :: dev0
+        type(hidev_t), pointer :: dev1
+        type(hidev_t), pointer :: dev2
+        call hicl_dev_find(ALL, dev0);
+        call hicl_dev_find(ior(ALL, FIRST), dev1);
+        call hicl_dev_find(FIRST, dev2);
+        status = &
+              associated(dev0, dev1) .and. &
+              associated(dev1, dev2) .and. &
+              associated(dev2, dev0) 
+    end function all_devs
+
+    logical function default_dev() result(status)
+        type(hidev_t), pointer :: dev0
+        type(hidev_t), pointer :: dev2
+        call hicl_dev_find(DEFAULT, dev0);
+        call hicl_dev_find(FIRST, dev2);
+        status = associated(dev0, dev2)  
+    end function default_dev
+
+    logical function cpu_dev() result(status)
+        type(hidev_t), pointer :: dev0
+        type(hidev_t), pointer :: dev1
+        if (hicl_has(CPU)) then
+            call hicl_dev_find(CPU, dev0);
+            call hicl_dev_find(ior(CPU, FIRST), dev1);
+            status = associated(dev0, dev1)
+        else
+            status = .true.
+        endif 
+    end function cpu_dev
+
+    logical function gpu_dev() result(status)
+        type(hidev_t), pointer :: dev0
+        type(hidev_t), pointer :: dev1
+        if (hicl_has(GPU)) then
+            call hicl_dev_find(GPU, dev0);
+            call hicl_dev_find(ior(GPU, FIRST), dev1);
+            status = associated(dev0, dev1) 
+        else
+            status = .true.
+        endif 
+    end function gpu_dev
+
+    logical function acc_dev() result(status)
+        type(hidev_t), pointer :: dev0
+        type(hidev_t), pointer :: dev1
+        if (hicl_has(ACCELERATOR)) then
+            call hicl_dev_find(ACCELERATOR, dev0);
+            call hicl_dev_find(ior(ACCELERATOR, FIRST), dev1);
+            status = &
+                  associated(dev0, dev1) 
+        else
+            status = .true.
+        end if
+    end function acc_dev
+
+    logical function extension_supported() result(status)
+        implicit none
+        type(hidev_t), pointer :: dev0
+        call hicl_dev_find(DEFAULT, dev0)
+        status = hicl_dev_support(dev0, "cl_khr_fp64") .and. &
+              .not. hicl_dev_support(dev0, "fake")
+    end function extension_supported
+
+    logical function info() result(status)
+        type(hidev_t), pointer :: dev0
+        call hicl_dev_find(DEFAULT, dev0)
+        status = associated(dev0) 
+        call hicl_dev_info(dev0)
+    end function info
+
+
     subroutine setup()
         call hicl_init(ALL)
     end subroutine setup
@@ -77,84 +157,5 @@ contains
               "dev_test.extension_supported")
         call run(setup, teardown, info, "dev_test.info")
     end subroutine dev_test
-
-    logical function find() result(status)
-        type(dev), pointer :: dev0
-        call hicl_dev_find(DEFAULT, dev0)
-        status = associated(dev0)
-    end function find
-
-    logical function all_devs() result(status)
-        type(dev), pointer :: dev0
-        type(dev), pointer :: dev1
-        type(dev), pointer :: dev2
-        call hicl_dev_find(ALL, dev0);
-        call hicl_dev_find(ior(ALL, FIRST), dev1);
-        call hicl_dev_find(FIRST, dev2);
-        status = &
-              associated(dev0, dev1) .and. &
-              associated(dev1, dev2) .and. &
-              associated(dev2, dev0) 
-    end function all_devs
-
-    logical function default_dev() result(status)
-        type(dev), pointer :: dev0
-        type(dev), pointer :: dev2
-        call hicl_dev_find(DEFAULT, dev0);
-        call hicl_dev_find(FIRST, dev2);
-        status = associated(dev0, dev2)  
-    end function default_dev
-
-    logical function cpu_dev() result(status)
-        type(dev), pointer :: dev0
-        type(dev), pointer :: dev1
-        if (hicl_has(CPU)) then
-            call hicl_dev_find(CPU, dev0);
-            call hicl_dev_find(ior(CPU, FIRST), dev1);
-            status = associated(dev0, dev1)
-        else
-            status = .true.
-        endif 
-    end function cpu_dev
-
-    logical function gpu_dev() result(status)
-        type(dev), pointer :: dev0
-        type(dev), pointer :: dev1
-        if (hicl_has(GPU)) then
-            call hicl_dev_find(GPU, dev0);
-            call hicl_dev_find(ior(GPU, FIRST), dev1);
-            status = associated(dev0, dev1) 
-        else
-            status = .true.
-        endif 
-    end function gpu_dev
-
-    logical function acc_dev() result(status)
-        type(dev), pointer :: dev0
-        type(dev), pointer :: dev1
-        if (hicl_has(ACCELERATOR)) then
-            call hicl_dev_find(ACCELERATOR, dev0);
-            call hicl_dev_find(ior(ACCELERATOR, FIRST), dev1);
-            status = &
-                  associated(dev0, dev1) 
-        else
-            status = .true.
-        end if
-    end function acc_dev
-
-    logical function extension_supported() result(status)
-        implicit none
-        type(dev), pointer :: dev0
-        call hicl_dev_find(DEFAULT, dev0)
-        status = hicl_dev_support(dev0, "cl_khr_fp64") .and. &
-              .not. hicl_dev_support(dev0, "fake")
-    end function extension_supported
-
-    logical function info() result(status)
-        type(dev), pointer :: dev0
-        call hicl_dev_find(DEFAULT, dev0)
-        status = associated(dev0) 
-        call hicl_dev_info(dev0)
-    end function info
 
 end module m_dev_test

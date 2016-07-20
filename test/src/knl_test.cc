@@ -44,108 +44,11 @@
 #include <hiCL/base.h>
 #include <gtest/gtest.h>
 #include <math.h>
+#include "hicl_knl_performance.h"
 
 extern hienv_t hicl;
 
 namespace {
-
-inline void hicl_fknl_set_mem(hiknl_t k, int index, address_t h) {
-    rbn_int_himem_t *n;
-    himem_t m = find_rbn_address_t_himem_t(&hicl->mems, h)->value;
-    if ((n = find_rbn_int_himem_t(&k->mems, index)) == k->mems.nil) {
-        HICL_DEBUG("insert @ %p for kernel %s", m->id, __api_knl_name(k->id));
-        insert_rbn_int_himem_t(&k->mems, index, m);
-        insert_rbn_hiknl_t_int(&m->knls, k, index);
-        __api_knl_set_arg_cl_mem(k->id, index, &m->id);
-    } else {
-        if (m != n->value) {
-            HICL_DEBUG("modify @ %p for kernel %s", m->id, __api_knl_name(k->id));
-            n->value = m; 
-            __api_knl_set_arg_cl_mem(k->id, index, &m->id);
-        }
-    }
-}
-
-inline void hicl_fknl_set_args(hiknl_t k, ...) {
-    va_list list;
-    va_start(list, k);
-    __api_knl_set_args_valist(k, list);
-    va_end(list);
-}
-
-inline void hicl_fknl_set_wrk(hiknl_t k, cl_uint wrk, size_t *gws, size_t *lws) {
-    cl_uint idx;
-    k->wrk = wrk;
-    for(idx=0; idx<3; ++idx) {
-        if (idx < wrk) {
-            k->gws[idx] = gws[idx];
-            k->lws[idx] = lws[idx];
-        } else {
-            k->gws[idx] = 1;
-            k->lws[idx] = 1;
-        }
-    }
-    HICL_DEBUG("call hicl_fknl_set_wrk: global[%lux%lux%lu], local[%lux%lux%lu]",
-         k->gws[0], k->gws[1], k->gws[2], k->lws[0], k->lws[1], k->lws[2]);
-}
-
-inline void hicl_fknl_set_ofs(hiknl_t k, size_t *ofs) {
-    cl_uint idx;
-    for(idx=0; idx<3; ++idx) k->ofs[idx] = ofs[idx];
-    HICL_DEBUG("call hicl_fknl_set_ofs: ofs[%lux%lux%lu]", 
-         k->ofs[0], k->ofs[1], k->ofs[2]);
-}
-
-inline void hicl_fknl_exec(hiknl_t k, hidev_t d) {
-    HICL_DEBUG("run (async) kernel : %s", __api_knl_name(k->id));
-    walk_value_rbt_int_himem_t(&k->mems, __api_mem_sync);
-    __api_knl_async_run(k->id, d->queue, k->wrk, k->gws, k->lws, k->ofs);
-    HICL_DEBUG("");
-}
-
-inline void hicl_fknl_sync_exec(hiknl_t k, hidev_t d) {
-    HICL_DEBUG("run (sync) kernel  : %s", __api_knl_name(k->id));
-    walk_value_rbt_int_himem_t(&k->mems, __api_mem_sync);
-    __api_knl_sync_run(k->id, d->queue, k->wrk, k->gws, k->lws, k->ofs);
-    HICL_DEBUG("");
-}
-
-inline double hicl_fknl_timed_exec(hiknl_t k, hidev_t d) {
-    HICL_DEBUG("run (timed) kernel : %s", __api_knl_name(k->id));
-    walk_value_rbt_int_himem_t(&k->mems, __api_mem_sync);
-    hicl_timer_tick();
-    __api_knl_sync_run(k->id, d->queue, k->wrk, k->gws, k->lws, k->ofs);
-    HICL_DEBUG("");
-    return hicl_timer_read();
-}
-
-inline void hicl_fknl_run(hiknl_t k, hidev_t d, ...) {
-    HICL_DEBUG("call hicl_fknl_set_and_run");
-    va_list list;
-    va_start(list, d);
-    __api_knl_set_args_valist(k, list);
-    va_end(list);
-    hicl_fknl_exec(k, d);
-}
-
-inline void hicl_fknl_sync_run(hiknl_t k, hidev_t d, ...) {
-    HICL_DEBUG("call hicl_fknl_set_and_srun");
-    va_list list;
-    va_start(list, d);
-    __api_knl_set_args_valist(k, list);
-    va_end(list);
-    hicl_fknl_sync_exec(k, d);
-}
-
-inline double hicl_fknl_timed_run(hiknl_t k, hidev_t d, ...) {
-    HICL_DEBUG("call hicl_fknl_set_and_trun");
-    va_list list;
-    va_start(list, d);
-    __api_knl_set_args_valist(k, list);
-    va_end(list);
-    return hicl_fknl_timed_exec(k, d);
-}
-
 
     class KnlTest : public ::testing::Test {
     protected:
@@ -187,23 +90,38 @@ inline double hicl_fknl_timed_run(hiknl_t k, hidev_t d, ...) {
         hiknl_t k1;
         hiknl_t k2;
         float *hsrc;
-        posix_memalign((void**)(&hsrc), __API_MEM_ALIGN_SIZE, N*sizeof(float));
+        int ret_val;
+        ret_val = posix_memalign((void**)(&hsrc), 
+                __API_MEM_ALIGN_SIZE, N*sizeof(float));
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
         float *hdst1;
-        posix_memalign((void**)(&hdst1), __API_MEM_ALIGN_SIZE, N*sizeof(float));
+        ret_val = posix_memalign((void**)(&hdst1), 
+                __API_MEM_ALIGN_SIZE, N*sizeof(float));
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
         float *hdst2;
-        posix_memalign((void**)(&hdst2), __API_MEM_ALIGN_SIZE, N*sizeof(float));
+        ret_val = posix_memalign((void**)(&hdst2), 
+                __API_MEM_ALIGN_SIZE, N*sizeof(float));
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
         float *ha;
-        posix_memalign((void**)(&ha), __API_MEM_ALIGN_SIZE, 4*sizeof(float));
+        ret_val = posix_memalign((void**)(&ha), 
+                __API_MEM_ALIGN_SIZE, 4*sizeof(float));
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
         float *hb;
-        posix_memalign((void**)(&hb), __API_MEM_ALIGN_SIZE, 4*sizeof(float));
+        ret_val = posix_memalign((void**)(&hb), 
+            __API_MEM_ALIGN_SIZE, 4*sizeof(float));
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
         float *hc;
-        posix_memalign((void**)(&hc), __API_MEM_ALIGN_SIZE, 4*sizeof(float));
-        himem_t src  = hicl_mem_wrap(d, hsrc,  N, HWA | READ_ONLY);
+        ret_val = posix_memalign((void**)(&hc), 
+            __API_MEM_ALIGN_SIZE, 4*sizeof(float));
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
+ 
+        hicl_mem_wrap(d, hsrc, N, HWA | READ_WRITE);
+        hicl_mem_wrap(d, ha, 4, HWA | READ_WRITE);
+        hicl_mem_wrap(d, hb, 4, HWA | READ_WRITE);
+        hicl_mem_wrap(d, hc, 4, HWA | READ_WRITE);
         himem_t dst1 = hicl_mem_wrap(d, hdst1, N, HWA | WRITE_ONLY);
         himem_t dst2 = hicl_mem_wrap(d, hdst2, N, HWA | WRITE_ONLY);
-        himem_t a    = hicl_mem_wrap(d, ha,    4, HWA | WRITE_ONLY);
-        himem_t b    = hicl_mem_wrap(d, hb,    4, HWA | WRITE_ONLY);
-        himem_t c    = hicl_mem_wrap(d, hc,    4, HWA | WRITE_ONLY);
+ 
         hicl_mem_update(hsrc, WRITE_ONLY);
         populate(hsrc, N);
         hicl_load("data/foo.cl", "-DSTENCIL=9 -cl-kernel-arg-info");
@@ -264,17 +182,30 @@ inline double hicl_fknl_timed_run(hiknl_t k, hidev_t d, ...) {
         unsigned int i;
         hiknl_t k1;
         float *hsrc;
-        posix_memalign((void**)(&hsrc), __API_MEM_ALIGN_SIZE, N*sizeof(float));
+        int ret_val;
+        ret_val = posix_memalign((void**)(&hsrc), 
+            __API_MEM_ALIGN_SIZE, N*sizeof(float));
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
         float *hdst1;
-        posix_memalign((void**)(&hdst1), __API_MEM_ALIGN_SIZE, N*sizeof(float));
+        ret_val = posix_memalign((void**)(&hdst1), 
+            __API_MEM_ALIGN_SIZE, N*sizeof(float));
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
         float *hdst2;
-        posix_memalign((void**)(&hdst2), __API_MEM_ALIGN_SIZE, N*sizeof(float));
+        ret_val = posix_memalign((void**)(&hdst2), 
+            __API_MEM_ALIGN_SIZE, N*sizeof(float));
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
         float *ha;
-        posix_memalign((void**)(&ha), __API_MEM_ALIGN_SIZE, 4*sizeof(float));
+        ret_val = posix_memalign((void**)(&ha), 
+            __API_MEM_ALIGN_SIZE, 4*sizeof(float));
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
         float *hb;
-        posix_memalign((void**)(&hb), __API_MEM_ALIGN_SIZE, 4*sizeof(float));
+        ret_val = posix_memalign((void**)(&hb), 
+            __API_MEM_ALIGN_SIZE, 4*sizeof(float));
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
         float *hc;
-        posix_memalign((void**)(&hc), __API_MEM_ALIGN_SIZE, 4*sizeof(float));
+        ret_val = posix_memalign((void**)(&hc), 
+            __API_MEM_ALIGN_SIZE, 4*sizeof(float));
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
         
         hicl_mem_wrap(d, hsrc,  N, HWA | READ_WRITE);
         hicl_mem_wrap(d, hdst1, N, HWA | READ_WRITE);
@@ -313,9 +244,14 @@ inline double hicl_fknl_timed_run(hiknl_t k, hidev_t d, ...) {
     TEST_F(KnlTest, sync_run_by_name) {
         unsigned int i;
         float *hsrc;
-        posix_memalign((void**)(&hsrc), __API_MEM_ALIGN_SIZE, N*sizeof(float));
+        int ret_val;
+        ret_val = posix_memalign((void**)(&hsrc), 
+            __API_MEM_ALIGN_SIZE, N*sizeof(float));
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
         float *hdst;
-        posix_memalign((void**)(&hdst), __API_MEM_ALIGN_SIZE, N*sizeof(float));
+        ret_val = posix_memalign((void**)(&hdst), 
+            __API_MEM_ALIGN_SIZE, N*sizeof(float));
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
         hicl_mem_wrap(d, hsrc, N, HWA | READ_ONLY);
         hicl_mem_wrap(d, hdst, N, HWA | WRITE_ONLY);
         hicl_mem_update(hsrc, WRITE_ONLY);
@@ -330,7 +266,8 @@ inline double hicl_fknl_timed_run(hiknl_t k, hidev_t d, ...) {
         hicl_timer_tick();
         for (i=0; i<ITER; ++i)
             hicl_knl_sync_run("test_hicl_1", d, hsrc, hdst, N);
-        HICL_PRINT("=> time: %f %s", hicl_timer_read()/ITER, hicl_timer_uget());
+        fprintf(stdout, 
+                "... time: %f %s", hicl_timer_read()/ITER, hicl_timer_uget());
         hicl_mem_update(hdst, READ_ONLY);
         for (i = 0; i < N; ++i) ASSERT_FLOAT_EQ(hdst[i], i);
         free(hsrc);
@@ -340,9 +277,14 @@ inline double hicl_fknl_timed_run(hiknl_t k, hidev_t d, ...) {
     TEST_F(KnlTest, run_by_name) {
         unsigned int i;
         float *hsrc;
-        posix_memalign((void**)(&hsrc), __API_MEM_ALIGN_SIZE, N*sizeof(float));
+        int ret_val;
+        ret_val = posix_memalign((void**)(&hsrc), 
+            __API_MEM_ALIGN_SIZE, N*sizeof(float));
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
         float *hdst;
-        posix_memalign((void**)(&hdst), __API_MEM_ALIGN_SIZE, N*sizeof(float));
+        ret_val = posix_memalign((void**)(&hdst), 
+            __API_MEM_ALIGN_SIZE, N*sizeof(float));
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
         hicl_mem_wrap(d, hsrc, N, HWA | READ_ONLY);
         hicl_mem_wrap(d, hdst, N, HWA | WRITE_ONLY);
         hicl_mem_update(hsrc, WRITE_ONLY);
@@ -355,7 +297,8 @@ inline double hicl_fknl_timed_run(hiknl_t k, hidev_t d, ...) {
         hicl_timer_tick();
         for (i=0; i<ITER; ++i) hicl_knl_exec("test_hicl_1", d);
         hicl_dev_wait(d);
-        HICL_PRINT("=> time: %f %s", hicl_timer_read()/ITER, hicl_timer_uget());
+        fprintf(stdout, 
+                "... time: %f %s", hicl_timer_read()/ITER, hicl_timer_uget());
         hicl_mem_update(hdst, READ_ONLY);
         for (i = 0; i < N; ++i) ASSERT_FLOAT_EQ(hdst[i], i);
         free(hsrc);
@@ -423,7 +366,6 @@ inline double hicl_fknl_timed_run(hiknl_t k, hidev_t d, ...) {
             for (y = 0; y < dim[1]; ++y)
                 for (x = 0; x < dim[0]; ++x)
                     ASSERT_NEAR(O(o, z,y,x), O(res, z,y,x), e);
-                
         free(o);
     }
     
@@ -432,7 +374,6 @@ inline double hicl_fknl_timed_run(hiknl_t k, hidev_t d, ...) {
         unsigned int i, n=100;
         float epsilon = 1.e-1;
         size_t size;
-        char options[128];
         int dim[3] = {DIM, DIM, DIM}, s[3] = {4, 4, 4};
         size_t g[3], l[3] = {16, 16, 1};
 
@@ -443,28 +384,31 @@ inline double hicl_fknl_timed_run(hiknl_t k, hidev_t d, ...) {
         size   = (2*s[0] + dim[0])*(2*s[1] + dim[1])*(2*s[2] + dim[2]);
         flops  = 2+(3*s[0]+1)+(3*s[1]+1)+(3*s[2]+1);
         
-        sprintf(options, 
-                "-cl-kernel-arg-info -DSTENCIL=%d -DLX=%lu -DLY=%lu", 
-                s[0], l[0], l[1]);
-                        
-        hicl_load("data/stencil_lv_3d.cl", options);
+        hicl_load("data/stencil_lv_3d.cl", 
+                  "-cl-kernel-arg-info -DSTENCIL=%d -DLX=%lu -DLY=%lu", 
+                  s[0], l[0], l[1]);
         
         float *ui;
         float *uo;
         float *coefx;
         float *coefy;
         float *coefz;
-
-        posix_memalign((void**)(&ui),    
+        int ret_val;
+        ret_val = posix_memalign((void**)(&ui),    
                         __API_MEM_ALIGN_SIZE,     size*sizeof(float));
-        posix_memalign((void**)(&uo),    
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
+        ret_val = posix_memalign((void**)(&uo),    
                         __API_MEM_ALIGN_SIZE,     size*sizeof(float));
-        posix_memalign((void**)(&coefx), 
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
+        ret_val = posix_memalign((void**)(&coefx), 
                         __API_MEM_ALIGN_SIZE, (s[0]+1)*sizeof(float));
-        posix_memalign((void**)(&coefy), 
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
+        ret_val = posix_memalign((void**)(&coefy), 
                         __API_MEM_ALIGN_SIZE, (s[1]+1)*sizeof(float));
-        posix_memalign((void**)(&coefz), 
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
+        ret_val = posix_memalign((void**)(&coefz), 
                         __API_MEM_ALIGN_SIZE, (s[2]+1)*sizeof(float));
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
 
         memset(uo, 0, size*sizeof(float));
         randomize_buffer(ui, size);
@@ -489,11 +433,12 @@ inline double hicl_fknl_timed_run(hiknl_t k, hidev_t d, ...) {
         hicl_timer_tick();
         hicl_mem_update(uo, READ_ONLY);
         comm = hicl_timer_read();
-        HICL_PRINT("avertage time: %8.2f (%8.2f) %s, %8.2f (%8.2f) Gflop/s",
-                 time/n, comm + time/n, hicl_timer_uget(),
-                 flops*1.e-9*n*dim[0]*dim[1]*dim[2]/(time*hicl_timer_coef()),
-                 flops*1.e-9*dim[0]*dim[1]*dim[2]/
-                 ((comm+(time/n))*hicl_timer_coef()));
+        fprintf(stdout, 
+                "... avertage time: %8.2f (%8.2f) %s, %8.2f (%8.2f) Gflop/s",
+                time/n, comm + time/n, hicl_timer_uget(),
+                flops*1.e-9*n*dim[0]*dim[1]*dim[2]/(time*hicl_timer_coef()),
+                flops*1.e-9*dim[0]*dim[1]*dim[2]/
+                ((comm+(time/n))*hicl_timer_coef()));
         check_stencil_3d(dim, s, coefx, coefy, coefz, ui, uo, epsilon);
     }
 
@@ -519,24 +464,27 @@ inline double hicl_fknl_timed_run(hiknl_t k, hidev_t d, ...) {
                         
         hicl_load("data/stencil_lv_3d.cl", options);
         
-        hiknl_t k = hicl_knl_find("stencil_lv_3d");
-        
         float *ui;
         float *uo;
         float *coefx;
         float *coefy;
         float *coefz;
-
-        posix_memalign((void**)(&ui),    
+        int ret_val;
+        ret_val = posix_memalign((void**)(&ui),    
                         __API_MEM_ALIGN_SIZE,     size*sizeof(float));
-        posix_memalign((void**)(&uo),    
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
+        ret_val = posix_memalign((void**)(&uo),    
                         __API_MEM_ALIGN_SIZE,     size*sizeof(float));
-        posix_memalign((void**)(&coefx), 
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
+        ret_val = posix_memalign((void**)(&coefx), 
                         __API_MEM_ALIGN_SIZE, (s[0]+1)*sizeof(float));
-        posix_memalign((void**)(&coefy), 
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
+        ret_val = posix_memalign((void**)(&coefy), 
                         __API_MEM_ALIGN_SIZE, (s[1]+1)*sizeof(float));
-        posix_memalign((void**)(&coefz), 
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
+        ret_val = posix_memalign((void**)(&coefz), 
                         __API_MEM_ALIGN_SIZE, (s[2]+1)*sizeof(float));
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
 
         memset(uo, 0, size*sizeof(float));
         randomize_buffer(ui, size);
@@ -561,11 +509,12 @@ inline double hicl_fknl_timed_run(hiknl_t k, hidev_t d, ...) {
         hicl_timer_tick();
         hicl_mem_update(uo, READ_ONLY);
         comm = hicl_timer_read();
-        HICL_PRINT("avertage time: %8.2f (%8.2f) %s, %8.2f (%8.2f) Gflop/s",
-                    time/n, comm + time/n, hicl_timer_uget(),
-                    flops*1.e-9*n*dim[0]*dim[1]*dim[2]/(time*hicl_timer_coef()),
-                    flops*1.e-9*dim[0]*dim[1]*dim[2]/
-                    ((comm+(time/n))*hicl_timer_coef()));
+        fprintf(stdout, 
+                "... avertage time: %8.2f (%8.2f) %s, %8.2f (%8.2f) Gflop/s",
+                time/n, comm + time/n, hicl_timer_uget(),
+                flops*1.e-9*n*dim[0]*dim[1]*dim[2]/(time*hicl_timer_coef()),
+                flops*1.e-9*dim[0]*dim[1]*dim[2]/
+                ((comm+(time/n))*hicl_timer_coef()));
         check_stencil_3d(dim, s, coefx, coefy, coefz, ui, uo, epsilon);
     }
 
@@ -591,24 +540,27 @@ inline double hicl_fknl_timed_run(hiknl_t k, hidev_t d, ...) {
                         
         hicl_load("data/stencil_lv_3d.cl", options);
         
-        hiknl_t k      = hicl_knl_find("stencil_lv_3d");
-        
         float *ui;
         float *uo;
         float *coefx;
         float *coefy;
         float *coefz;
-
-        posix_memalign((void**)(&ui),    
+        int ret_val;
+        ret_val = posix_memalign((void**)(&ui),    
                         __API_MEM_ALIGN_SIZE,     size*sizeof(float));
-        posix_memalign((void**)(&uo),    
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
+        ret_val = posix_memalign((void**)(&uo),    
                         __API_MEM_ALIGN_SIZE,     size*sizeof(float));
-        posix_memalign((void**)(&coefx), 
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
+        ret_val = posix_memalign((void**)(&coefx), 
                         __API_MEM_ALIGN_SIZE, (s[0]+1)*sizeof(float));
-        posix_memalign((void**)(&coefy), 
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
+        ret_val = posix_memalign((void**)(&coefy), 
                         __API_MEM_ALIGN_SIZE, (s[1]+1)*sizeof(float));
-        posix_memalign((void**)(&coefz), 
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
+        ret_val = posix_memalign((void**)(&coefz), 
                         __API_MEM_ALIGN_SIZE, (s[2]+1)*sizeof(float));
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
 
         memset(uo, 0, size*sizeof(float));
         randomize_buffer(ui, size);
@@ -633,11 +585,11 @@ inline double hicl_fknl_timed_run(hiknl_t k, hidev_t d, ...) {
         hicl_timer_tick();
         hicl_mem_update(uo, READ_ONLY);
         comm = hicl_timer_read();
-        HICL_PRINT("avertage time: %8.2f (%8.2f) %s, %8.2f (%8.2f) Gflop/s",
-                 time/n, comm + (time/n), hicl_timer_uget(),
-                 flops*1.e-9*n*dim[0]*dim[1]*dim[2]/(time*hicl_timer_coef()),
-                 flops*1.e-9*dim[0]*dim[1]*dim[2]/
-                 ((comm+(time/n))*hicl_timer_coef()));
+        fprintf(stdout, "avertage time: %8.2f (%8.2f) %s, %8.2f (%8.2f) Gflop/s",
+                time/n, comm + (time/n), hicl_timer_uget(),
+                flops*1.e-9*n*dim[0]*dim[1]*dim[2]/(time*hicl_timer_coef()),
+                flops*1.e-9*dim[0]*dim[1]*dim[2]/
+                ((comm+(time/n))*hicl_timer_coef()));
         check_stencil_3d(dim, s, coefx, coefy, coefz, ui, uo, epsilon);
     }
 
@@ -663,24 +615,27 @@ inline double hicl_fknl_timed_run(hiknl_t k, hidev_t d, ...) {
                         
         hicl_load("data/stencil_lv_3d.cl", options);
         
-        hiknl_t k = hicl_knl_find("stencil_lv_3d");
-        
         float *ui;
         float *uo;
         float *coefx;
         float *coefy;
         float *coefz;
-
-        posix_memalign((void**)(&ui),    
+        int ret_val;
+        ret_val = posix_memalign((void**)(&ui),    
                         __API_MEM_ALIGN_SIZE,     size*sizeof(float));
-        posix_memalign((void**)(&uo),    
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
+        ret_val = posix_memalign((void**)(&uo),    
                         __API_MEM_ALIGN_SIZE,     size*sizeof(float));
-        posix_memalign((void**)(&coefx), 
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
+        ret_val = posix_memalign((void**)(&coefx), 
                         __API_MEM_ALIGN_SIZE, (s[0]+1)*sizeof(float));
-        posix_memalign((void**)(&coefy), 
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
+        ret_val = posix_memalign((void**)(&coefy), 
                         __API_MEM_ALIGN_SIZE, (s[1]+1)*sizeof(float));
-        posix_memalign((void**)(&coefz), 
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
+        ret_val = posix_memalign((void**)(&coefz), 
                         __API_MEM_ALIGN_SIZE, (s[2]+1)*sizeof(float));
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
 
         memset(uo, 0, size*sizeof(float));
         randomize_buffer(ui, size);
@@ -705,11 +660,11 @@ inline double hicl_fknl_timed_run(hiknl_t k, hidev_t d, ...) {
         hicl_timer_tick();
         hicl_mem_update(uo, READ_ONLY);
         comm = hicl_timer_read();
-        HICL_PRINT("avertage time: %8.2f (%8.2f) %s, %8.2f (%8.2f) Gflop/s",
-                 time/n, comm + time/n, hicl_timer_uget(),
-                 flops*1.e-9*n*dim[0]*dim[1]*dim[2]/(time*hicl_timer_coef()),
-                 flops*1.e-9*dim[0]*dim[1]*dim[2]/
-                 ((comm+(time/n))*hicl_timer_coef()));
+        fprintf(stdout, "avertage time: %8.2f (%8.2f) %s, %8.2f (%8.2f) Gflop/s",
+                time/n, comm + time/n, hicl_timer_uget(),
+                flops*1.e-9*n*dim[0]*dim[1]*dim[2]/(time*hicl_timer_coef()),
+                flops*1.e-9*dim[0]*dim[1]*dim[2]/
+                ((comm+(time/n))*hicl_timer_coef()));
         check_stencil_3d(dim, s, coefx, coefy, coefz, ui, uo, epsilon);
     }
 
@@ -735,24 +690,27 @@ inline double hicl_fknl_timed_run(hiknl_t k, hidev_t d, ...) {
                         
         hicl_load("data/stencil_lv_3d.cl", options);
         
-        hiknl_t k = hicl_knl_find("stencil_lv_3d");
-        
         float *ui;
         float *uo;
         float *coefx;
         float *coefy;
         float *coefz;
-
-        posix_memalign((void**)(&ui),    
+        int ret_val;
+        ret_val = posix_memalign((void**)(&ui),    
                         __API_MEM_ALIGN_SIZE,     size*sizeof(float));
-        posix_memalign((void**)(&uo),    
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
+        ret_val = posix_memalign((void**)(&uo),    
                         __API_MEM_ALIGN_SIZE,     size*sizeof(float));
-        posix_memalign((void**)(&coefx), 
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
+        ret_val = posix_memalign((void**)(&coefx), 
                         __API_MEM_ALIGN_SIZE, (s[0]+1)*sizeof(float));
-        posix_memalign((void**)(&coefy), 
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
+        ret_val = posix_memalign((void**)(&coefy), 
                         __API_MEM_ALIGN_SIZE, (s[1]+1)*sizeof(float));
-        posix_memalign((void**)(&coefz), 
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
+        ret_val = posix_memalign((void**)(&coefz), 
                         __API_MEM_ALIGN_SIZE, (s[2]+1)*sizeof(float));
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
 
         memset(uo, 0, size*sizeof(float));
         randomize_buffer(ui, size);
@@ -777,7 +735,7 @@ inline double hicl_fknl_timed_run(hiknl_t k, hidev_t d, ...) {
         hicl_timer_tick();
         hicl_mem_update(uo, READ_ONLY);
         comm = hicl_timer_read();
-        HICL_PRINT("avertage time: %8.2f (%8.2f) %s, %8.2f (%8.2f) Gflop/s",
+        fprintf(stdout, "avertage time: %8.2f (%8.2f) %s, %8.2f (%8.2f) Gflop/s",
                  time/n, comm + time/n, hicl_timer_uget(),
                  flops*1.e-9*n*dim[0]*dim[1]*dim[2]/(time*hicl_timer_coef()),
                  flops*1.e-9*dim[0]*dim[1]*dim[2]/
@@ -807,24 +765,27 @@ inline double hicl_fknl_timed_run(hiknl_t k, hidev_t d, ...) {
                         
         hicl_load("data/stencil_lv_3d.cl", options);
         
-        hiknl_t k = hicl_knl_find("stencil_lv_3d");
-        
         float *ui;
         float *uo;
         float *coefx;
         float *coefy;
         float *coefz;
-
-        posix_memalign((void**)(&ui),    
+        int ret_val;
+        ret_val = posix_memalign((void**)(&ui),    
                         __API_MEM_ALIGN_SIZE,     size*sizeof(float));
-        posix_memalign((void**)(&uo),    
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
+        ret_val = posix_memalign((void**)(&uo),    
                         __API_MEM_ALIGN_SIZE,     size*sizeof(float));
-        posix_memalign((void**)(&coefx), 
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
+        ret_val = posix_memalign((void**)(&coefx), 
                         __API_MEM_ALIGN_SIZE, (s[0]+1)*sizeof(float));
-        posix_memalign((void**)(&coefy), 
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
+        ret_val = posix_memalign((void**)(&coefy), 
                         __API_MEM_ALIGN_SIZE, (s[1]+1)*sizeof(float));
-        posix_memalign((void**)(&coefz), 
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
+        ret_val = posix_memalign((void**)(&coefz), 
                         __API_MEM_ALIGN_SIZE, (s[2]+1)*sizeof(float));
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
 
         memset(uo, 0, size*sizeof(float));
         randomize_buffer(ui, size);
@@ -849,16 +810,17 @@ inline double hicl_fknl_timed_run(hiknl_t k, hidev_t d, ...) {
         hicl_timer_tick();
         hicl_mem_update(uo, READ_ONLY);
         comm = hicl_timer_read();
-        HICL_PRINT("avertage time: %8.2f (%8.2f) %s, %8.2f (%8.2f) Gflop/s",
-                   time/n, comm + (time/n), hicl_timer_uget(),
-                   flops*1.e-9*n*dim[0]*dim[1]*dim[2]/(time*hicl_timer_coef()),
-                   flops*1.e-9*dim[0]*dim[1]*dim[2]/
-                   ((comm+(time/n))*hicl_timer_coef()));
+        fprintf(stdout, 
+                "... avertage time: %8.2f (%8.2f) %s, %8.2f (%8.2f) Gflop/s",
+                time/n, comm + (time/n), hicl_timer_uget(),
+                flops*1.e-9*n*dim[0]*dim[1]*dim[2]/(time*hicl_timer_coef()),
+                flops*1.e-9*dim[0]*dim[1]*dim[2]/
+                ((comm+(time/n))*hicl_timer_coef()));
         check_stencil_3d(dim, s, coefx, coefy, coefz, ui, uo, epsilon);
     }
 
     TEST_F(KnlTest, find_performance) {
-        double comm, time = 0.;
+        double time = 0.;
         unsigned int i, n=1000;
         size_t size;
         char options[128];
@@ -884,17 +846,22 @@ inline double hicl_fknl_timed_run(hiknl_t k, hidev_t d, ...) {
         float *coefx;
         float *coefy;
         float *coefz;
-
-        posix_memalign((void**)(&ui),    
+        int ret_val;
+        ret_val = posix_memalign((void**)(&ui),    
                         __API_MEM_ALIGN_SIZE,     size*sizeof(float));
-        posix_memalign((void**)(&uo),    
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
+        ret_val = posix_memalign((void**)(&uo),    
                         __API_MEM_ALIGN_SIZE,     size*sizeof(float));
-        posix_memalign((void**)(&coefx), 
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
+        ret_val = posix_memalign((void**)(&coefx), 
                         __API_MEM_ALIGN_SIZE, (s[0]+1)*sizeof(float));
-        posix_memalign((void**)(&coefy), 
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
+        ret_val = posix_memalign((void**)(&coefy), 
                         __API_MEM_ALIGN_SIZE, (s[1]+1)*sizeof(float));
-        posix_memalign((void**)(&coefz), 
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
+        ret_val = posix_memalign((void**)(&coefz), 
                         __API_MEM_ALIGN_SIZE, (s[2]+1)*sizeof(float));
+        if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
 
         memset(uo, 0, size*sizeof(float));
         randomize_buffer(ui, size);
@@ -917,7 +884,7 @@ inline double hicl_fknl_timed_run(hiknl_t k, hidev_t d, ...) {
         for (i=0; i<n; ++i) hicl_fknl_exec(k, d);
         hicl_dev_wait(d);
         time = hicl_timer_read();
-        HICL_PRINT("direct time: %8.2f %s", time, hicl_timer_uget());
+        fprintf(stdout, "... direct time: %8.2f %s", time, hicl_timer_uget());
 
         hicl_timer_tick();     
         hicl_knl_set_wrk("stencil_lv_3d", 2, g, l);
@@ -927,7 +894,7 @@ inline double hicl_fknl_timed_run(hiknl_t k, hidev_t d, ...) {
         for (i=0; i<n; ++i) hicl_knl_exec("stencil_lv_3d", d);
         hicl_dev_wait(d);
         time = hicl_timer_read();
-        HICL_PRINT("loockup time: %8.2f %s", time, hicl_timer_uget());
+        fprintf(stdout, "... loockup time: %8.2f %s", time, hicl_timer_uget());
     }    
 
 }  // namespace

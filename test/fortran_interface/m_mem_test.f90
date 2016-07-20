@@ -51,34 +51,9 @@ module m_mem_test
     public :: mem_test
 
     integer, parameter :: N = 64
-    type(dev), pointer :: d
+    type(hidev_t), pointer :: d
 
 contains
-
-    subroutine setup()
-        call hicl_init(ALL)
-        call hicl_dev_find(DEFAULT, d)
-    end subroutine setup
-
-    subroutine teardown()
-        call hicl_release()
-    end subroutine teardown
-    
-    subroutine mem_test()
-        call run(setup, teardown, float_allocated_buffer, &
-              "mem_test.float_allocated_buffer")
-        call run(setup, teardown, info, &
-              "mem_test.info")
-        call run(setup, teardown, read_access_buffer, &
-               "mem_test.read_access_buffer")
-        call run(setup, teardown, write_access_buffer, &
-              "mem_test.write_access_buffer")
-        call run(setup, teardown, access_buffer_2d, &
-              "mem_test.access_buffer_2d")
-        call run(setup, teardown, access_buffer_3d, &
-              "mem_test.access_buffer_3d")
-    end subroutine mem_test
-    
   
     logical function float_allocated_buffer() result(status)
         real, allocatable :: h(:)
@@ -162,5 +137,30 @@ contains
         status = status .and. (hicl_mem_count() == 0)
         deallocate(h3d)
     end function access_buffer_3d
+
+
+    subroutine setup()
+        call hicl_init(ALL)
+        call hicl_dev_find(DEFAULT, d)
+    end subroutine setup
+
+    subroutine teardown()
+        call hicl_release()
+    end subroutine teardown
+    
+    subroutine mem_test()
+        call run(setup, teardown, float_allocated_buffer, &
+              "mem_test.float_allocated_buffer")
+        call run(setup, teardown, info, &
+              "mem_test.info")
+        call run(setup, teardown, read_access_buffer, &
+               "mem_test.read_access_buffer")
+        call run(setup, teardown, write_access_buffer, &
+              "mem_test.write_access_buffer")
+        call run(setup, teardown, access_buffer_2d, &
+              "mem_test.access_buffer_2d")
+        call run(setup, teardown, access_buffer_3d, &
+              "mem_test.access_buffer_3d")
+    end subroutine mem_test
 
 end module m_mem_test

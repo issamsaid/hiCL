@@ -90,7 +90,6 @@ inline hiknl_t hicl_knl_find(const char *name) {
 
 inline void hicl_knl_build(const char *name, const char *options) {
     cl_int cl_ret;
-    hiknl_t tmp_knl;
     char tmp[__API_STR_SIZE], names[__API_BUFFER_SIZE];
     cl_program program;
     size_t idx, num_kernels, code_size;
@@ -155,7 +154,12 @@ inline void hicl_knl_set_double(const char *name, int index, double d) {
 inline void hicl_knl_set_mem(const char *name, int index, address_t h) {
     hiknl_t k = hicl_knl_find(name);
     rbn_int_himem_t *n;
-    himem_t m = find_rbn_address_t_himem_t(&hicl->mems, h)->value;
+    rbn_address_t_himem_t *i;
+    himem_t m;
+    HICL_EXIT_IF((i=find_rbn_address_t_himem_t(&hicl->mems, 
+                                               h)) == hicl->mems.nil,
+                 "memory object not found, check if it is already wrapped");
+    m = i->value;
     if ((n = find_rbn_int_himem_t(&k->mems, index)) == k->mems.nil) {
         HICL_DEBUG("insert @ %p for kernel %s", m->id, name);
         insert_rbn_int_himem_t(&k->mems, index, m);
@@ -211,7 +215,6 @@ inline void hicl_knl_set_ofs(const char *name, size_t *ofs) {
 //   - timed run     : timed synchronous execution
 //
 inline void hicl_knl_run(const char *name, hidev_t d, ...) {
-    HICL_DEBUG("call hicl_knl_set_and_run");
     hiknl_t k = hicl_knl_find(name);
     va_list list;
     va_start(list, d);
@@ -224,7 +227,6 @@ inline void hicl_knl_run(const char *name, hidev_t d, ...) {
 }
 
 inline void hicl_knl_sync_run(const char *name, hidev_t d, ...) {
-    HICL_DEBUG("call hicl_knl_set_and_sync_run");
     hiknl_t k = hicl_knl_find(name);
     va_list list;
     va_start(list, d);

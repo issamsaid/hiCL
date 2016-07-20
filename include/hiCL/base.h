@@ -73,12 +73,13 @@ void hicl_release();
 ///
 /// This routine loads a source code from a given file (with a '.cl'
 /// extention) in order to create the OpenCL kernels contained by this file.
-/// @param filename the path to the kernels file.
-/// @param options the OpenCL options to pass to the OpenCL compiler when
-///        compiling the kernels.
+/// @param filename is the path to the kernels file.
+/// @param options_format is the OpenCL options to pass to the OpenCL compiler 
+///        when compiling the kernels (can be formatted).
+/// @param ... are optional arguments to concatenate to the options string. 
 /// @return Nothing.
 ///
-void hicl_load(const char *filename, const char *options);
+void hicl_load(const char *filename, const char *options_string, ...);
 
 ///
 /// @brief Shows information about the used OpenCL resources.

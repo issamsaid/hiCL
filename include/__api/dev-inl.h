@@ -37,7 +37,6 @@
 ///
 #include <stdio.h>
 #include <string.h>
-#include <math.h>
 #include "hiCL/flags.h"
 #include "hiCL/types.h"
 #include "__api/config/dev.h"
@@ -170,12 +169,18 @@ __api_dev_flags_to_type(flags_t flags) {
     if (__API_FLAGS_HAVE(flags, GPU))         return CL_DEVICE_TYPE_GPU;
     if (__API_FLAGS_HAVE(flags, ACCELERATOR)) return CL_DEVICE_TYPE_ACCELERATOR;
     if (__API_FLAGS_HAVE(flags, ALL))         return CL_DEVICE_TYPE_ALL;
+    return CL_DEVICE_TYPE_DEFAULT;
 }
 
 PRIVATE cl_uint
 __api_dev_flags_to_index(flags_t flags) {
+    unsigned int log_value = -1, n = flags;
     if (__API_FLAGS_HAVE(flags, DEFAULT)) return 0;
-    else return ((cl_uint)(log2(flags)))-1;
+    while (n) {
+        log_value++;
+        n >>= 1;
+    }
+    return log_value-1;
 }
 
 PRIVATE cl_uint

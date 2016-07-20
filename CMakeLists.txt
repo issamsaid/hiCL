@@ -39,7 +39,10 @@ cmake_minimum_required (VERSION 2.8)
 ## Overwrite CMake default behavior
 set (CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}")
 set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
-set (CMAKE_BUILD_TYPE Release)
+
+if ( NOT CMAKE_BUILD_TYPE )
+   set (CMAKE_BUILD_TYPE Release ... FORCE)
+endif ()
 
 ## Check whether OpenCL is detected:
 ## - The OpenCL library quered in usual directories
@@ -64,8 +67,11 @@ add_subdirectory(src)
 ## Build the hiCL fortran interface.
 add_subdirectory(fortran_interface)
 
+## Build the hiCL unit testing suit (develop branch only).
+add_subdirectory(test)
+
 ## Build the hiCL documentation.
 add_subdirectory(doc EXCLUDE_FROM_ALL)
 
-## Build the hiCL unit testing suit.
-add_subdirectory(test)
+## Build the hiCL examples.
+add_subdirectory(examples)

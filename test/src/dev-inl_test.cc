@@ -67,7 +67,7 @@ namespace {
         virtual void TearDown() {}
     };
 
-    TEST_F(DevInlTest, check_hidev_type_flags) {
+    TEST_F(DevInlTest, check_dev_type_flags) {
         flags_t flags = DEFAULT;
         ASSERT_TRUE(__API_DEV_CHECK_TYPE_FLAGS(flags));
         flags = ALL;
@@ -82,7 +82,7 @@ namespace {
         ASSERT_FALSE(__API_DEV_CHECK_TYPE_FLAGS(flags));
     }
 
-    TEST_F(DevInlTest, checkhidev_t_index_flags) {
+    TEST_F(DevInlTest, check_dev_index_flags) {
         flags_t flags = DEFAULT;
         ASSERT_TRUE(__API_DEV_CHECK_INDEX_FLAGS(flags));
         flags = FIRST;

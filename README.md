@@ -10,9 +10,13 @@ of functionalities in C/C++ and Fortran to help efficiently exploit hardware
 accelerators for scientific computing.<br/>
 A [paper](http://dl.acm.org/citation.cfm?id=2909453) about hiCL was published
 at the International OpenCL Workshop (IWOCL 2016) in Vienna, Austria on late
-April'16.
+April' 16.
 
 # Getting started
+The following section is a step by step guide that will take you from fetching
+the source code to running your hiCL first examples.
+
+## Branches and cloning 
 To get started, you can clone the hiCL repository and build it using cmake like
 follows:
 ```
@@ -55,15 +59,32 @@ make hiCL_fortran
 This target will build another static library libhiCL_fortran.a from the Fortran
 source files present in the 
 [fortran_interface](https://github.com/issamsaid/hiCL/tree/master/fortran_interface)
-directory.
+directory.<br/>
+In order to use the hiCL C/C++ link your code against libhiCL.a (by adding 
+*-lhiCL -lOpenCL* to your linker options), however if your code is based on Fortran the 
+latter should linked against both the C/C++ library and the Fortran interface (
+with the help of the options *-lhiCL_fortran -lhiCL -lOpenCL*).<br/>
+
+```
+make install
+```
+
+
+```
+make all install
+```
+
+# Examples
+
 # Testing
 A testing framework is of no good if itself is not thoroughly tested. 
 Tests should be written for any new code, and changes should be verified to not 
 break existing tests before they are submitted for review. 
 To perform the tests, follow the instructions in README and verify that 
 there are no failures.
-
-# Examples
+```
+make install
+```
 
 # How to contribute
 

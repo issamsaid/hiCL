@@ -49,46 +49,12 @@ module m_knl_test
 
     private
 
-    type(dev),         pointer :: d
+    type(hidev_t),         pointer :: d
     integer(kind=4), parameter :: N = 64
 
     public :: knl_test
 
 contains
-
-    subroutine setup()
-        call hicl_init(ALL)
-        call hicl_load("data/foo.cl", "-cl-kernel-arg-info -D STENCIL=4")
-        call hicl_load("data/bar.cl", "-cl-kernel-arg-info -D STENCIL=4")
-        call hicl_dev_find(DEFAULT, d)
-    end subroutine setup
-
-    subroutine teardown()
-        call hicl_release()
-    end subroutine teardown
-
-    subroutine knl_test()
-        call run(setup, teardown, info, &
-              "knl_test.info")
-        call run(setup, teardown, build, &
-              "knl_test.build")
-        call run(setup, teardown, set_wrk, &
-              "knl_test.set_wrk")
-        call run(setup, teardown, set_arg, &
-              "knl_test.set_arg")
-        call run(setup, teardown, sync_run, &
-            "knl_test.run")
-        call run(setup, teardown, async_run, &
-            "knl_test.async_run")
-        call run(setup, teardown, sync_run_hzc, &
-            "knl_test.sync_run_hzc")
-        !call run(setup, teardown, sync_run_dzc, &
-        !    "knl_test.sync_run_dzc")
-        call run(setup, teardown, sync_run_pinned, &
-            "knl_test.sync_run_pinned")
-        call run(setup, teardown, test_precision_one_thread, &
-            "knl_test.test_precision_one_thread")
-    end subroutine knl_test
 
     logical function info() result(status)
         implicit none
@@ -330,5 +296,41 @@ contains
         enddo
         deallocate(cpu, fld, src)
     end function test_precision_one_thread
+
+
+
+    subroutine setup()
+        call hicl_init(ALL)
+        call hicl_load("data/foo.cl", "-cl-kernel-arg-info -D STENCIL=4")
+        call hicl_load("data/bar.cl", "-cl-kernel-arg-info -D STENCIL=4")
+        call hicl_dev_find(DEFAULT, d)
+    end subroutine setup
+
+    subroutine teardown()
+        call hicl_release()
+    end subroutine teardown
+
+    subroutine knl_test()
+        call run(setup, teardown, info, &
+              "knl_test.info")
+        call run(setup, teardown, build, &
+              "knl_test.build")
+        call run(setup, teardown, set_wrk, &
+              "knl_test.set_wrk")
+        call run(setup, teardown, set_arg, &
+              "knl_test.set_arg")
+        call run(setup, teardown, sync_run, &
+            "knl_test.run")
+        call run(setup, teardown, async_run, &
+            "knl_test.async_run")
+        call run(setup, teardown, sync_run_hzc, &
+            "knl_test.sync_run_hzc")
+        !call run(setup, teardown, sync_run_dzc, &
+        !    "knl_test.sync_run_dzc")
+        call run(setup, teardown, sync_run_pinned, &
+            "knl_test.sync_run_pinned")
+        call run(setup, teardown, test_precision_one_thread, &
+            "knl_test.test_precision_one_thread")
+    end subroutine knl_test
 
 end module m_knl_test

@@ -29,31 +29,25 @@
 ## NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ## SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ##
-## @file src/CMakeLists.txt
+## @file examples/src/sgemm/CMakeLists.txt
 ## @author Issam SAID
-## @brief CMake build script for the hiCL C library.
+## @brief CMake build script for the hiCL C/C++ sgemm.
 ##
-project (hiCL C)
+project (sgemm C)
 cmake_minimum_required (VERSION 2.8)
 
-option(hicl_verbose "Build hiCL with the verbose mode activated." ON)
-option(hicl_use_tty "Build hiCL with logging into  the terminal." ON)
+find_package(OpenMP)
+if (OPENMP_FOUND)
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+else (OPENMP_FOUND)
+	set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wunknown-pragmas")
+endif (OPENMP_FOUND)
 
-set (CMAKE_C_FLAGS_DEBUG 
-	"${CMAKE_C_FLAGS_DEBUG} -D__API_DEBUG -Wall -O0 -g")
-set (CMAKE_C_FLAGS_RELEASE 
-	"${CMAKE_C_FLAGS_RELEASE} -fmerge-constants -O3")
-
-if (hicl_verbose)
-	set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__API_VERBOSE")
-endif (hicl_verbose)
-
-if (hicl_use_tty)
-	set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__API_LOG_STD")
-endif (hicl_use_tty)
-
-## Build the hiCL C static library.
-include_directories(${CMAKE_SOURCE_DIR}/include)
 file(GLOB C_SRCS "*.c")
-add_library(hiCL STATIC ${C_SRCS})
-install(TARGETS hiCL ARCHIVE DESTINATION lib)
+
+add_executable(sgemm ${C_SRCS})
+target_link_libraries (sgemm LINK_PUBLIC hiCL)
+target_link_libraries (sgemm LINK_PUBLIC OpenCL)
+install(TARGETS sgemm DESTINATION examples/bin)
+install(FILES sgemm.cl DESTINATION examples/bin)
+add_dependencies(sgemm hiCL)

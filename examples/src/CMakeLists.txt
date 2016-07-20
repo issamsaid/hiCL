@@ -29,31 +29,27 @@
 ## NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ## SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ##
-## @file src/CMakeLists.txt
+## @file examples/src/CMakeLists.txt
 ## @author Issam SAID
-## @brief CMake build script for the hiCL C library.
+## @brief CMake build script for the hiCL C/C++ examples.
 ##
-project (hiCL C)
+project (hiCL-C-examples C)
 cmake_minimum_required (VERSION 2.8)
 
-option(hicl_verbose "Build hiCL with the verbose mode activated." ON)
-option(hicl_use_tty "Build hiCL with logging into  the terminal." ON)
-
 set (CMAKE_C_FLAGS_DEBUG 
-	"${CMAKE_C_FLAGS_DEBUG} -D__API_DEBUG -Wall -O0 -g")
+	"${CMAKE_C_FLAGS_DEBUG} -D__API_DEBUG -Wall")
+set (CMAKE_C_FLAGS_DEBUG   
+	"${CMAKE_C_FLAGS_DEBUG} -D__API_VERBOSE -O0 -g")
 set (CMAKE_C_FLAGS_RELEASE 
 	"${CMAKE_C_FLAGS_RELEASE} -fmerge-constants -O3")
 
-if (hicl_verbose)
-	set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__API_VERBOSE")
-endif (hicl_verbose)
-
-if (hicl_use_tty)
-	set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__API_LOG_STD")
-endif (hicl_use_tty)
-
-## Build the hiCL C static library.
+## Include the hiCL headers
 include_directories(${CMAKE_SOURCE_DIR}/include)
-file(GLOB C_SRCS "*.c")
-add_library(hiCL STATIC ${C_SRCS})
-install(TARGETS hiCL ARCHIVE DESTINATION lib)
+
+file(GLOB sub_dirs RELATIVE ${CMAKE_SOURCE_DIR}/examples/src *)
+
+foreach(dir ${sub_dirs})
+	if(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/examples/src/${dir})
+		add_subdirectory(${dir})
+	endif()
+endforeach()

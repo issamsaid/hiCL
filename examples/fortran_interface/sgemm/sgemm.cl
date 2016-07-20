@@ -1,5 +1,3 @@
-#ifndef __API_CONFIG_LOG_H_
-#define __API_CONFIG_LOG_H_
 ///
 /// @copyright Copyright (c) 2013-2016, Univrsité Pierre et Marie Curie
 /// All rights reserved.
@@ -31,50 +29,22 @@
 /// NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ///
-/// @file config/log.h
+/// @file sgemm/sgemm.cl
 /// @author Issam SAID
-/// @brief Configuration file for logging in hiCL.
+/// @brief The OpenCL kernel used for the matrix multiplication based on hiCL.
 ///
+kernel void sgemm(global float *a,
+                  global float *b,
+                  global float *c,
+                  unsigned int common_dim) {		
+    uint k, xgid = get_global_id(0);
+    uint    ygid = get_global_id(1);
+    uint  xgsize = get_global_size(0);
 
-///
-/// @brief Use tty as the output for logging, otherwise use files.
-///
-#ifdef __API_LOG_STD
-#endif // __API_LOG_STD
+    float c_ = c[xgid + ygid*xgsize];
+   
+    for(k = 0; k < common_dim; ++k)
+        c_ += a[k + ygid*common_dim]*b[xgid + k*xgsize];
 
-///
-/// @brief Set the verbose mode of hiCL up.
-///
-#ifdef __API_VERBOSE
-#endif // __API_VERBOSE          
-
-///
-/// @brief Set the debug mode of hiCL up.
-///
-#ifdef __API_DEBUG
-#ifndef __API_VERBOSE
-#define __API_VERBOSE
-#endif // __API_VERBOSE         
-#ifndef __API_LOG_STD
-#define __API_LOG_STD
-#endif // __API_LOG_STD 
-#endif // __API_DEBUG           
-
-#ifdef __API_LOG_STD
-///
-/// @brief Terminal colors (only available if out/err to tty).
-///
-#define C_GREEN  "\x1B[32m"
-#define C_PURPLE "\x1B[35m"
-#define C_YELLOW "\x1B[33m"
-#define C_RED    "\x1B[31m"
-#define C_END    "\x1B[0m"
-#else
-#define C_GREEN  ""
-#define C_PURPLE ""
-#define C_YELLOW ""
-#define C_RED    ""
-#define C_END    ""
-#endif  // __API_LOG_STD
-
-#endif  // __API_CONFIG_LOG_H_
+    c[xgid + ygid*xgsize] = c_;
+}

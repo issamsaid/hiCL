@@ -107,39 +107,6 @@ inline void hicl_fknl_set_ofs(hiknl_t k, size_t *ofs) {
 	     k->ofs[0], k->ofs[1], k->ofs[2]);
 }
 
-//
-// WARNING: 
-//   - run  : asynchronous run
-//   - srun : synchronous run
-//   - trun : timed srun
-//
-inline void hicl_fknl_run(hiknl_t k, hidev_t d, ...) {
-    HICL_DEBUG("call hicl_fknl_set_and_run");
-    va_list list;
-    va_start(list, d);
-    __api_knl_set_args_valist(k, list);
-    va_end(list);
-    hicl_fknl_run(k, d);
-}
-
-inline void hicl_fknl_sync_run(hiknl_t k, hidev_t d, ...) {
-    HICL_DEBUG("call hicl_fknl_set_and_srun");
-    va_list list;
-    va_start(list, d);
-    __api_knl_set_args_valist(k, list);
-    va_end(list);
-    hicl_fknl_srun(k, d);
-}
-
-inline double hicl_fknl_timed_run(hiknl_t k, hidev_t d, ...) {
-    HICL_DEBUG("call hicl_fknl_set_and_trun");
-    va_list list;
-    va_start(list, d);
-    __api_knl_set_args_valist(k, list);
-    va_end(list);
-    return hicl_fknl_trun(k, d);
-}
-
 inline void hicl_fknl_exec(hiknl_t k, hidev_t d) {
     HICL_DEBUG("run (async) kernel : %s", __api_knl_name(k->id));
     walk_value_rbt_int_himem_t(&k->mems, __api_mem_sync);
@@ -154,11 +121,38 @@ inline void hicl_fknl_sync_exec(hiknl_t k, hidev_t d) {
     HICL_DEBUG("");
 }
 
-inline double hicl_fknl_timed_run(hiknl_t k, hidev_t d) {
+inline double hicl_fknl_timed_exec(hiknl_t k, hidev_t d) {
     HICL_DEBUG("run (timed) kernel : %s", __api_knl_name(k->id));
     walk_value_rbt_int_himem_t(&k->mems, __api_mem_sync);
     hicl_timer_tick();
     __api_knl_sync_run(k->id, d->queue, k->wrk, k->gws, k->lws, k->ofs);
     HICL_DEBUG("");
     return hicl_timer_read();
+}
+
+inline void hicl_fknl_run(hiknl_t k, hidev_t d, ...) {
+    HICL_DEBUG("call hicl_fknl_set_and_run");
+    va_list list;
+    va_start(list, d);
+    __api_knl_set_args_valist(k, list);
+    va_end(list);
+    hicl_fknl_exec(k, d);
+}
+
+inline void hicl_fknl_sync_run(hiknl_t k, hidev_t d, ...) {
+    HICL_DEBUG("call hicl_fknl_sync_run");
+    va_list list;
+    va_start(list, d);
+    __api_knl_set_args_valist(k, list);
+    va_end(list);
+    hicl_fknl_sync_exec(k, d);
+}
+
+inline double hicl_fknl_timed_run(hiknl_t k, hidev_t d, ...) {
+    HICL_DEBUG("call hicl_fknl_set_and_trun");
+    va_list list;
+    va_start(list, d);
+    __api_knl_set_args_valist(k, list);
+    va_end(list);
+    return hicl_fknl_timed_exec(k, d);
 }

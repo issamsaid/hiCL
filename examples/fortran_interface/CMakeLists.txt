@@ -29,31 +29,27 @@
 ## NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ## SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ##
-## @file src/CMakeLists.txt
+## @file examples/fortran_interface/CMakeLists.txt
 ## @author Issam SAID
-## @brief CMake build script for the hiCL C library.
+## @brief CMake build script for the hiCL Fortran examples.
 ##
-project (hiCL C)
+project (hiCL-Fortran-examples Fortran)
 cmake_minimum_required (VERSION 2.8)
 
-option(hicl_verbose "Build hiCL with the verbose mode activated." ON)
-option(hicl_use_tty "Build hiCL with logging into  the terminal." ON)
+set (CMAKE_Fortran_FLAGS_DEBUG   
+	"${CMAKE_Fortran_FLAGS_DEBUG} -Wall -O0 -g")
+set (CMAKE_Fortran_FLAGS_RELEASE 
+	"${CMAKE_Fortran_FLAGS_RELEASE} -funroll-all-loops -fno-f2c -O3")
+set (CMAKE_Fortran_FLAGS 
+	"${CMAKE_Fortran_FLAGS} -fbackslash")
 
-set (CMAKE_C_FLAGS_DEBUG 
-	"${CMAKE_C_FLAGS_DEBUG} -D__API_DEBUG -Wall -O0 -g")
-set (CMAKE_C_FLAGS_RELEASE 
-	"${CMAKE_C_FLAGS_RELEASE} -fmerge-constants -O3")
+## Include the hiCL Fortran modules
+include_directories(${CMAKE_SOURCE_DIR}/modules)
 
-if (hicl_verbose)
-	set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__API_VERBOSE")
-endif (hicl_verbose)
+file(GLOB sub_dirs RELATIVE ${CMAKE_SOURCE_DIR}/examples/fortran_interface *)
 
-if (hicl_use_tty)
-	set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__API_LOG_STD")
-endif (hicl_use_tty)
-
-## Build the hiCL C static library.
-include_directories(${CMAKE_SOURCE_DIR}/include)
-file(GLOB C_SRCS "*.c")
-add_library(hiCL STATIC ${C_SRCS})
-install(TARGETS hiCL ARCHIVE DESTINATION lib)
+foreach(dir ${sub_dirs})
+	if(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/examples/fortran_interface/${dir})
+		add_subdirectory(${dir})
+	endif()
+endforeach()

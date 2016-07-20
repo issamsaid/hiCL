@@ -29,31 +29,15 @@
 ## NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ## SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ##
-## @file src/CMakeLists.txt
+## @file examples/CMakeLists.txt
 ## @author Issam SAID
-## @brief CMake build script for the hiCL C library.
+## @brief CMake build script for the hiCL unit testing.
 ##
-project (hiCL C)
+project (hiCL-examples)
 cmake_minimum_required (VERSION 2.8)
 
-option(hicl_verbose "Build hiCL with the verbose mode activated." ON)
-option(hicl_use_tty "Build hiCL with logging into  the terminal." ON)
+## Build the hiCL C/C++ examples.
+add_subdirectory(src)
 
-set (CMAKE_C_FLAGS_DEBUG 
-	"${CMAKE_C_FLAGS_DEBUG} -D__API_DEBUG -Wall -O0 -g")
-set (CMAKE_C_FLAGS_RELEASE 
-	"${CMAKE_C_FLAGS_RELEASE} -fmerge-constants -O3")
-
-if (hicl_verbose)
-	set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__API_VERBOSE")
-endif (hicl_verbose)
-
-if (hicl_use_tty)
-	set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__API_LOG_STD")
-endif (hicl_use_tty)
-
-## Build the hiCL C static library.
-include_directories(${CMAKE_SOURCE_DIR}/include)
-file(GLOB C_SRCS "*.c")
-add_library(hiCL STATIC ${C_SRCS})
-install(TARGETS hiCL ARCHIVE DESTINATION lib)
+## Build the hiCL fortran examples.
+add_subdirectory(fortran_interface)

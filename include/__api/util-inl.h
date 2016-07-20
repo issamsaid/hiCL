@@ -200,8 +200,8 @@ PRIVATE void
 __api_read_from_file(char* buffer, size_t size, const char* filename) {
     FILE* fd = NULL;
     HICL_EXIT_IF((fd = fopen(filename, "rb"))==NULL,
-               "file '%s' not found", filename);
-    if (fread(buffer, 1, size, fd) != size) {        
+                "file '%s' not found", filename);
+    if (fread(buffer, 1, size-1, fd) != (size-1)) {        
         fclose(fd);
         HICL_EXIT("couldn't read file '%s'", filename);
     }
