@@ -22,8 +22,11 @@ on your machine.
 
 ## Branches and cloning
 The project contains two git main branches: **master** and **develop**. 
-The **master** branch only contains the major releases and stable versions, and 
+The **master** branch only contains the major releases, and 
 is intended to use the library as is.
+We recommend to clone from this branch if you would like to use 
+the latest stable version. 
+The current version of the software is 1.0.
 The releases are tagged on the master branch and each version has a major
 number and a minor number which are used as the tagging string (.e.g. the 
 first release is tagged 1.0 on the master branch).
@@ -40,15 +43,12 @@ the library. To get started, you can clone this branch as follows:
 ```
 git clone -b develop https://github.com/issamsaid/hiCL.git
 ```
-mkdir build
-cd build
-cmake -G"Unix Makefiles" ../
-```
+The **develop** branch has a unit testing directory for both the C/C++ and the
+Fortran interfaces of the library.
 
-To get started, you can clone the hiCL repository and build it using cmake like
-follows:
+## Setting up and compiling
+The library can be compiled using cmake as follows:
 ```
-git clone https://github.com/issamsaid/hiCL.git
 cd hiCL
 mkdir build
 cd build
@@ -62,17 +62,7 @@ can help setting it manually as follows:
 export OPENCL_INCLUDE_DIR="YOUR_OPENCL_HEADERS_PATH"
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"YOUR_OPENCL_LIBRARY_PATH"
 ```
-The repository contains two git branches: **master** and **develop**. 
-The **master** branch
-only covers the tagged releases of the library, we recommend to clone from this 
-branch if you would like to use the latest stable version. 
-The current version of the software is 1.2 (which is inline with the highest 
-version of OpenCL that we support).
-If you want to work with the latest build, you are invited to fetch from the 
-**develop** branch, which also includes a set of unit tests and performance 
-tests (on top of the [googletest](https://github.com/google/googletest/) 
-Framework) to validate the behavior of the library.<br/>
-In order to build the core C/C++ library of hiCL you may run:
+
 ```
 make hiCL
 ```
@@ -105,6 +95,12 @@ make all install
 # Examples
 
 # Testing
+If you want to work with the latest build, you are invited to fetch from the 
+**develop** branch, which also includes a set of unit tests and performance 
+tests (on top of the [googletest](https://github.com/google/googletest/) 
+Framework) to validate the behavior of the library.<br/>
+In order to build the core C/C++ library of hiCL you may run:
+
 A testing framework is of no good if itself is not thoroughly tested. 
 Tests should be written for any new code, and changes should be verified to not 
 break existing tests before they are submitted for review. 
