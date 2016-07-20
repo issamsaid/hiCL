@@ -62,7 +62,7 @@ can help setting it manually as follows:
 export OPENCL_INCLUDE_DIR="YOUR_OPENCL_HEADERS_PATH"
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"YOUR_OPENCL_LIBRARY_PATH"
 ```
-
+To build the library you can run:
 ```
 make hiCL
 ```
@@ -78,22 +78,30 @@ This target will build another static library libhiCL_fortran.a from the Fortran
 source files present in the 
 [fortran_interface](https://github.com/issamsaid/hiCL/tree/master/fortran_interface)
 directory.<br/>
-In order to use the hiCL C/C++ link your code against libhiCL.a (by adding 
-*-lhiCL -lOpenCL* to your linker options), however if your code is based on Fortran the 
+In order to use the hiCL C/C++ link your code against libhiCL.a additionally to 
+the OpenCL library (by adding 
+*-lhiCL -lOpenCL* to your linker options), 
+however if your code is based on Fortran the 
 latter should linked against both the C/C++ library and the Fortran interface (
 with the help of the options *-lhiCL_fortran -lhiCL -lOpenCL*).<br/>
-
+In order to install the build on the lib directory you can run:
 ```
 make install
 ```
-
-
+You can also classically run the following in order to build both interfaces
+all at once (additionally to unit tests if the **develop** branch is used): 
 ```
 make all install
 ```
+The documentation of the library can be generated with the help of doxygen
+by simply running:
+```
+make doc
+```
 
 # Examples
-
+The library come with an [examples](https://github.com/issamsaid/hiCL/tree/master/examples)
+directory which contains some C/C++ and Fortran samples.  
 # Testing
 If you want to work with the latest build, you are invited to fetch from the 
 **develop** branch, which also includes a set of unit tests and performance 
