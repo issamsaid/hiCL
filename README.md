@@ -119,6 +119,16 @@ make install
 ```
 
 # How to contribute
+We believe that hiCL can be used by scientific programmers very efficiently.
+We tend to extend the functionalities of the library. For this to do
+we need your feedbacks and proposals of features and use cases.
+If you are willing to contribute please visit the contributors guide
+[CONTRIBUTING](https://github.com/issamsaid/hiCL/tree/master/CONTRIBUTING.md),
+or feel free to contact us.
+
+# License
+hiCL is a free software licensed under BSD. The project was 
+initially funded by [Total](www.total.com).
 
 # Contact
 For bug report, feature requests or if you willing to contribute please 
