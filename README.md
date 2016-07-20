@@ -34,7 +34,7 @@ Cloning the master branch and checking out the first release can
 be done as follows:
 ```
 git clone -b master https://github.com/issamsaid/hiCL.git
-git checkout 1.0
+git checkout tags/1.0
 ```
 
 On the other hand, the **develop** branch contains the latest builds and is
