@@ -13,7 +13,7 @@ accelerators with different memory models thanks to a set of bitwise
 flags.
 A [paper](http://dl.acm.org/citation.cfm?id=2909453) about hiCL was published
 at the International OpenCL Workshop (IWOCL 2016) in Vienna, Austria on late
-April' 16.
+April 2016.
 
 # Getting started
 The following section is a step by step guide that will take you from fetching
@@ -27,7 +27,6 @@ is intended to use the library as is.
 The releases are tagged on the master branch and each version has a major
 number and a minor number which are used as the tagging string (.e.g. the 
 first release is tagged 1.0 on the master branch).
-
 Cloning the master branch and checking out the first release can
 be done as follows:
 ```
