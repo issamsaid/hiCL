@@ -50,3 +50,10 @@ bin/
 # Doc files
 doc/html
 doc/doxygen.stamp
+
+# Fortran modules
+modules
+
+# Gtest files
+include/gmock
+include/gtest

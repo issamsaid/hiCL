@@ -14,9 +14,29 @@ April' 16.
 
 # Getting started
 The following section is a step by step guide that will take you from fetching
-the source code to running your hiCL first examples.
+the source code from the repository branches to running your hiCL first examples
+on your machine.
 
-## Branches and cloning 
+## Branches and cloning
+The project contains two git main branches: **master** and **develop**. 
+The **master** branch only contains the major releases and stable versions.
+The releases are tagged on the master branch and each version has a major
+number and a minor number which are used as the tagging string (.e.g. the 
+first release is tagged 1.0 on the master branch).
+
+Cloning the master branch and checking out the first release can
+be done as follows:
+```
+git -b master clone https://github.com/issamsaid/hiCL.git
+git checkout 1.0
+```
+
+```
+mkdir build
+cd build
+cmake -G"Unix Makefiles" ../
+```
+
 To get started, you can clone the hiCL repository and build it using cmake like
 follows:
 ```
