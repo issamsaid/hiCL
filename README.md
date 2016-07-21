@@ -2,15 +2,14 @@
 hiCL is a C/C++ and Fortran wrapper that makes it easier to use OpenCL
 for scientific computing. Writing an OpenCL code evolves including hundreds 
 of lines of host code. In scientific computing, host code is usually cumbersome
-and very verbose in such a matter scientists would spent more time putting 
+and very verbose in such a manner scientists would spend more time putting 
 together the host code rather than focusing on accelerating their workloads
-on GPUs or other OpenCL capable hardware.<br/>
+on GPUs or on any other OpenCL capable hardware.<br/>
 hiCL extensively reduces the need to focus on the host code and offers a set
 of functionalities in C/C++ and Fortran to help efficiently exploit hardware
 accelerators for scientific computing.<br/>
 hiCL offers a transparent way to manage memory objects on different hardware 
-accelerators with different memory models thanks to a set of bitwise 
-flags.
+accelerators with different memory models thanks to a set of bitwise flags.
 A [paper](http://dl.acm.org/citation.cfm?id=2909453) about hiCL was published
 at the International OpenCL Workshop (IWOCL 2016) in Vienna, Austria on late
 April 2016.
@@ -78,12 +77,6 @@ This target will build another static library libhiCL_fortran.a from the Fortran
 source files present in the 
 [fortran_interface](https://github.com/issamsaid/hiCL/tree/master/fortran_interface)
 directory.<br/>
-In order to use the hiCL C/C++ link your code against libhiCL.a additionally to 
-the OpenCL library (by adding 
-*-lhiCL -lOpenCL* to your linker options), 
-however if your code is based on Fortran the 
-latter should linked against both the C/C++ library and the Fortran interface (
-with the help of the options *-lhiCL_fortran -lhiCL -lOpenCL*).<br/>
 In order to install the build on the lib directory you can run:
 ```
 make install
@@ -93,6 +86,8 @@ all at once (additionally to unit tests if the **develop** branch is used):
 ```
 make all install
 ```
+
+## Generating the documentation
 The documentation of the library can be generated with the help of doxygen
 by simply running:
 ```
@@ -100,6 +95,14 @@ make doc
 ```
 It is now up to you to read the documentation and check the examples in order 
 to use hiCL to write your own OpenCL codes for scientific purposes.
+
+## Using the library
+In order to use the hiCL C/C++ link your code against libhiCL.a additionally to 
+the OpenCL library (by adding 
+*-lhiCL -lOpenCL* to your linker options), 
+however if your code is based on Fortran the 
+latter should linked against both the C/C++ library and the Fortran interface (
+with the help of the options *-lhiCL_fortran -lhiCL -lOpenCL*).<br/>
 
 # Examples
 The library come with an [examples](https://github.com/issamsaid/hiCL/tree/master/examples)
@@ -129,9 +132,9 @@ If you are willing to contribute please visit the contributors guide
 or feel free to contact us.
 
 # License
-hiCL is a free software licensed under BSD and was put together in a computer
-science laboratory at the [UPMC](www.upmc.fr). The project was 
-initially funded by [Total](www.total.com) which is acknoledged.
+hiCL is a free software licensed under [BSD](https://github.com/issamsaid/hiCL/tree/master/LICENSE.md) 
+and was put together in a computer science laboratory at the [UPMC](www.upmc.fr). 
+The project was initially funded by [Total](www.total.com) which is acknoledged.
 
 # Contact
 For bug report, feature requests or if you willing to contribute please 
