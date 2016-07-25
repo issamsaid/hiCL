@@ -52,6 +52,6 @@ sed -i '/add_subdirectory(test)/d' CMakeLists.txt
 sed -i '/Build the hiCL unit testing suit/d' CMakeLists.tx
 git commit -am "commit the hiCL $1 release"
 git tag --force -a $1 -m "tagging the hiCL $1 release"
-git push origin --force --tags
 git push origin master
+git push origin --force --tags
 git checkout develop
