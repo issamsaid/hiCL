@@ -1,0 +1,13 @@
+language: C
+compiler:
+	- gcc
+before_install:
+	- sudo apt-get install cmake
+script:
+	- mkdir build
+	- cd build
+	- cmake -G"Unix Makefiles" ../
+	- make 
+	- make install
+
+
