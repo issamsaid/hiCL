@@ -49,7 +49,7 @@ git checkout master
 git checkout develop cmake doc examples fortran_interface include \
     src CMakeLists.txt CONTRIBUTING.md LICENSE.md README.md .gitignore
 sed -i '/add_subdirectory(test)/d' CMakeLists.txt
-sed -i '/Build the hiCL unit text ng suit/d' CMakeLists.tx
+sed -i '/Build the hiCL unit testing suit/d' CMakeLists.tx
 git commit -am "commit the hiCL $1 release"
 git tag --force -a $1 -m "tagging the hiCL $1 release"
 git push origin --force --tags
