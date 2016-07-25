@@ -50,4 +50,5 @@ git checkout develop cmake doc examples fortran_interface include src CMakeLists
 git commit -am "commit the hiCL $1 release"
 git tag --force -a $1 -m "tagging the hiCL $1 release"
 git push origin --tags
+git push origin master
 git checkout develop
