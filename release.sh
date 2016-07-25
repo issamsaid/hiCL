@@ -47,3 +47,4 @@ if [ $# -lt 2 ] ; then
 fi
 git checkout master
 git checkout develop cmake doc examples fortran_interface include src CMakeLists.txt CONTRIBUTING.md LICENSE.md README.md .gitignore
+git tag -a $1 -m "commit the hiCL $1 release"
