@@ -46,7 +46,7 @@ The **develop** branch has a unit testing directory for both the C/C++ and the
 Fortran interfaces of the library.
 
 ## Setting up and compiling
-The library can be compiled using cmake as follows:
+The library can be compiled using [cmake](https://cmake.org/) as follows:
 ```
 cd hiCL
 mkdir build
@@ -134,7 +134,7 @@ or feel free to contact us.
 # License
 hiCL is a free software licensed under [BSD](https://github.com/issamsaid/hiCL/tree/master/LICENSE.md) 
 and was put together in a computer science laboratory at the [UPMC](www.upmc.fr). 
-The project was initially funded by [Total](www.total.com) which is acknoledged.
+The project was initially funded by [Total](www.total.com) which is acknowledged.
 
 # Contact
 For bug report, feature requests or if you willing to contribute please 
