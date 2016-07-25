@@ -68,7 +68,6 @@ add_subdirectory(src)
 add_subdirectory(fortran_interface)
 
 ## Build the hiCL unit testing suit (develop branch only).
-add_subdirectory(test)
 
 ## Build the hiCL documentation.
 add_subdirectory(doc EXCLUDE_FROM_ALL)

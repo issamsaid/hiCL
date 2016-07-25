@@ -46,8 +46,7 @@ if [ $# -lt 1 ] ; then
 	exit
 fi
 git checkout master
-git checkout develop cmake doc examples fortran_interface include \
-    src CMakeLists.txt CONTRIBUTING.md LICENSE.md README.md .gitignore
+git checkout develop cmake doc examples fortran_interface include src CMakeLists.txt CONTRIBUTING.md LICENSE.md README.md .gitignore
 sed -i '/add_subdirectory(test)/d' CMakeLists.txt
 sed -i '/Build the hiCL unit testing suit/d' CMakeLists.tx
 git commit -am "commit the hiCL $1 release"
