@@ -34,7 +34,7 @@ be done as follows:
 ```
 git clone -b master https://github.com/issamsaid/hiCL.git
 ```
-If you wish to clone a specific release you may add:
+If you wish to clone a specific release (the latest is 1.0) you may add:
 ```
 cd hiCL
 git checkout tags/1.0
