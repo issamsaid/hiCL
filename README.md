@@ -29,13 +29,16 @@ The current version of the software is 1.0.
 The releases are tagged on the master branch and each version has a major
 number and a minor number which are used as the tagging string (.e.g. the 
 first release is tagged 1.0 on the master branch).
-Cloning the master branch and checking out the first release can
+Cloning the master branch and checking out the latest release can
 be done as follows:
 ```
 git clone -b master https://github.com/issamsaid/hiCL.git
-git checkout tags/1.0
 ```
-
+If you wish to clone a specific release you may add:
+```
+cd hiCL
+git checkout tags/1.0
+``` 
 On the other hand, the **develop** branch contains the latest builds and is
 intended to be used by the developers who are willing to contribute or improve 
 the library. To get started, you can clone this branch as follows:
