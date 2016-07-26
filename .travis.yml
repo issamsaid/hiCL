@@ -6,11 +6,11 @@ compiler:
 before_install:
   - sudo apt-get update 
   - sudo apt-get install opencl-headers
-  - sudo apt-get install cmake
+  - sudo apt-get install build-essential cmake gfortran 
   - if [ $TRAVIS_OS_NAME = "linux" ]; then
       bash .travis/amd_sdk.sh;
       tar -xjf AMD-SDK.tar.bz2;
-      AMDAPPSDK=${HOME}/AMDAPPSDK;
+      export AMDAPPSDK=${HOME}/AMDAPPSDK;
       export OPENCL_VENDOR_PATH=${AMDAPPSDK}/etc/OpenCL/vendors;
       mkdir -p ${OPENCL_VENDOR_PATH};
       sh AMD-APP-SDK*.sh --tar -xf -C ${AMDAPPSDK};
@@ -18,8 +18,6 @@ before_install:
       export LD_LIBRARY_PATH=${AMDAPPSDK}/lib/x86_64:${LD_LIBRARY_PATH};
       chmod +x ${AMDAPPSDK}/bin/x86_64/clinfo;
       ${AMDAPPSDK}/bin/x86_64/clinfo;
-      echo ${AMDAPPSDK};
-      export AMDAPPSDK=${AMDAPPSDK};
     fi;
 script:
   - mkdir build
