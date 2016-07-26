@@ -19,7 +19,7 @@ before_install:
       chmod +x ${AMDAPPSDK}/bin/x86_64/clinfo;
       ${AMDAPPSDK}/bin/x86_64/clinfo;
       echo ${AMDAPPSDK}
-      export AMDAPPSDK
+      export AMDAPPSDK=${AMDAPPSDK}
     fi;
 script:
   - mkdir build
