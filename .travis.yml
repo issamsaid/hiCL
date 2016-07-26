@@ -4,7 +4,8 @@ dist: trusty
 compiler:
   - gcc
 before_install:
-  - lspci
+  - lspci -vvnn | grep VGA
+  - fglrxinfo
   - sudo apt-get update 
   - sudo apt-get install fglrx opencl-headers
   - sudo apt-get install cmake
