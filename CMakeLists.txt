@@ -41,8 +41,9 @@ set (CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}")
 set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 if ( NOT CMAKE_BUILD_TYPE )
-   set (CMAKE_BUILD_TYPE Release ... FORCE)
+   set (CMAKE_BUILD_TYPE Release)
 endif ()
+message(STATUS "... CMAKE_BUILD_TYPE : ${CMAKE_BUILD_TYPE}")
 
 ## Check whether OpenCL is detected:
 ## - The OpenCL library quered in usual directories
@@ -51,15 +52,25 @@ endif ()
 ##   OPENCL_LIBRARY_DIR: contains the OpenCL library
 find_package (OpenCL)
 if (OPENCL_FOUND)
-	message(STATUS "... OpenCL found: ${OPENCL_FOUND}")
-	message(STATUS "... OpenCL includes: ${OPENCL_INCLUDE_DIRS}")
-	message(STATUS "... OpenCL CXX includes: ${OPENCL_HAS_CPP_BINDINGS}")
-	message(STATUS "... OpenCL libraries: ${OPENCL_LIBRARIES}")
+	message(STATUS "... OpenCL headers paths : ${OPENCL_INCLUDE_DIRS}")
 	include_directories(${OPENCL_INCLUDE_DIRS})
 else (OPENCL_FOUND)
-	message(FATAL_ERROR "... Unable to find the OpenCL include dirs:\n"
-			            "... Please set OPENCL_INCLUDE_DIRS env variable")
+	message(FATAL_ERROR 
+			"... Unable to find your OpenCL implementation headers:\n"
+			"... Set the OPENCL_INCLUDE_DIRS variable to locate the headers.\n"
+			)
 endif (OPENCL_FOUND)
+	
+if (${OPENCL_LIBRARIES} EQUAL 'OPENCL_LIBRARIES-NOTFOUND')
+	message(FATAL_ERROR 
+			"... Unable to find your OpenCL implementation library:\n"
+			"... Set the OPENCL_LIB_DIRS variable to locate the library.\n"
+			"... You may also add the library path to the LD_LIBRARY_PATH env."
+			)
+else ()
+	message(STATUS "... OpenCL library paths : ${OPENCL_LIBRARY_DIRS}")
+	message(STATUS "... OpenCL libraries     : ${OPENCL_LIBRARIES}")
+endif ()
 
 ## Build the hiCL C/C++ library.
 add_subdirectory(src)
