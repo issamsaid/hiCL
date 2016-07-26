@@ -135,7 +135,15 @@ cd test
 ```
 ## Continuous integration
 We use [Travis CI](https://travis-ci.org/issamsaid/hiCL) for the continuous 
-integration of the <b>hiCL</b>
+integration of the <b>hiCL</b> library. The image on the top of the page is a
+link to the latest build of each branch.
+A build is launched after each pull request with respect to the Travis CI 
+configuration file (.travis.yml).
+
+## Examples
+The library come with an 
+[examples](https://github.com/issamsaid/hiCL/tree/master/examples)
+directory which contains some C/C++ and Fortran samples.  
 
 # How to contribute
 We believe that <b>hiCL</b> can be used by scientific programmers very 
@@ -144,11 +152,6 @@ do we need your feedbacks and proposals of features and use cases.
 If you are willing to contribute please visit the contributors guide
 [CONTRIBUTING](https://github.com/issamsaid/hiCL/tree/master/CONTRIBUTING.md),
 or feel free to contact us.
-
-## Examples
-The library come with an 
-[examples](https://github.com/issamsaid/hiCL/tree/master/examples)
-directory which contains some C/C++ and Fortran samples.  
 
 # License
 <b>hiCL</b> is a free software licensed under 
