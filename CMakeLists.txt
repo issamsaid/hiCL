@@ -67,6 +67,7 @@ if (${OPENCL_LIBRARIES} EQUAL 'OPENCL_LIBRARIES-NOTFOUND')
 			"... You may also add the library path to the LD_LIBRARY_PATH env."
 			)
 else ()
+	message(STATUS "... OpenCL library paths : ${OPENCL_LIBRARY_DIRS}")
 	message(STATUS "... OpenCL libraries     : ${OPENCL_LIBRARIES}")
 endif ()
 

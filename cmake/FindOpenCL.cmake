@@ -110,6 +110,10 @@ else ()
       /opt/cuda/lib
   )
 endif ()
+if (NOT OPENCL_LIBRARY_DIRS)
+  get_filename_component(OPENCL_LIBRARY_DIRS ${OPENCL_LIBRARIES} DIRECTORY)
+endif ()
+set(CMAKE_INSTALL_RPATH ${OPENCL_LIBRARY_DIRS})
 mark_as_advanced(OPENCL_LIBRARIES)
 
 include(FindPackageHandleStandardArgs)
