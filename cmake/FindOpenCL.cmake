@@ -52,7 +52,7 @@
 ## the OpenCL library. Note that the OpenCL library path can be manually added 
 ## to the variable LD_LIBRARY_PATH.
 ##     
-if (not OPENCL_INCLUDE_DIRS)
+if (NOT OPENCL_INCLUDE_DIRS)
   find_path(OPENCL_INCLUDE_DIRS
     NAMES OpenCL/cl.h CL/cl.h
     HINTS
@@ -81,7 +81,7 @@ find_library(OPENCL_LIBRARIES
       $ENV{AMDAPPSDK}/lib
       $ENV{ATISTREAMSDKROOT}/lib
       $ENV{CUDA_PATH}/lib
-      $ENV{CUDA_ROOT/lib
+      $ENV{CUDA_ROOT}/lib
   DOC "OpenCL dynamic libraries paths"
   PATH_SUFFIXES x86 Win32 x86_64 x64 x86_64/sdk
   PATHS
@@ -89,7 +89,6 @@ find_library(OPENCL_LIBRARIES
     /usr/local/cuda/lib
     /opt/cuda/lib
   )
-endif( )
 mark_as_advanced(OPENCL_LIBRARIES)
 
 include(FindPackageHandleStandardArgs)
