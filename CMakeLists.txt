@@ -41,8 +41,9 @@ set (CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}")
 set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 if ( NOT CMAKE_BUILD_TYPE )
-   set (CMAKE_BUILD_TYPE Release ... FORCE)
+   set (CMAKE_BUILD_TYPE Release)
 endif ()
+message(STATUS "... CMAKE_BUILD_TYPE : ${CMAKE_BUILD_TYPE}")
 
 ## Check whether OpenCL is detected:
 ## - The OpenCL library quered in usual directories
@@ -78,6 +79,7 @@ add_subdirectory(src)
 add_subdirectory(fortran_interface)
 
 ## Build the hiCL unit testing suit (develop branch only).
+add_subdirectory(test)
 
 ## Build the hiCL documentation.
 add_subdirectory(doc EXCLUDE_FROM_ALL)
