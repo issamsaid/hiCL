@@ -1,6 +1,4 @@
-# hiCL
-[![Build Status](https://travis-ci.org/issamsaid/hiCL.svg?branch=develop)](https://travis-ci.org/issamsaid/hiCL)
-
+# hiCL | [![Build Status](https://travis-ci.org/issamsaid/hiCL.svg?branch=develop)](https://travis-ci.org/issamsaid/hiCL)
 <b>hiCL</b> is a C/C++ and Fortran wrapper that makes it easier to use OpenCL
 for scientific computing. Writing an OpenCL code evolves including hundreds 
 of lines of host code. In scientific computing, host code is usually cumbersome
