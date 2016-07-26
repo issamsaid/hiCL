@@ -83,7 +83,7 @@ find_library(OPENCL_LIBRARIES
       $ENV{CUDA_PATH}/lib
       $ENV{CUDA_ROOT}/lib
   DOC "OpenCL dynamic libraries paths"
-  PATH_SUFFIXES x86 Win32 x86_64 x64 x86_64/sdk
+  PATH_SUFFIXES x86_64 x64 x86_64/sdk x86 Win32 
   PATHS
     /usr/lib
     /usr/local/cuda/lib

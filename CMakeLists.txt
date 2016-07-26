@@ -60,7 +60,7 @@ else (OPENCL_FOUND)
 			)
 endif (OPENCL_FOUND)
 	
-if (${OPENCL_LIBRARIES} EQUAL 'OPENCL-NOTFOUND')
+if (${OPENCL_LIBRARIES} EQUAL 'OPENCL_LIBRARIES-NOTFOUND')
 	message(FATAL_ERROR 
 			"... Unable to find your OpenCL implementation library:\n"
 			"... Set the OPENCL_LIB_DIRS variable to locate the library.\n"
