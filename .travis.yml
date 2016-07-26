@@ -28,3 +28,4 @@ script:
   - make install
   - cd ../test
   - ./bin/hiCL_test
+  - ./bin/hiCL_test_fortran
