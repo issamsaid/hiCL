@@ -52,16 +52,23 @@ endif ()
 find_package (OpenCL)
 if (OPENCL_FOUND)
 	message(STATUS "... OpenCL headers paths : ${OPENCL_INCLUDE_DIRS}")
-	message(STATUS "... OpenCL libraries     : ${OPENCL_LIBRARIES}")
 	include_directories(${OPENCL_INCLUDE_DIRS})
 else (OPENCL_FOUND)
 	message(FATAL_ERROR 
-			"... Unable to find your OpenCL implementation:\n"
+			"... Unable to find your OpenCL implementation headers:\n"
 			"... Set the OPENCL_INCLUDE_DIRS variable to locate the headers.\n"
+			)
+endif (OPENCL_FOUND)
+	
+if (${OPENCL_LIBRARIES} EQUAL 'OPENCL-NOTFOUND')
+	message(FATAL_ERROR 
+			"... Unable to find your OpenCL implementation library:\n"
 			"... Set the OPENCL_LIB_DIRS variable to locate the library.\n"
 			"... You may also add the library path to the LD_LIBRARY_PATH env."
 			)
-endif (OPENCL_FOUND)
+else ()
+	message(STATUS "... OpenCL libraries     : ${OPENCL_LIBRARIES}")
+endif ()
 
 ## Build the hiCL C/C++ library.
 add_subdirectory(src)
