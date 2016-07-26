@@ -46,9 +46,22 @@ if [ $# -lt 1 ] ; then
 	exit
 fi
 git checkout master
-git checkout develop cmake doc examples fortran_interface include src CMakeLists.txt CONTRIBUTING.md LICENSE.md README.md .gitignore
+git checkout develop cmake doc examples fortran_interface include src CMakeLists.txt CONTRIBUTING.md LICENSE.md README.md .gitignore .travis .travis.yml
+##
+## Adapt the CMakeLists.txt file to the master branch.
+##
 sed -i '/add_subdirectory(test)/d' CMakeLists.txt
 sed -i '/Build the hiCL unit testing suit/d' CMakeLists.txt
+##
+## Adapt the README.md for the master branch.
+##
+sed -i 's/branch=develop/branch=master/d' README.md
+##
+## Adapt .travis.yml for the master branch.
+##
+sed -i '/- cd ..\/test/d'                  .travis.yml 
+sed -i '/- cd .\/bin\/hiCL_test/d'         .travis.yml 
+sed -i '/- cd .\/bin\/hiCL_test_fortran/d' .travis.yml 
 git commit -am "commit the hiCL $1 release"
 git tag --force -a $1 -m "tagging the hiCL $1 release"
 git push origin master
