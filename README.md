@@ -44,9 +44,9 @@ cd hiCL
 git checkout tags/1.0
 ``` 
 The following table summarizes the different releases of the library:</br>
-Release number (tag) | Date       | Description                                    
----------------------|------------|-----------------------------------------------
- 1.0                 | 06/01/2016 | The initial release of the <b>hiCL</b> library
+Release number (tag)  | Date         | Description                                    
+--------------------- | ------------ | -----------------------------------------------
+1.0                   | 06/01/2016   | The initial release of the <b>hiCL</b> library
 
 On the other hand, the **develop** branch contains the latest builds and is
 intended to be used by the developers who are willing to contribute or improve 
