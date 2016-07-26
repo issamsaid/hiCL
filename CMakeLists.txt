@@ -51,14 +51,17 @@ endif ()
 ##   OPENCL_LIBRARY_DIR: contains the OpenCL library
 find_package (OpenCL)
 if (OPENCL_FOUND)
-	message(STATUS "... OpenCL found: ${OPENCL_FOUND}")
-	message(STATUS "... OpenCL includes: ${OPENCL_INCLUDE_DIRS}")
-	message(STATUS "... OpenCL CXX includes: ${OPENCL_HAS_CPP_BINDINGS}")
-	message(STATUS "... OpenCL libraries: ${OPENCL_LIBRARIES}")
+	message(STATUS "... OpenCL headers paths : ${OPENCL_INCLUDE_DIRS}")
+	message(STATUS "... OpenCL CXX includes  : ${OPENCL_HAS_CPP_BINDINGS}")
+	message(STATUS "... OpenCL libraries     : ${OPENCL_LIBRARIES}")
 	include_directories(${OPENCL_INCLUDE_DIRS})
 else (OPENCL_FOUND)
-	message(FATAL_ERROR "... Unable to find the OpenCL include dirs:\n"
-			            "... Please set OPENCL_INCLUDE_DIRS env variable")
+	message(FATAL_ERROR 
+			"... Unable to find your OpenCL implementation:\n"
+			"... Set the OPENCL_INCLUDE_DIRS variable to locate the headers.\n"
+			"... Set the OPENCL_LIB_DIRS variable to locate the library.\n"
+			"... You may also add the library path to the LD_LIBRARY_PATH env."
+			)
 endif (OPENCL_FOUND)
 
 ## Build the hiCL C/C++ library.
