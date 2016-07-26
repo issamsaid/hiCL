@@ -5,8 +5,7 @@ compiler:
   - gcc
 before_install:
   - sudo apt-get update 
-  - sudo apt-get install opencl-headers
-  - sudo apt-get install build-essential cmake gfortran 
+  - sudo apt-get install -y -qq build-essential cmake gfortran 
   - if [ $TRAVIS_OS_NAME = "linux" ]; then
       bash .travis/amd_sdk.sh;
       tar -xjf AMD-SDK.tar.bz2;
