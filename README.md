@@ -29,7 +29,6 @@ The **master** branch only contains the major releases, and
 is intended to use the library as is.
 We recommend to clone from this branch if you would like to use 
 the latest stable version. 
-The current version of the software is 1.0.
 The releases are tagged on the master branch and each version has a major
 number and a minor number which are used as the tagging string (.e.g. the 
 first release is tagged 1.0 on the master branch).
