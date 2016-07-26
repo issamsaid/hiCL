@@ -73,10 +73,10 @@ if (NOT OPENCL_INCLUDE_DIRS)
   mark_as_advanced(OPENCL_INCLUDE_DIRS)
 endif()
 
-get_property(USE_LIB64 GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS)
+#get_property(USE_LIB64 GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS)
 
-if (USE_LIB64)
-  find_library(OPENCL_LIBRARIES
+
+find_library(OPENCL_LIBRARIES
     NAMES OpenCL
     HINTS
       $ENV{OPENCL_LIBRARY_DIRS}
@@ -86,30 +86,12 @@ if (USE_LIB64)
       $ENV{CUDA_PATH}/lib
       $ENV{CUDA_ROOT}/lib
     DOC "OpenCL dynamic libraries (64 bits) paths"
-    PATH_SUFFIXES x86_64 x64 x86_64/sdk
+    PATH_SUFFIXES x86_64 x64 x86_64/sdk x86 Win32 
     PATHS
       /usr/lib
       /usr/local/cuda/lib
       /opt/cuda/lib
   )
-else ()
-  find_library(OPENCL_LIBRARIES
-    NAMES OpenCL
-    HINTS
-      $ENV{OPENCL_LIBRARY_DIRS}
-      $ENV{AMDAPPSDKROOT}/lib
-      $ENV{AMDAPPSDK}/lib
-      $ENV{ATISTREAMSDKROOT}/lib
-      $ENV{CUDA_PATH}/lib
-      $ENV{CUDA_ROOT}/lib
-    DOC "OpenCL dynamic libraries (32 bits) paths"
-    PATH_SUFFIXES x86 Win32 
-    PATHS
-      /usr/lib
-      /usr/local/cuda/lib
-      /opt/cuda/lib
-  )
-endif ()
 if (NOT OPENCL_LIBRARY_DIRS)
   get_filename_component(OPENCL_LIBRARY_DIRS ${OPENCL_LIBRARIES} DIRECTORY)
 endif ()
