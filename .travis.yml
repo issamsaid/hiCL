@@ -18,8 +18,8 @@ before_install:
       export LD_LIBRARY_PATH=${AMDAPPSDK}/lib/x86_64:${LD_LIBRARY_PATH};
       chmod +x ${AMDAPPSDK}/bin/x86_64/clinfo;
       ${AMDAPPSDK}/bin/x86_64/clinfo;
-      echo ${AMDAPPSDK}
-      export AMDAPPSDK=${AMDAPPSDK}
+      echo ${AMDAPPSDK};
+      export AMDAPPSDK=${AMDAPPSDK};
     fi;
 script:
   - mkdir build
