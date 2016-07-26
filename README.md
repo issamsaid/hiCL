@@ -43,7 +43,8 @@ an example) you may add:
 cd hiCL
 git checkout tags/1.0
 ``` 
-The following table summarizes the different releases of the library:</br>
+The following table summarizes the different details about all the 
+releases of the <b>hiCL</b> library:</br>
 
 Release number (tag)  | Date         | Description                                    
 --------------------- | ------------ | -----------------------------------------------
