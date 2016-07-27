@@ -26,9 +26,6 @@ script:
   - cmake -G"Unix Makefiles" ../
   - make VERBOSE=1
   - make install
-<<<<<<< HEAD
-=======
   - cd ../test
->>>>>>> develop
   - ./bin/hiCL_test
   - ./bin/hiCL_test_fortran
