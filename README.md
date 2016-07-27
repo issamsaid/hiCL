@@ -156,8 +156,8 @@ or feel free to contact us.
 # License
 <b>hiCL</b> is a free software licensed under 
 [BSD](https://github.com/issamsaid/hiCL/tree/master/LICENSE.md) 
-and was put together in a computer science laboratory at the [UPMC](www.upmc.fr). 
-The project was initially funded by [Total](www.total.com) which is acknowledged.
+and was put together in a computer science laboratory at the [UPMC](http://www.upmc.fr). 
+The project was initially funded by [Total](http://www.total.com) which is acknowledged.
 
 # Contact
 For bug report, feature requests or if you willing to contribute please 
