@@ -884,7 +884,7 @@ namespace {
         for (i=0; i<n; ++i) hicl_fknl_exec(k, d);
         hicl_dev_wait(d);
         time = hicl_timer_read();
-        fprintf(stdout, "... direct time: %8.2f %s\n", time, hicl_timer_uget());
+        fprintf(stdout, "... direct  time: %8.2f %s\n", time, hicl_timer_uget());
 
         hicl_timer_tick();     
         hicl_knl_set_wrk("stencil_v_3d", 2, g, l);
