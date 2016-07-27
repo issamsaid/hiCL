@@ -1,5 +1,4 @@
 #define INDEX_OPTIM
-
 #ifdef INDEX_OPTIM
 #define G(m, z, y, x) m[(2+dimx)*((2*STENCIL+dimy)*(z) + y) + x]
 #define L(m, y, x)    m[y][x]

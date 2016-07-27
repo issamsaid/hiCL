@@ -423,12 +423,12 @@ namespace {
         hicl_mem_wrap(d, coefz, s[2]+1, READ_ONLY);
                 
         hicl_knl_set_wrk("stencil_lv_3d", 2, g, l);
-        for (i = 0; i < 5; ++i)
+        for (i = 0; i < 1; ++i)
             hicl_knl_sync_run("stencil_lv_3d", d, ui, uo, coefx, coefy, coefz,
                               dim[0], dim[1], dim[2], s[0], s[1], s[2]);
         hicl_timer_tick();
-        for (i=0; i<n; ++i) hicl_knl_exec("stencil_lv_3d", d);
-        hicl_dev_wait(d);
+        //for (i=0; i<n; ++i) hicl_knl_exec("stencil_lv_3d", d);
+        //hicl_dev_wait(d);
         time = hicl_timer_read();
         hicl_timer_tick();
         hicl_mem_update(uo, READ_ONLY);
