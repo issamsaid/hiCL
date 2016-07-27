@@ -60,4 +60,4 @@ include/gtest
 
 # Release script
 release.sh
-
+tag.sh
