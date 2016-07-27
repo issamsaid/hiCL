@@ -57,3 +57,7 @@ modules
 # Gtest files
 include/gmock
 include/gtest
+
+# Release script
+release.sh
+

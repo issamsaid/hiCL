@@ -267,7 +267,7 @@ namespace {
         for (i=0; i<ITER; ++i)
             hicl_knl_sync_run("test_hicl_1", d, hsrc, hdst, N);
         fprintf(stdout, 
-                "... time: %f %s", hicl_timer_read()/ITER, hicl_timer_uget());
+                "... time: %f %s\n", hicl_timer_read()/ITER, hicl_timer_uget());
         hicl_mem_update(hdst, READ_ONLY);
         for (i = 0; i < N; ++i) ASSERT_FLOAT_EQ(hdst[i], i);
         free(hsrc);
@@ -298,7 +298,7 @@ namespace {
         for (i=0; i<ITER; ++i) hicl_knl_exec("test_hicl_1", d);
         hicl_dev_wait(d);
         fprintf(stdout, 
-                "... time: %f %s", hicl_timer_read()/ITER, hicl_timer_uget());
+                "... time: %f %s\n", hicl_timer_read()/ITER, hicl_timer_uget());
         hicl_mem_update(hdst, READ_ONLY);
         for (i = 0; i < N; ++i) ASSERT_FLOAT_EQ(hdst[i], i);
         free(hsrc);
@@ -371,20 +371,17 @@ namespace {
     
     TEST_F(KnlTest, stencil_3d_wrapped_duplicated) {
         double comm, time = 0., flops;
-        unsigned int i, n=100;
+        unsigned int i;
         float epsilon = 1.e-1;
         size_t size;
         int dim[3] = {DIM, DIM, DIM}, s[3] = {4, 4, 4};
-        size_t g[3], l[3] = {16, 16, 1};
-
-        g[0] = dim[0]/4;
-        g[1] = dim[1];
-        g[3] = 1;
+        size_t l[3] = {16, 16, 1};
+        size_t g[3] = {dim[0]/4, dim[1], 1};
 
         size   = (2*s[0] + dim[0])*(2*s[1] + dim[1])*(2*s[2] + dim[2]);
         flops  = 2+(3*s[0]+1)+(3*s[1]+1)+(3*s[2]+1);
         
-        hicl_load("data/stencil_lv_3d.cl", 
+        hicl_load("data/stencil_v_3d.cl", 
                   "-cl-kernel-arg-info -DSTENCIL=%d -DLX=%lu -DLY=%lu", 
                   s[0], l[0], l[1]);
         
@@ -422,23 +419,23 @@ namespace {
         hicl_mem_wrap(d, coefy, s[1]+1, READ_ONLY);
         hicl_mem_wrap(d, coefz, s[2]+1, READ_ONLY);
                 
-        hicl_knl_set_wrk("stencil_lv_3d", 2, g, l);
-        for (i = 0; i < 1; ++i)
-            hicl_knl_sync_run("stencil_lv_3d", d, ui, uo, coefx, coefy, coefz,
+        hicl_knl_set_wrk("stencil_v_3d", 2, g, l);
+        for (i = 0; i < 5; ++i)
+            hicl_knl_sync_run("stencil_v_3d", d, ui, uo, coefx, coefy, coefz,
                               dim[0], dim[1], dim[2], s[0], s[1], s[2]);
         hicl_timer_tick();
-        //for (i=0; i<n; ++i) hicl_knl_exec("stencil_lv_3d", d);
-        //hicl_dev_wait(d);
+        for (i=0; i<ITER; ++i) hicl_knl_exec("stencil_v_3d", d);
+        hicl_dev_wait(d);
         time = hicl_timer_read();
         hicl_timer_tick();
         hicl_mem_update(uo, READ_ONLY);
         comm = hicl_timer_read();
         fprintf(stdout, 
                 "... avertage time: %8.2f (%8.2f) %s, %8.2f (%8.2f) Gflop/s\n",
-                time/n, comm + time/n, hicl_timer_uget(),
-                flops*1.e-9*n*dim[0]*dim[1]*dim[2]/(time*hicl_timer_coef()),
+                time/ITER, comm + time/ITER, hicl_timer_uget(),
+                flops*1.e-9*ITER*dim[0]*dim[1]*dim[2]/(time*hicl_timer_coef()),
                 flops*1.e-9*dim[0]*dim[1]*dim[2]/
-                ((comm+(time/n))*hicl_timer_coef()));
+                ((comm+(time/ITER))*hicl_timer_coef()));
         check_stencil_3d(dim, s, coefx, coefy, coefz, ui, uo, epsilon);
     }
 
@@ -462,7 +459,7 @@ namespace {
                 "-cl-kernel-arg-info -DSTENCIL=%d -DLX=%lu -DLY=%lu", 
                 s[0], l[0], l[1]);
                         
-        hicl_load("data/stencil_lv_3d.cl", options);
+        hicl_load("data/stencil_v_3d.cl", options);
         
         float *ui;
         float *uo;
@@ -498,12 +495,12 @@ namespace {
         hicl_mem_wrap(d, coefy, s[1]+1, READ_ONLY);
         hicl_mem_wrap(d, coefz, s[2]+1, READ_ONLY);        
         
-        hicl_knl_set_wrk("stencil_lv_3d", 2, g, l);
+        hicl_knl_set_wrk("stencil_v_3d", 2, g, l);
         for (i = 0; i < 5; ++i)
-            hicl_knl_sync_run("stencil_lv_3d", d, ui, uo, coefx, coefy, coefz,
+            hicl_knl_sync_run("stencil_v_3d", d, ui, uo, coefx, coefy, coefz,
                                dim[0], dim[1], dim[2], s[0], s[1], s[2]);
         hicl_timer_tick();
-        for (i=0; i<n; ++i) hicl_knl_exec("stencil_lv_3d", d);
+        for (i=0; i<n; ++i) hicl_knl_exec("stencil_v_3d", d);
         hicl_dev_wait(d);
         time = hicl_timer_read();
         hicl_timer_tick();
@@ -538,7 +535,7 @@ namespace {
                 "-cl-kernel-arg-info -DSTENCIL=%d -DLX=%lu -DLY=%lu", 
                 s[0], l[0], l[1]);
                         
-        hicl_load("data/stencil_lv_3d.cl", options);
+        hicl_load("data/stencil_v_3d.cl", options);
         
         float *ui;
         float *uo;
@@ -574,12 +571,12 @@ namespace {
         hicl_mem_wrap(d, coefy, s[1]+1, READ_ONLY);
         hicl_mem_wrap(d, coefz, s[2]+1, READ_ONLY);
                         
-        hicl_knl_set_wrk("stencil_lv_3d", 2, g, l);
+        hicl_knl_set_wrk("stencil_v_3d", 2, g, l);
         for (i = 0; i < 5; ++i)
-            hicl_knl_sync_run("stencil_lv_3d", d, ui, uo, coefx, coefy, coefz,
+            hicl_knl_sync_run("stencil_v_3d", d, ui, uo, coefx, coefy, coefz,
                               dim[0], dim[1], dim[2], s[0], s[1], s[2]);
         hicl_timer_tick();
-        for (i=0; i<n; ++i) hicl_knl_exec("stencil_lv_3d", d);
+        for (i=0; i<n; ++i) hicl_knl_exec("stencil_v_3d", d);
         hicl_dev_wait(d);
         time = hicl_timer_read();
         hicl_timer_tick();
@@ -614,7 +611,7 @@ namespace {
                 "-cl-kernel-arg-info -DSTENCIL=%d -DLX=%lu -DLY=%lu", 
                 s[0], l[0], l[1]);
                         
-        hicl_load("data/stencil_lv_3d.cl", options);
+        hicl_load("data/stencil_v_3d.cl", options);
         
         float *ui;
         float *uo;
@@ -650,12 +647,12 @@ namespace {
         hicl_mem_wrap(d, coefy, s[1]+1, READ_ONLY);
         hicl_mem_wrap(d, coefz, s[2]+1, READ_ONLY);
                 
-        hicl_knl_set_wrk("stencil_lv_3d", 2, g, l);
+        hicl_knl_set_wrk("stencil_v_3d", 2, g, l);
         for (i = 0; i < 5; ++i)
-            hicl_knl_sync_run("stencil_lv_3d", d, ui, uo, coefx, coefy, coefz,
+            hicl_knl_sync_run("stencil_v_3d", d, ui, uo, coefx, coefy, coefz,
                               dim[0], dim[1], dim[2], s[0], s[1], s[2]);
         hicl_timer_tick();
-        for (i=0; i<n; ++i) hicl_knl_exec("stencil_lv_3d", d);
+        for (i=0; i<n; ++i) hicl_knl_exec("stencil_v_3d", d);
         hicl_dev_wait(d);
         time = hicl_timer_read();
         hicl_timer_tick();
@@ -690,7 +687,7 @@ namespace {
                 "-cl-kernel-arg-info -DSTENCIL=%d -DLX=%lu -DLY=%lu", 
                 s[0], l[0], l[1]);
                         
-        hicl_load("data/stencil_lv_3d.cl", options);
+        hicl_load("data/stencil_v_3d.cl", options);
         
         float *ui;
         float *uo;
@@ -726,12 +723,12 @@ namespace {
         hicl_mem_wrap(d, coefy, s[1]+1, READ_ONLY);
         hicl_mem_wrap(d, coefz, s[2]+1, READ_ONLY);        
         
-        hicl_knl_set_wrk("stencil_lv_3d", 2, g, l);
+        hicl_knl_set_wrk("stencil_v_3d", 2, g, l);
         for (i = 0; i < 5; ++i)
-            hicl_knl_sync_run("stencil_lv_3d", d, ui, uo, coefx, coefy, coefz,
+            hicl_knl_sync_run("stencil_v_3d", d, ui, uo, coefx, coefy, coefz,
                               dim[0], dim[1], dim[2], s[0], s[1], s[2]);
         hicl_timer_tick();
-        for (i=0; i<n; ++i) hicl_knl_exec("stencil_lv_3d", d);
+        for (i=0; i<n; ++i) hicl_knl_exec("stencil_v_3d", d);
         hicl_dev_wait(d);
         time = hicl_timer_read();
         hicl_timer_tick();
@@ -766,7 +763,7 @@ namespace {
                 "-cl-kernel-arg-info -DSTENCIL=%d -DLX=%lu -DLY=%lu", 
                 s[0], l[0], l[1]);
                         
-        hicl_load("data/stencil_lv_3d.cl", options);
+        hicl_load("data/stencil_v_3d.cl", options);
         
         float *ui;
         float *uo;
@@ -802,12 +799,12 @@ namespace {
         hicl_mem_wrap(d, coefy, s[1]+1, READ_ONLY);
         hicl_mem_wrap(d, coefz, s[2]+1, READ_ONLY);
                         
-        hicl_knl_set_wrk("stencil_lv_3d", 2, g, l);
+        hicl_knl_set_wrk("stencil_v_3d", 2, g, l);
         for (i = 0; i < 5; ++i)
-            hicl_knl_sync_run("stencil_lv_3d", d, ui, uo, coefx, coefy, coefz,
+            hicl_knl_sync_run("stencil_v_3d", d, ui, uo, coefx, coefy, coefz,
                               dim[0], dim[1], dim[2], s[0], s[1], s[2]);
         hicl_timer_tick();
-        for (i=0; i<n; ++i) hicl_knl_exec("stencil_lv_3d", d);
+        for (i=0; i<n; ++i) hicl_knl_exec("stencil_v_3d", d);
         hicl_dev_wait(d);
         time = hicl_timer_read();
         hicl_timer_tick();
@@ -842,7 +839,7 @@ namespace {
               
         hicl_load("data/foo.cl", "-DSTENCIL=9");
         hicl_load("data/bar.cl", "-DSTENCIL=19");  
-        hicl_load("data/stencil_lv_3d.cl", options);
+        hicl_load("data/stencil_v_3d.cl", options);
         
         float *ui;
         float *uo;
@@ -879,7 +876,7 @@ namespace {
         hicl_mem_wrap(d, coefz, s[2]+1, READ_ONLY);
         
         hicl_timer_tick();
-        k = hicl_knl_find("stencil_lv_3d");      
+        k = hicl_knl_find("stencil_v_3d");      
         hicl_fknl_set_wrk(k, 2, g, l);
         for (i = 0; i < 5; ++i)
             hicl_fknl_sync_run(k, d, ui, uo, coefx, coefy, coefz,
@@ -887,17 +884,17 @@ namespace {
         for (i=0; i<n; ++i) hicl_fknl_exec(k, d);
         hicl_dev_wait(d);
         time = hicl_timer_read();
-        fprintf(stdout, "... direct time: %8.2f %s", time, hicl_timer_uget());
+        fprintf(stdout, "... direct time: %8.2f %s\n", time, hicl_timer_uget());
 
         hicl_timer_tick();     
-        hicl_knl_set_wrk("stencil_lv_3d", 2, g, l);
+        hicl_knl_set_wrk("stencil_v_3d", 2, g, l);
         for (i = 0; i < 5; ++i)
-            hicl_knl_sync_run("stencil_lv_3d", d, ui, uo, coefx, coefy, coefz,
+            hicl_knl_sync_run("stencil_v_3d", d, ui, uo, coefx, coefy, coefz,
                               dim[0], dim[1], dim[2], s[0], s[1], s[2]);
-        for (i=0; i<n; ++i) hicl_knl_exec("stencil_lv_3d", d);
+        for (i=0; i<n; ++i) hicl_knl_exec("stencil_v_3d", d);
         hicl_dev_wait(d);
         time = hicl_timer_read();
-        fprintf(stdout, "... loockup time: %8.2f %s", time, hicl_timer_uget());
+        fprintf(stdout, "... loockup time: %8.2f %s\n", time, hicl_timer_uget());
     }    
 
 }  // namespace
