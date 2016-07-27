@@ -56,8 +56,6 @@ the library. To get started, you can clone this branch as follows:
 ```
 git clone -b develop https://github.com/issamsaid/hiCL.git
 ```
-The **develop** branch has a unit testing directory for both the C/C++ and the
-Fortran interfaces of the library.
 
 ## Setting up and compiling
 The library can be compiled using [cmake](https://cmake.org/) as follows:
@@ -96,7 +94,7 @@ In order to install the build on the lib directory you can run:
 make install
 ```
 You can also classically run the following in order to build both interfaces
-all at once (additionally to unit tests if the **develop** branch is used): 
+all at once, additionally to unit the tests and the examples: 
 ```
 make all install
 ```
@@ -120,15 +118,16 @@ with the help of the options *-lhiCL_fortran -lhiCL -lOpenCL*).<br/>
 
 ## Testing
 If you want to work with the latest build, you are invited to fetch from the 
-**develop** branch, which also includes a set of unit tests and performance 
+**develop** branch. The library comes with a set of unit tests and performance 
 tests (on top of the [googletest](https://github.com/google/googletest/) 
-Framework) to validate the behavior of the library.<br/>
+Framework) to validate the new features. You can check the unit testing 
+directory [here](https://github.com/issamsaid/hiCL/tree/master/test).<br/>
 The testing framework is used to thoroughly test <b>hiCL</b> in C/C++ 
 and Fortran. 
 Tests should be written for any new code, and changes should be verified to not 
 break existing tests before they are submitted for review. 
-To perform the tests (which are automatically built if you are using the 
-**develop** branch) you can run:
+To perform the tests (which are automatically built when you compile
+the library) you can run:
 ```
 cd test
 ./bin/hiCL_test         // for C/C++
