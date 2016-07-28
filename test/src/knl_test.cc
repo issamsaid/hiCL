@@ -583,7 +583,7 @@ namespace {
         hicl_mem_update(uo, READ_ONLY);
         comm = hicl_timer_read();
         fprintf(stdout, 
-                "avertage time: %8.2f (%8.2f) %s, %8.2f (%8.2f) Gflop/s\n",
+                "... avertage time: %8.2f (%8.2f) %s, %8.2f (%8.2f) Gflop/s\n",
                 time/n, comm + (time/n), hicl_timer_uget(),
                 flops*1.e-9*n*dim[0]*dim[1]*dim[2]/(time*hicl_timer_coef()),
                 flops*1.e-9*dim[0]*dim[1]*dim[2]/
@@ -659,7 +659,7 @@ namespace {
         hicl_mem_update(uo, READ_ONLY);
         comm = hicl_timer_read();
         fprintf(stdout, 
-                "avertage time: %8.2f (%8.2f) %s, %8.2f (%8.2f) Gflop/s\n",
+                "... avertage time: %8.2f (%8.2f) %s, %8.2f (%8.2f) Gflop/s\n",
                 time/n, comm + time/n, hicl_timer_uget(),
                 flops*1.e-9*n*dim[0]*dim[1]*dim[2]/(time*hicl_timer_coef()),
                 flops*1.e-9*dim[0]*dim[1]*dim[2]/
@@ -735,7 +735,7 @@ namespace {
         hicl_mem_update(uo, READ_ONLY);
         comm = hicl_timer_read();
         fprintf(stdout, 
-                "avertage time: %8.2f (%8.2f) %s, %8.2f (%8.2f) Gflop/s\n",
+                "... avertage time: %8.2f (%8.2f) %s, %8.2f (%8.2f) Gflop/s\n",
                  time/n, comm + time/n, hicl_timer_uget(),
                  flops*1.e-9*n*dim[0]*dim[1]*dim[2]/(time*hicl_timer_coef()),
                  flops*1.e-9*dim[0]*dim[1]*dim[2]/
