@@ -40,8 +40,9 @@ git clone -b master https://github.com/issamsaid/hiCL.git
 If you wish to clone a specific release (here we use the 1.0 release as
 an example) you may add:
 ```
-cd hiCL
+pushd hiCL
 git checkout tags/1.0
+popd
 ``` 
 The following table summarizes the different details about all the 
 releases of the <b>hiCL</b> library:</br>
@@ -58,7 +59,7 @@ git clone -b develop https://github.com/issamsaid/hiCL.git
 ```
 
 ## Setting up and building
-The <b>hiCL</b> project has multiple component, each in a subdirectory of the
+The <b>hiCL</b> project has multiple components, each in a subdirectory of the
 root directory (hiCL). The [src](https://github.com/issamsaid/hiCL/tree/master/src)
 subdirectory is the C/C++ interface, the 
 [fortran_interface](https://github.com/issamsaid/hiCL/tree/master/fortran_interface)
@@ -89,7 +90,7 @@ export OPENCL_INCLUDE_DIR="YOUR_OPENCL_HEADERS_PATH"
 export OPENCL_LIBRARY_DIR="YOUR_OPENCL_LIBRARY_PATH"
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$OPENCL_LIBRARY_DIR
 ```
-To build the library you can run the default target which compiles the C 
+To build the library you can run the default target which compiles the C/C++ 
 interface only:
 ```
 pushd build
@@ -109,8 +110,8 @@ popd
 This target will build another static library `libhiCL_fortran.a` from the
 Fortran source files present in the 
 [fortran_interface](https://github.com/issamsaid/hiCL/tree/master/fortran_interface)
-subdirectory.<br/>
-In order to install the build on the `lib` subdirectory you can run:
+subdirectory.
+In order to install the libraries on the `lib` subdirectory you can run:
 ```
 pushd build
 make install
@@ -126,9 +127,8 @@ popd
 ```
 
 ## Generating the documentation
-The documentation of the library can be generated, in the [doc]
-with the help of 
-[doxygen](http://www.stack.nl/~dimitri/doxygen/) by simply running:
+The documentation of the library can be generated, in the [doc](https://github.com/issamsaid/hiCL/tree/master/doc) subdirectory,
+with the help of [doxygen](http://www.stack.nl/~dimitri/doxygen/) by simply running:
 ```
 pushd build
 make doc
@@ -140,17 +140,17 @@ to use <b>hiCL</b> to write your own OpenCL codes for scientific purposes.
 ## Using the library
 In order to use the <b>hiCL</b> C/C++ link your code against libhiCL.a 
 additionally to the OpenCL library (by adding 
-*-lhiCL -lOpenCL* to your linker options), 
+`-lhiCL -lOpenCL` to your linker options), 
 however if your code is based on Fortran the 
 latter should linked against both the C/C++ library and the Fortran interface (
-with the help of the options *-lhiCL_fortran -lhiCL -lOpenCL*).<br/>
+with the help of the options `-lhiCL_fortran -lhiCL -lOpenCL`).<br/>
 
 ## Testing
 If you want to work with the latest build, you are invited to fetch from the 
 **develop** branch. The library comes with a set of unit tests and performance 
 tests (on top of the [googletest](https://github.com/google/googletest/) 
 Framework) to validate the new features. You can check the unit testing 
-directory [here](https://github.com/issamsaid/hiCL/tree/master/test).<br/>
+directory [here](https://github.com/issamsaid/hiCL/tree/master/test).
 The testing framework is used to thoroughly test <b>hiCL</b> in C/C++ 
 ([test/src](https://github.com/issamsaid/hiCL/tree/master/test/src)) and 
 Fortran ([test/fortran](https://github.com/issamsaid/hiCL/tree/master/test/fortran_interface)). 
