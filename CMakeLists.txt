@@ -33,17 +33,69 @@
 ## @author Issam SAID
 ## @brief CMake main build script for hiCL.
 ##
-project (hiCL-distribution)
+project (hicl_distribution C CXX Fortran)
 cmake_minimum_required (VERSION 2.8)
 
-## Overwrite CMake default behavior
+## Overwrite the install prefix
 set (CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}")
+
+## Add extra cmake modules dir
 set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
-if ( NOT CMAKE_BUILD_TYPE )
+## Configurable options for how we want to build hiCL
+option(hicl_debug   "Build hiCL with the debug mode."             OFF)
+option(hicl_verbose "Build hiCL with the verbose mode activated."  ON)
+option(hicl_use_tty "Build hiCL with logging into  the terminal."  ON)
+
+## Set the build type (DEFAULT is Release)
+if (NOT CMAKE_BUILD_TYPE)
    set (CMAKE_BUILD_TYPE Release)
 endif ()
+if (hicl_debug)
+	set (CMAKE_BUILD_TYPE Debug)
+endif ()
 message(STATUS "... CMAKE_BUILD_TYPE : ${CMAKE_BUILD_TYPE}")
+
+## Set the compilation flags 
+if ("${CMAKE_C_COMPILER_ID}"     MATCHES "Cray")
+  	# using Cray C
+elseif ("${CMAKE_C_COMPILER_ID}" MATCHES "GNU")
+	include(${CMAKE_MODULE_PATH}/gnu_c.cmake)
+elseif ("${CMAKE_C_COMPILER_ID}" MATCHES "Intel")
+  	# using Intel C
+elseif ("${CMAKE_C_COMPILER_ID}" MATCHES "MSVC")
+  	# using Visual Studio 
+endif()
+
+if ("${CMAKE_Fortran_COMPILER_ID}"     MATCHES "Cray")
+  	# using Cray Fortran
+elseif ("${CMAKE_Fortran_COMPILER_ID}" MATCHES "GNU")
+	include(${CMAKE_MODULE_PATH}/gnu_fortran.cmake)
+elseif ("${CMAKE_Fortran_COMPILER_ID}" MATCHES "Intel")
+  	# using Intel Fortran
+elseif ("${CMAKE_Fortran_COMPILER_ID}" MATCHES "MSVC")
+  	# using Visual Studio Fortran
+endif()
+
+if ("${CMAKE_CXX_COMPILER_ID}"     MATCHES "Cray")
+  	# using Cray C++
+elseif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
+	include(${CMAKE_MODULE_PATH}/gnu_cxx.cmake)
+elseif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Intel")
+  	# using Intel C++
+elseif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")
+  	# using Visual Studio C++
+endif()
+
+if (hicl_verbose)
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__API_VERBOSE")
+endif (hicl_verbose)
+if (hicl_use_tty)
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__API_LOG_STD")
+endif (hicl_use_tty)
+
+## Skip dependencies between builds and installs
+#set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY TRUE) 
 
 ## Check whether OpenCL is detected:
 ## - The OpenCL library quered in usual directories
@@ -76,13 +128,14 @@ endif ()
 add_subdirectory(src)
 
 ## Build the hiCL fortran interface.
-add_subdirectory(fortran_interface)
+add_subdirectory(fortran_interface EXCLUDE_FROM_ALL)
 
 ## Build the hiCL unit testing suit (develop branch only).
-add_subdirectory(test)
+add_subdirectory(test EXCLUDE_FROM_ALL)
+
+## Build the hiCL examples.
+add_subdirectory(examples EXCLUDE_FROM_ALL)
 
 ## Build the hiCL documentation.
 add_subdirectory(doc EXCLUDE_FROM_ALL)
 
-## Build the hiCL examples.
-add_subdirectory(examples)

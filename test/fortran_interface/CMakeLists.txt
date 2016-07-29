@@ -33,21 +33,14 @@
 ## @author Issam SAID
 ## @brief CMake build script for hiCL Fortran interface unit testing.
 ## 
-project (hiCL_test_fortran Fortran)
+project (hicl_test_fortran Fortran)
 cmake_minimum_required (VERSION 2.8)
-
-set (CMAKE_Fortran_FLAGS_DEBUG   
-	"${CMAKE_Fortran_FLAGS_DEBUG} -Wall -O0 -g")
-set (CMAKE_Fortran_FLAGS_RELEASE 
-	"${CMAKE_Fortran_FLAGS_RELEASE} -funroll-all-loops -fno-f2c -O3")
-set (CMAKE_Fortran_FLAGS 
-	"${CMAKE_Fortran_FLAGS} -fbackslash")
 
 include_directories(${CMAKE_SOURCE_DIR}/modules)
 file(GLOB F_SRCS "*.f90")
-add_executable(hiCL_test_fortran ${F_SRCS})
-target_link_libraries (hiCL_test_fortran LINK_PUBLIC hiCL_fortran)
-target_link_libraries (hiCL_test_fortran LINK_PUBLIC hiCL)
-target_link_libraries (hiCL_test_fortran LINK_PUBLIC OpenCL)
-install(TARGETS hiCL_test_fortran DESTINATION test/bin)
-add_dependencies(hiCL_test_fortran hiCL_fortran)
+add_executable(hicl_test_fortran ${F_SRCS})
+target_link_libraries (hicl_test_fortran LINK_PUBLIC hicl_fortran)
+target_link_libraries (hicl_test_fortran LINK_PUBLIC hicl)
+target_link_libraries (hicl_test_fortran LINK_PUBLIC OpenCL)
+add_dependencies(hicl_test_fortran hicl_fortran)
+install(TARGETS hicl_test_fortran DESTINATION test/bin OPTIONAL)

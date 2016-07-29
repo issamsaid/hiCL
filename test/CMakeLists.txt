@@ -33,7 +33,7 @@
 ## @author Issam SAID
 ## @brief CMake build script for the hiCL unit testing.
 ##
-project (hiCL-testing)
+project (test)
 cmake_minimum_required (VERSION 2.8)
 
 ## Build googletest/googletest first
@@ -46,3 +46,7 @@ add_subdirectory(src)
 
 ## Build the hiCL fortran interface unit tests.
 add_subdirectory(fortran_interface)
+
+## Add a custom target that includes the build of all the tests
+add_custom_target(test)
+add_dependencies(test hicl_test hicl_fortran_test)

@@ -33,27 +33,12 @@
 ## @author Issam SAID
 ## @brief CMake build script for the hiCL C library.
 ##
-project (hiCL C)
+project (hicl C)
 cmake_minimum_required (VERSION 2.8)
-
-option(hicl_verbose "Build hiCL with the verbose mode activated." ON)
-option(hicl_use_tty "Build hiCL with logging into  the terminal." ON)
-
-set (CMAKE_C_FLAGS_DEBUG 
-	"${CMAKE_C_FLAGS_DEBUG} -D__API_DEBUG -Wall -O0 -g")
-set (CMAKE_C_FLAGS_RELEASE 
-	"${CMAKE_C_FLAGS_RELEASE} -fmerge-constants -O3")
-
-if (hicl_verbose)
-	set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__API_VERBOSE")
-endif (hicl_verbose)
-
-if (hicl_use_tty)
-	set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__API_LOG_STD")
-endif (hicl_use_tty)
 
 ## Build the hiCL C static library.
 include_directories(${CMAKE_SOURCE_DIR}/include)
 file(GLOB C_SRCS "*.c")
-add_library(hiCL STATIC ${C_SRCS})
-install(TARGETS hiCL ARCHIVE DESTINATION lib)
+add_library(hicl STATIC ${C_SRCS})
+set_target_properties(hicl PROPERTIES OUTPUT_NAME "hiCL")
+install(TARGETS hicl ARCHIVE DESTINATION lib)

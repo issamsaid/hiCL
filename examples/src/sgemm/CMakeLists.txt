@@ -36,18 +36,11 @@
 project (sgemm C)
 cmake_minimum_required (VERSION 2.8)
 
-find_package(OpenMP)
-if (OPENMP_FOUND)
-    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-else (OPENMP_FOUND)
-	set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wunknown-pragmas")
-endif (OPENMP_FOUND)
-
 file(GLOB C_SRCS "*.c")
 
 add_executable(sgemm ${C_SRCS})
-target_link_libraries (sgemm LINK_PUBLIC hiCL)
+target_link_libraries (sgemm LINK_PUBLIC hicl)
 target_link_libraries (sgemm LINK_PUBLIC OpenCL)
-install(TARGETS sgemm DESTINATION examples/bin)
-install(FILES sgemm.cl DESTINATION examples/bin)
-add_dependencies(sgemm hiCL)
+add_dependencies(sgemm hicl)
+install(TARGETS sgemm DESTINATION examples/bin OPTIONAL)
+install(FILES sgemm.cl DESTINATION examples/bin OPTIONAL)

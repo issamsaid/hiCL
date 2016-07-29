@@ -33,7 +33,7 @@
 ## @author Issam SAID
 ## @brief CMake build script for the hiCL unit testing.
 ##
-project (hiCL-examples)
+project (examples C Fortran)
 cmake_minimum_required (VERSION 2.8)
 
 ## Build the hiCL C/C++ examples.
@@ -41,3 +41,7 @@ add_subdirectory(src)
 
 ## Build the hiCL fortran examples.
 add_subdirectory(fortran_interface)
+
+## Add a custom target that includes the build of all the targets
+add_custom_target(examples)
+add_dependencies(examples c_examples fortran_examples)

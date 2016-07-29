@@ -33,23 +33,20 @@
 ## @author Issam SAID
 ## @brief CMake build script for the hiCL Fortran examples.
 ##
-project (hiCL-Fortran-examples Fortran)
+project (fortran_examples Fortran)
 cmake_minimum_required (VERSION 2.8)
-
-set (CMAKE_Fortran_FLAGS_DEBUG   
-	"${CMAKE_Fortran_FLAGS_DEBUG} -Wall -O0 -g")
-set (CMAKE_Fortran_FLAGS_RELEASE 
-	"${CMAKE_Fortran_FLAGS_RELEASE} -funroll-all-loops -fno-f2c -O3")
-set (CMAKE_Fortran_FLAGS 
-	"${CMAKE_Fortran_FLAGS} -fbackslash")
 
 ## Include the hiCL Fortran modules
 include_directories(${CMAKE_SOURCE_DIR}/modules)
 
-file(GLOB sub_dirs RELATIVE ${CMAKE_SOURCE_DIR}/examples/fortran_interface *)
+## Add a custom target that includes the build of all the Fortran examples
+add_custom_target(fortran_examples)
 
+## Build all the subdirectories
+file(GLOB sub_dirs RELATIVE ${CMAKE_SOURCE_DIR}/examples/fortran_interface *)
 foreach(dir ${sub_dirs})
 	if(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/examples/fortran_interface/${dir})
 		add_subdirectory(${dir})
+        add_dependencies(fortran_examples "${dir}_fortran")
 	endif()
 endforeach()

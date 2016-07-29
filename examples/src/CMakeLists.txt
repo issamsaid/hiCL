@@ -33,23 +33,20 @@
 ## @author Issam SAID
 ## @brief CMake build script for the hiCL C/C++ examples.
 ##
-project (hiCL-C-examples C)
+project (c_examples C)
 cmake_minimum_required (VERSION 2.8)
-
-set (CMAKE_C_FLAGS_DEBUG 
-	"${CMAKE_C_FLAGS_DEBUG} -D__API_DEBUG -Wall")
-set (CMAKE_C_FLAGS_DEBUG   
-	"${CMAKE_C_FLAGS_DEBUG} -D__API_VERBOSE -O0 -g")
-set (CMAKE_C_FLAGS_RELEASE 
-	"${CMAKE_C_FLAGS_RELEASE} -fmerge-constants -O3")
 
 ## Include the hiCL headers
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
-file(GLOB sub_dirs RELATIVE ${CMAKE_SOURCE_DIR}/examples/src *)
+## Add a custom target that includes the build of all the C examples
+add_custom_target(c_examples)
 
+## Build all the subdirectories
+file(GLOB sub_dirs RELATIVE ${CMAKE_SOURCE_DIR}/examples/src *)
 foreach(dir ${sub_dirs})
 	if(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/examples/src/${dir})
 		add_subdirectory(${dir})
+        add_dependencies(c_examples ${dir})
 	endif()
 endforeach()
