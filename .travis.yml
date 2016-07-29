@@ -23,8 +23,11 @@ script:
   - mkdir build
   - cd build
   - cmake -G"Unix Makefiles" ../
-  - make VERBOSE=1
+  - make hicl hicl_fortran test
   - make install
+  - make install -C fortran_interface
+  - make install -C test/src
+  - make install -C test/fortran_interface
   - cd ../test
   - ./bin/hicl_test
   - ./bin/hicl_test_fortran
