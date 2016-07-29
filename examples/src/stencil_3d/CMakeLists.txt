@@ -36,18 +36,11 @@
 project (stencil_3d C)
 cmake_minimum_required (VERSION 2.8)
 
-find_package(OpenMP)
-if (OPENMP_FOUND)
-    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-else (OPENMP_FOUND)
-	set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wunknown-pragmas")
-endif (OPENMP_FOUND)
-
 file(GLOB C_SRCS "*.c")
 
 add_executable(stencil_3d ${C_SRCS})
-target_link_libraries (stencil_3d LINK_PUBLIC hiCL)
+target_link_libraries (stencil_3d LINK_PUBLIC hicl)
 target_link_libraries (stencil_3d LINK_PUBLIC OpenCL)
-install(TARGETS stencil_3d DESTINATION examples/bin)
-install(FILES stencil_3d.cl DESTINATION examples/bin)
-add_dependencies(stencil_3d hiCL)
+add_dependencies(stencil_3d hicl)
+install(TARGETS stencil_3d DESTINATION examples/bin OPTIONAL)
+install(FILES stencil_3d.cl DESTINATION examples/bin OPTIONAL)

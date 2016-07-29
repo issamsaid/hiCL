@@ -33,21 +33,8 @@
 ## @author Issam SAID
 ## @brief CMake build script for the hiCL C/C++ unit testing.
 ##
-project (hiCL_test CXX)
+project (hicl_test CXX)
 cmake_minimum_required (VERSION 2.8)
-
-set (CMAKE_CXX_FLAGS_DEBUG 
-	"${CMAKE_CXX_FLAGS_DEBUG} -Wall -O0 -g")
-set (CMAKE_CXX_FLAGS_RELEASE 
-	"${CMAKE_CXX_FLAGS_RELEASE} -fmerge-constants -O3")
-
-## Add the OpenMP headers
-find_package(OpenMP)
-if (OPENMP_FOUND)
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-else (OPENMP_FOUND)
-	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wunknown-pragmas")
-endif (OPENMP_FOUND)
 
 ## Include the hiCL and the googletest headers
 include_directories(${CMAKE_SOURCE_DIR}/include)
@@ -55,10 +42,12 @@ include_directories(${gtest_SOURCE_DIR}/include)
 
 file(GLOB CXX_SRCS "*.cc")
 
-add_executable(hiCL_test ${CXX_SRCS})
+add_executable(hicl_test ${CXX_SRCS})
 # Link the executable to the hiCL, OpenCL and gtest libraries
-target_link_libraries (hiCL_test LINK_PUBLIC hiCL)
-target_link_libraries (hiCL_test LINK_PUBLIC OpenCL)
-target_link_libraries (hiCL_test LINK_PUBLIC gtest)
-install(TARGETS hiCL_test DESTINATION test/bin)
-add_dependencies(hiCL_test hiCL)
+target_link_libraries (hicl_test LINK_PUBLIC hicl)
+target_link_libraries (hicl_test LINK_PUBLIC OpenCL)
+target_link_libraries (hicl_test LINK_PUBLIC gtest)
+add_dependencies(hicl_test hicl)
+install(TARGETS hicl_test 
+        DESTINATION test/bin 
+        OPTIONAL)

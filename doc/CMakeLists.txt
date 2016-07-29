@@ -29,11 +29,11 @@
 ## NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ## SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ##
-## @file CMakeLists.txt
+## @file doc/CMakeLists.txt
 ## @author Issam SAID
 ## @brief CMake build script for the hiCL documentation.
 ##
-project ("The hiCL documentation")
+project (doc)
 cmake_minimum_required (VERSION 2.8)
 
 find_package(Doxygen)

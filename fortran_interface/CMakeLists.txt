@@ -33,17 +33,13 @@
 ## @author Issam SAID
 ## @brief CMake build script for the hiCL Fortran interface.
 ##
-project (hiCL_fortran Fortran)
+project (hicl_fortran Fortran)
 cmake_minimum_required (VERSION 2.8)
-
-set (CMAKE_Fortran_FLAGS_DEBUG   
-	"${CMAKE_Fortran_FLAGS_DEBUG} -Wall -O0 -g")
-set (CMAKE_Fortran_FLAGS_RELEASE 
-	"${CMAKE_Fortran_FLAGS_RELEASE} -funroll-all-loops -fno-f2c -O3")
 
 ## Build the hiCL fortran static library.
 file(GLOB F_SRCS "*.f90")
 set(CMAKE_Fortran_MODULE_DIRECTORY "${CMAKE_SOURCE_DIR}/modules")
-add_library(hiCL_fortran STATIC ${F_SRCS})
-install(TARGETS hiCL_fortran ARCHIVE DESTINATION lib)
-add_dependencies(hiCL_fortran hiCL) 
+add_library(hicl_fortran STATIC ${F_SRCS})
+set_target_properties(hicl_fortran PROPERTIES OUTPUT_NAME "hiCL_fortran")
+add_dependencies(hicl_fortran hicl)
+install(TARGETS hicl_fortran ARCHIVE DESTINATION lib OPTIONAL)
