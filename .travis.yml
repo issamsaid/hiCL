@@ -16,7 +16,6 @@ before_install:
       sh AMD-APP-SDK*.sh --tar -xf -C ${AMDAPPSDK};
       echo libamdocl64.so > ${OPENCL_VENDOR_PATH}/amdocl64.icd;
       export LD_LIBRARY_PATH=${AMDAPPSDK}/lib/x86_64:${LD_LIBRARY_PATH};
-      echo ${LD_LIBRARY_PATH};
       chmod +x ${AMDAPPSDK}/bin/x86_64/clinfo;
       ${AMDAPPSDK}/bin/x86_64/clinfo;
     fi;
@@ -27,5 +26,5 @@ script:
   - make VERBOSE=1
   - make install
   - cd ../test
-  - ./bin/hiCL_test
-  - ./bin/hiCL_test_fortran
+  - ./bin/hicl_test
+  - ./bin/hicl_test_fortran
