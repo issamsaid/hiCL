@@ -60,9 +60,9 @@ message(STATUS "... CMAKE_BUILD_TYPE : ${CMAKE_BUILD_TYPE}")
 if ("${CMAKE_C_COMPILER_ID}"     MATCHES "Cray")
   	# using Cray C
 elseif ("${CMAKE_C_COMPILER_ID}" MATCHES "GNU")
-	include(${CMAKE_MODULE_PATH}/gnu_c.cmake)
+    include(${CMAKE_MODULE_PATH}/gnu_c.cmake)
 elseif ("${CMAKE_C_COMPILER_ID}" MATCHES "Intel")
-  	# using Intel C
+    include(${CMAKE_MODULE_PATH}/intel_c.cmake)
 elseif ("${CMAKE_C_COMPILER_ID}" MATCHES "MSVC")
   	# using Visual Studio 
 endif()
@@ -72,7 +72,7 @@ if ("${CMAKE_Fortran_COMPILER_ID}"     MATCHES "Cray")
 elseif ("${CMAKE_Fortran_COMPILER_ID}" MATCHES "GNU")
 	include(${CMAKE_MODULE_PATH}/gnu_fortran.cmake)
 elseif ("${CMAKE_Fortran_COMPILER_ID}" MATCHES "Intel")
-  	# using Intel Fortran
+  	include(${CMAKE_MODULE_PATH}/intel_fortran.cmake)
 elseif ("${CMAKE_Fortran_COMPILER_ID}" MATCHES "MSVC")
   	# using Visual Studio Fortran
 endif()
@@ -82,7 +82,7 @@ if ("${CMAKE_CXX_COMPILER_ID}"     MATCHES "Cray")
 elseif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
 	include(${CMAKE_MODULE_PATH}/gnu_cxx.cmake)
 elseif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Intel")
-  	# using Intel C++
+    include(${CMAKE_MODULE_PATH}/intel_cxx.cmake)
 elseif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")
   	# using Visual Studio C++
 endif()
