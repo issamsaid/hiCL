@@ -155,17 +155,41 @@ module m_hicl_knl
         module procedure hicl_knl_set_double
         !! hicl_knl_set_mem
         module procedure hicl_knl_set_mem_int32_1d
+        module procedure hicl_knl_set_mem_int32_1d_pointer
+        module procedure hicl_knl_set_mem_int32_1d_allocatable
         module procedure hicl_knl_set_mem_int64_1d
+        module procedure hicl_knl_set_mem_int64_1d_pointer
+        module procedure hicl_knl_set_mem_int64_1d_allocatable
         module procedure hicl_knl_set_mem_float_1d
+        module procedure hicl_knl_set_mem_float_1d_pointer
+        module procedure hicl_knl_set_mem_float_1d_allocatable
         module procedure hicl_knl_set_mem_double_1d
+        module procedure hicl_knl_set_mem_double_1d_pointer
+        module procedure hicl_knl_set_mem_double_1d_allocatable
         module procedure hicl_knl_set_mem_int32_2d
+        module procedure hicl_knl_set_mem_int32_2d_pointer
+        module procedure hicl_knl_set_mem_int32_2d_allocatable
         module procedure hicl_knl_set_mem_int64_2d
+        module procedure hicl_knl_set_mem_int64_2d_pointer
+        module procedure hicl_knl_set_mem_int64_2d_allocatable
         module procedure hicl_knl_set_mem_float_2d
+        module procedure hicl_knl_set_mem_float_2d_pointer
+        module procedure hicl_knl_set_mem_float_2d_allocatable
         module procedure hicl_knl_set_mem_double_2d
+        module procedure hicl_knl_set_mem_double_2d_pointer
+        module procedure hicl_knl_set_mem_double_2d_allocatable
         module procedure hicl_knl_set_mem_int32_3d
+        module procedure hicl_knl_set_mem_int32_3d_pointer
+        module procedure hicl_knl_set_mem_int32_3d_allocatable
         module procedure hicl_knl_set_mem_int64_3d
+        module procedure hicl_knl_set_mem_int64_3d_pointer
+        module procedure hicl_knl_set_mem_int64_3d_allocatable
         module procedure hicl_knl_set_mem_float_3d
+        module procedure hicl_knl_set_mem_float_3d_pointer
+        module procedure hicl_knl_set_mem_float_3d_allocatable
         module procedure hicl_knl_set_mem_double_3d
+        module procedure hicl_knl_set_mem_double_3d_pointer
+        module procedure hicl_knl_set_mem_double_3d_allocatable
     end interface hicl_knl_set
     
     public :: hicl_knl_exec
@@ -232,89 +256,310 @@ contains
     !!
     !! hicl_knl_set_mem
     !! 
-    subroutine hicl_knl_set_mem_int32_1d(name, index, arg)
+    subroutine hicl_knl_set_mem_int32_1d(name, index, arg, size_x)
+        character(len=*),        intent(in) :: name
+        integer(kind=4),         intent(in) :: index
+        integer(kind=4), target, intent(in) :: arg(size_x)
+        integer(kind=4),         intent(in) :: size_x
+        call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
+    end subroutine hicl_knl_set_mem_int32_1d
+
+    subroutine hicl_knl_set_mem_int32_1d_pointer(name, index, arg)
+        character(len=*),                        intent(in) :: name
+        integer(kind=4),                         intent(in) :: index
+        integer(kind=4),  pointer, dimension(:), intent(in) :: arg
+        call c_hicl_knl_set_mem(name // c_null_char, index, &
+                                c_loc(arg(lbound(arg, 1))))
+    end subroutine hicl_knl_set_mem_int32_1d_pointer
+
+    subroutine hicl_knl_set_mem_int32_1d_allocatable(name, index, arg)
         character(len=*),                     intent(in) :: name
         integer(kind=4),                      intent(in) :: index
         integer(kind=4), allocatable, target, intent(in) :: arg(:)
         call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
-    end subroutine hicl_knl_set_mem_int32_1d
+    end subroutine hicl_knl_set_mem_int32_1d_allocatable
 
-    subroutine hicl_knl_set_mem_int64_1d(name, index, arg)
+    subroutine hicl_knl_set_mem_int64_1d(name, index, arg, size_x)
+        character(len=*),        intent(in) :: name
+        integer(kind=4),         intent(in) :: index
+        integer(kind=8), target, intent(in) :: arg(size_x)
+        integer(kind=4),         intent(in) :: size_x
+        call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
+    end subroutine hicl_knl_set_mem_int64_1d
+
+    subroutine hicl_knl_set_mem_int64_1d_pointer(name, index, arg)
+        character(len=*),                       intent(in) :: name
+        integer(kind=4),                        intent(in) :: index
+        integer(kind=8), pointer, dimension(:), intent(in) :: arg
+        call c_hicl_knl_set_mem(name // c_null_char, index, &
+                                c_loc(arg(lbound(arg, 1))))
+    end subroutine hicl_knl_set_mem_int64_1d_pointer
+
+    subroutine hicl_knl_set_mem_int64_1d_allocatable(name, index, arg)
         character(len=*),                     intent(in) :: name
         integer(kind=4),                      intent(in) :: index
         integer(kind=8), allocatable, target, intent(in) :: arg(:)
         call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
-    end subroutine hicl_knl_set_mem_int64_1d
+    end subroutine hicl_knl_set_mem_int64_1d_allocatable
 
-    subroutine hicl_knl_set_mem_float_1d(name, index, arg)
+    subroutine hicl_knl_set_mem_float_1d(name, index, arg, size_x)
+        character(len=*),        intent(in) :: name
+        integer(kind=4),         intent(in) :: index
+        real(kind=4),    target, intent(in) :: arg(size_x)
+        integer(kind=4),         intent(in) :: size_x
+        call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
+    end subroutine hicl_knl_set_mem_float_1d
+
+    subroutine hicl_knl_set_mem_float_1d_pointer(name, index, arg)
+        character(len=*),                     intent(in) :: name
+        integer(kind=4),                      intent(in) :: index
+        real(kind=4),  pointer, dimension(:), intent(in) :: arg
+        call c_hicl_knl_set_mem(name // c_null_char, index, &
+                                c_loc(arg(lbound(arg, 1))))
+    end subroutine hicl_knl_set_mem_float_1d_pointer
+
+    subroutine hicl_knl_set_mem_float_1d_allocatable(name, index, arg)
         character(len=*),                     intent(in) :: name
         integer(kind=4),                      intent(in) :: index
         real(kind=4),    allocatable, target, intent(in) :: arg(:)
         call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
-    end subroutine hicl_knl_set_mem_float_1d
+    end subroutine hicl_knl_set_mem_float_1d_allocatable
 
-    subroutine hicl_knl_set_mem_double_1d(name, index, arg)
+    subroutine hicl_knl_set_mem_double_1d(name, index, arg, size_x)
+        character(len=*),        intent(in) :: name
+        integer(kind=4),         intent(in) :: index
+        real(kind=8),    target, intent(in) :: arg(size_x)
+        integer(kind=4),         intent(in) :: size_x
+        call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
+    end subroutine hicl_knl_set_mem_double_1d
+
+    subroutine hicl_knl_set_mem_double_1d_pointer(name, index, arg)
+        character(len=*),                     intent(in) :: name
+        integer(kind=4),                      intent(in) :: index
+        real(kind=8),  pointer, dimension(:), intent(in) :: arg
+        call c_hicl_knl_set_mem(name // c_null_char, index, &
+                                c_loc(arg(lbound(arg, 1))))
+    end subroutine hicl_knl_set_mem_double_1d_pointer
+
+    subroutine hicl_knl_set_mem_double_1d_allocatable(name, index, arg)
         character(len=*),                     intent(in) :: name
         integer(kind=4),                      intent(in) :: index
         real(kind=8),    allocatable, target, intent(in) :: arg(:)
         call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
-    end subroutine hicl_knl_set_mem_double_1d
+    end subroutine hicl_knl_set_mem_double_1d_allocatable
 
-    subroutine hicl_knl_set_mem_int32_2d(name, index, arg)
+    subroutine hicl_knl_set_mem_int32_2d(name, index, arg, size_x, size_y)
+        character(len=*),        intent(in) :: name
+        integer(kind=4),         intent(in) :: index
+        integer(kind=4), target, intent(in) :: arg(size_x, size_y)
+        integer(kind=4),         intent(in) :: size_x
+        integer(kind=4),         intent(in) :: size_y
+        call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
+    end subroutine hicl_knl_set_mem_int32_2d
+
+    subroutine hicl_knl_set_mem_int32_2d_pointer(name, index, arg)
+        character(len=*),                         intent(in) :: name
+        integer(kind=4),                          intent(in) :: index
+        integer(kind=4), pointer, dimension(:,:), intent(in) :: arg(:,:)
+        call c_hicl_knl_set_mem(name // c_null_char, index, &
+                                c_loc(arg(lbound(arg, 1),   &
+                                          lbound(arg, 2))))
+    end subroutine hicl_knl_set_mem_int32_2d_pointer
+    
+    subroutine hicl_knl_set_mem_int32_2d_allocatable(name, index, arg)
         character(len=*),                     intent(in) :: name
         integer(kind=4),                      intent(in) :: index
         integer(kind=4), allocatable, target, intent(in) :: arg(:,:)
         call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
-    end subroutine hicl_knl_set_mem_int32_2d
+    end subroutine hicl_knl_set_mem_int32_2d_allocatable
 
-    subroutine hicl_knl_set_mem_int64_2d(name, index, arg)
+    subroutine hicl_knl_set_mem_int64_2d(name, index, arg, size_x, size_y)
+        character(len=*),        intent(in) :: name
+        integer(kind=4),         intent(in) :: index
+        integer(kind=8), target, intent(in) :: arg(size_x, size_y)
+        integer(kind=4),         intent(in) :: size_x
+        integer(kind=4),         intent(in) :: size_y
+        call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
+    end subroutine hicl_knl_set_mem_int64_2d
+
+    subroutine hicl_knl_set_mem_int64_2d_pointer(name, index, arg)
+        character(len=*),                     intent(in) :: name
+        integer(kind=4),                      intent(in) :: index
+        integer(kind=8), pointer, dimension(:,:), intent(in) :: arg(:,:)
+        call c_hicl_knl_set_mem(name // c_null_char, index, &
+                                c_loc(arg(lbound(arg, 1),   &
+                                          lbound(arg, 2))))
+    end subroutine hicl_knl_set_mem_int64_2d_pointer
+    
+    subroutine hicl_knl_set_mem_int64_2d_allocatable(name, index, arg)
         character(len=*),                     intent(in) :: name
         integer(kind=4),                      intent(in) :: index
         integer(kind=8), allocatable, target, intent(in) :: arg(:,:)
         call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
-    end subroutine hicl_knl_set_mem_int64_2d
+    end subroutine hicl_knl_set_mem_int64_2d_allocatable
 
-    subroutine hicl_knl_set_mem_float_2d(name, index, arg)
+    subroutine hicl_knl_set_mem_float_2d(name, index, arg, size_x, size_y)
+        character(len=*),     intent(in) :: name
+        integer(kind=4),      intent(in) :: index
+        real(kind=4), target, intent(in) :: arg(size_x, size_y)
+        integer(kind=4),      intent(in) :: size_x
+        integer(kind=4),      intent(in) :: size_y
+        call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
+    end subroutine hicl_knl_set_mem_float_2d
+
+    subroutine hicl_knl_set_mem_float_2d_pointer(name, index, arg)
+        character(len=*),                     intent(in) :: name
+        integer(kind=4),                      intent(in) :: index
+        real(kind=4), pointer, dimension(:,:), intent(in) :: arg(:,:)
+        call c_hicl_knl_set_mem(name // c_null_char, index, &
+                                c_loc(arg(lbound(arg, 1),   &
+                                          lbound(arg, 2))))
+    end subroutine hicl_knl_set_mem_float_2d_pointer
+
+    subroutine hicl_knl_set_mem_float_2d_allocatable(name, index, arg)
         character(len=*),                     intent(in) :: name
         integer(kind=4),                      intent(in) :: index
         real(kind=4),    allocatable, target, intent(in) :: arg(:,:)
         call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
-    end subroutine hicl_knl_set_mem_float_2d
+    end subroutine hicl_knl_set_mem_float_2d_allocatable
 
-    subroutine hicl_knl_set_mem_double_2d(name, index, arg)
+    subroutine hicl_knl_set_mem_double_2d(name, index, arg, size_x, size_y)
+        character(len=*),        intent(in) :: name
+        integer(kind=4),         intent(in) :: index
+        real(kind=8),    target, intent(in) :: arg(size_x, size_y)
+        integer(kind=4),         intent(in) :: size_x
+        integer(kind=4),         intent(in) :: size_y
+        call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
+    end subroutine hicl_knl_set_mem_double_2d
+
+    subroutine hicl_knl_set_mem_double_2d_pointer(name, index, arg)
+        character(len=*),                      intent(in) :: name
+        integer(kind=4),                       intent(in) :: index
+        real(kind=8), pointer, dimension(:,:), intent(in) :: arg(:,:)
+        call c_hicl_knl_set_mem(name // c_null_char, index, &
+                                c_loc(arg(lbound(arg, 1),   &
+                                          lbound(arg, 2))))
+    end subroutine hicl_knl_set_mem_double_2d_pointer
+
+    subroutine hicl_knl_set_mem_double_2d_allocatable(name, index, arg)
         character(len=*),                     intent(in) :: name
         integer(kind=4),                      intent(in) :: index
         real(kind=8),    allocatable, target, intent(in) :: arg(:,:)
         call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
-    end subroutine hicl_knl_set_mem_double_2d
+    end subroutine hicl_knl_set_mem_double_2d_allocatable
 
-    subroutine hicl_knl_set_mem_int32_3d(name, index, arg)
+
+    subroutine hicl_knl_set_mem_int32_3d(name, index, arg, &
+                                         size_x, size_y, size_z)
+        character(len=*),        intent(in) :: name
+        integer(kind=4),         intent(in) :: index
+        integer(kind=4), target, intent(in) :: arg(size_x, size_y, size_z)
+        integer(kind=4),         intent(in) :: size_x
+        integer(kind=4),         intent(in) :: size_y
+        integer(kind=4),         intent(in) :: size_z
+        call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
+    end subroutine hicl_knl_set_mem_int32_3d
+
+    subroutine hicl_knl_set_mem_int32_3d_pointer(name, index, arg)
+        character(len=*),                           intent(in) :: name
+        integer(kind=4),                            intent(in) :: index
+        integer(kind=4), pointer, dimension(:,:,:), intent(in) :: arg(:,:,:)
+        call c_hicl_knl_set_mem(name // c_null_char, index, &
+                                c_loc(arg(lbound(arg, 1),   &
+                                          lbound(arg, 2),   &
+                                          lbound(arg, 3))))
+    end subroutine hicl_knl_set_mem_int32_3d_pointer
+
+    subroutine hicl_knl_set_mem_int32_3d_allocatable(name, index, arg)
         character(len=*),                     intent(in) :: name
         integer(kind=4),                      intent(in) :: index
         integer(kind=4), allocatable, target, intent(in) :: arg(:,:,:)
         call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
-    end subroutine hicl_knl_set_mem_int32_3d
+    end subroutine hicl_knl_set_mem_int32_3d_allocatable
 
-    subroutine hicl_knl_set_mem_int64_3d(name, index, arg)
+    subroutine hicl_knl_set_mem_int64_3d(name, index, arg, &
+                                         size_x, size_y, size_z)
+        character(len=*),        intent(in) :: name
+        integer(kind=4),         intent(in) :: index
+        integer(kind=8), target, intent(in) :: arg(size_x, size_y, size_z)
+        integer(kind=4),         intent(in) :: size_x
+        integer(kind=4),         intent(in) :: size_y
+        integer(kind=4),         intent(in) :: size_z
+        call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
+    end subroutine hicl_knl_set_mem_int64_3d
+
+    subroutine hicl_knl_set_mem_int64_3d_pointer(name, index, arg)
+        character(len=*),                           intent(in) :: name
+        integer(kind=4),                            intent(in) :: index
+        integer(kind=8), pointer, dimension(:,:,:), intent(in) :: arg(:,:,:)
+        call c_hicl_knl_set_mem(name // c_null_char, index, &
+                                c_loc(arg(lbound(arg, 1),   &
+                                          lbound(arg, 2),   &
+                                          lbound(arg, 3))))
+    end subroutine hicl_knl_set_mem_int64_3d_pointer
+
+    subroutine hicl_knl_set_mem_int64_3d_allocatable(name, index, arg)
         character(len=*),                     intent(in) :: name
         integer(kind=4),                      intent(in) :: index
         integer(kind=8), allocatable, target, intent(in) :: arg(:,:,:)
         call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
-    end subroutine hicl_knl_set_mem_int64_3d
+    end subroutine hicl_knl_set_mem_int64_3d_allocatable
 
-    subroutine hicl_knl_set_mem_float_3d(name, index, arg)
+    subroutine hicl_knl_set_mem_float_3d(name, index, arg, &
+                                         size_x, size_y, size_z)
+        character(len=*),     intent(in) :: name
+        integer(kind=4),      intent(in) :: index
+        real(kind=4), target, intent(in) :: arg(size_x, size_y, size_z)
+        integer(kind=4),      intent(in) :: size_x
+        integer(kind=4),      intent(in) :: size_y
+        integer(kind=4),      intent(in) :: size_z
+        call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
+    end subroutine hicl_knl_set_mem_float_3d
+
+    subroutine hicl_knl_set_mem_float_3d_pointer(name, index, arg)
+        character(len=*),                        intent(in) :: name
+        integer(kind=4),                         intent(in) :: index
+        real(kind=4), pointer, dimension(:,:,:), intent(in) :: arg(:,:,:)
+        call c_hicl_knl_set_mem(name // c_null_char, index, &
+                                c_loc(arg(lbound(arg, 1),   &
+                                          lbound(arg, 2),   &
+                                          lbound(arg, 3))))
+    end subroutine hicl_knl_set_mem_float_3d_pointer
+
+    subroutine hicl_knl_set_mem_float_3d_allocatable(name, index, arg)
         character(len=*),                     intent(in) :: name
         integer(kind=4),                      intent(in) :: index
         real(kind=4),    allocatable, target, intent(in) :: arg(:,:,:)
         call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
-    end subroutine hicl_knl_set_mem_float_3d
+    end subroutine hicl_knl_set_mem_float_3d_allocatable
 
-    subroutine hicl_knl_set_mem_double_3d(name, index, arg)
+    subroutine hicl_knl_set_mem_double_3d(name, index, arg, &
+                                          size_x, size_y, size_z)
+        character(len=*),     intent(in) :: name
+        integer(kind=4),      intent(in) :: index
+        real(kind=8), target, intent(in) :: arg(size_x, size_y, size_z)
+        integer(kind=4),      intent(in) :: size_x
+        integer(kind=4),      intent(in) :: size_y
+        integer(kind=4),      intent(in) :: size_z
+        call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
+    end subroutine hicl_knl_set_mem_double_3d
+
+    subroutine hicl_knl_set_mem_double_3d_pointer(name, index, arg)
+        character(len=*),                        intent(in) :: name
+        integer(kind=4),                         intent(in) :: index
+        real(kind=8), pointer, dimension(:,:,:), intent(in) :: arg(:,:,:)
+        call c_hicl_knl_set_mem(name // c_null_char, index, &
+                                c_loc(arg(lbound(arg, 1),   &
+                                          lbound(arg, 2),   &
+                                          lbound(arg, 3))))
+    end subroutine hicl_knl_set_mem_double_3d_pointer
+
+    subroutine hicl_knl_set_mem_double_3d_allocatable(name, index, arg)
         character(len=*),                     intent(in) :: name
         integer(kind=4),                      intent(in) :: index
         real(kind=8),    allocatable, target, intent(in) :: arg(:,:,:)
         call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
-    end subroutine hicl_knl_set_mem_double_3d
+    end subroutine hicl_knl_set_mem_double_3d_allocatable
 
     !!
     !! exec
