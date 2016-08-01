@@ -55,13 +55,27 @@ module m_mem_test
 
 contains
   
-    logical function float_allocated_buffer() result(status)
+    logical function wrap_buffer() result(status)
+        real :: h(N)
+        call hicl_mem_wrap(h, d, N, FLOAT)
+        status = associated(d) .and. (hicl_mem_count() == 1)
+    end function wrap_buffer
+    
+    logical function wrap_allocatable() result(status)
         real, allocatable :: h(:)
         allocate(h(N)) 
         call hicl_mem_wrap(h, d, FLOAT)
         status = associated(d) .and. (hicl_mem_count() == 1)
         deallocate(h)
-    end function float_allocated_buffer
+    end function wrap_allocatable
+
+    logical function wrap_pointer() result(status)
+        real, pointer, dimension(:) :: h
+        allocate(h(N)) 
+        call hicl_mem_wrap(h, d, FLOAT)
+        status = associated(d) .and. (hicl_mem_count() == 1)
+        deallocate(h)
+    end function wrap_pointer
 
     logical function info() result(status)
         real(kind=4), allocatable :: h(:)
@@ -83,6 +97,16 @@ contains
     end function read_access_buffer
 
     logical function write_access_buffer() result(status)    
+        real :: h(-3:N-4)
+        h(-3:N-4) = 0.0
+        h(-3)     = 1.2
+        call hicl_mem_wrap(h, d, N, READ_WRITE)        
+        call hicl_mem_update(h, N, READ_ONLY)
+        status = h(-3).eq.1.2
+        status = status .and. (hicl_mem_count() == 1)
+    end function write_access_buffer
+
+    logical function write_access_allocatable() result(status)    
         real, allocatable :: h(:)
         allocate(h(-3:N-4))
         h(-3:N-4) = 0.0
@@ -92,7 +116,21 @@ contains
         status = h(-3).eq.1.2
         status = status .and. (hicl_mem_count() == 1)
         deallocate(h)
-    end function write_access_buffer
+    end function write_access_allocatable
+
+    logical function write_access_pointer() result(status)    
+        real, pointer :: h(:)
+        allocate(h(-3:N-4))
+        h(-3:N-4) = 0.0
+        h(-3)     = 1.2
+        h(N-10)   = -1.2
+        call hicl_mem_wrap(h, d, READ_WRITE)        
+        call hicl_mem_update(h, READ_ONLY)
+        status = h(-3).eq.1.2
+        status = status .and. h(N-10).eq.-1.2
+        status = status .and. (hicl_mem_count() == 1)
+        deallocate(h)
+    end function write_access_pointer
 
     logical function access_buffer_2d() result(status)
         real, allocatable :: h2d(:,:)
@@ -149,14 +187,22 @@ contains
     end subroutine teardown
     
     subroutine mem_test()
-        call run(setup, teardown, float_allocated_buffer, &
-              "mem_test.float_allocated_buffer")
+        call run(setup, teardown, wrap_buffer, &
+              "mem_test.wrap_buffer")
+        call run(setup, teardown, wrap_allocatable, &
+              "mem_test.wrap_allocatable")
+        call run(setup, teardown, wrap_pointer, &
+              "mem_test.wrap_pointer")
         call run(setup, teardown, info, &
               "mem_test.info")
         call run(setup, teardown, read_access_buffer, &
                "mem_test.read_access_buffer")
         call run(setup, teardown, write_access_buffer, &
               "mem_test.write_access_buffer")
+        call run(setup, teardown, write_access_allocatable, &
+              "mem_test.write_access_allocatable")
+        call run(setup, teardown, write_access_pointer, &
+              "mem_test.write_access_pointer")
         call run(setup, teardown, access_buffer_2d, &
               "mem_test.access_buffer_2d")
         call run(setup, teardown, access_buffer_3d, &
