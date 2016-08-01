@@ -1,7 +1,7 @@
 set(CMAKE_Fortran_FLAGS_DEBUG   
     "${CMAKE_Fortran_FLAGS_DEBUG} -Wall -O0 -g")
 set(CMAKE_Fortran_FLAGS_RELEASE 
-    "${CMAKE_Fortran_FLAGS_RELEASE} -funroll-all-loops -fno-f2c -O3")
+    "${CMAKE_Fortran_FLAGS_RELEASE} -cpp -w -ffree-line-length-none -funroll-all-loops -fno-f2c -O3")
 set(CMAKE_Fortran_FLAGS         
     "${CMAKE_Fortran_FLAGS} -fbackslash")
 find_package(OpenMP)

@@ -127,8 +127,8 @@ contains
         integer                       :: i
         integer(kind=8), dimension(3) :: gws = (/1_8, 1_8, 1_8/)
         integer(kind=8), dimension(3) :: lws = (/1_8, 1_8, 1_8/)
-        real, allocatable, target :: src(:) 
-        real, allocatable, target :: dst(:) 
+        real, allocatable :: src(:) 
+        real, allocatable :: dst(:) 
 
         gws(1) = N
         lws(1) = 64
