@@ -43,9 +43,10 @@ set (CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}")
 set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 ## Configurable options for how we want to build hiCL
-option(hicl_debug   "Build hiCL with the debug mode."             OFF)
-option(hicl_verbose "Build hiCL with the verbose mode activated."  ON)
-option(hicl_use_tty "Build hiCL with logging into  the terminal."  ON)
+option(hicl_debug       "Build hiCL with the debug mode."                  OFF)
+option(hicl_verbose     "Build hiCL with the verbose mode activated."       ON)
+option(hicl_use_tty     "Build hiCL with logging into  the terminal."       ON)
+option(hicl_roundup_wrk "Build hiCL with rounding up the workgroup sizes." OFF)
 
 ## Set the build type (DEFAULT is Release)
 if (NOT CMAKE_BUILD_TYPE)
@@ -93,6 +94,9 @@ endif (hicl_verbose)
 if (hicl_use_tty)
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__API_LOG_STD")
 endif (hicl_use_tty)
+if (hicl_roundup_wrk)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__API_ROUNDUP_WRK")
+endif (hicl_roundup_wrk)
 
 ## Skip dependencies between builds and installs
 #set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY TRUE) 
