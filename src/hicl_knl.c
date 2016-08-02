@@ -189,7 +189,11 @@ inline void hicl_knl_set_wrk(const char *name,
     k->wrk = wrk;
     for(idx=0; idx<3; ++idx) {
         if (idx < wrk) {
+#ifdef __API_ROUNDUP_WRK
+            k->gws[idx] = __api_nmult64(gws[idx], lws[idx]);
+#else
             k->gws[idx] = gws[idx];
+#endif // __API_ROUNDUP_WRK
             k->lws[idx] = lws[idx];
         } else {
             k->gws[idx] = 1;

@@ -155,6 +155,11 @@ __api_knl_cmp(hiknl_t cur, hiknl_t otr) {
     return (int64_t)cur - (int64_t)otr;
 }
 
+PRIVATE int64_t 
+__api_nmult64(int64_t val, int64_t q) {
+    return val + q - 1 - (val - 1)%q;
+}
+
 PRIVATE void
 __api_generate_filename(char *filename) {
     time_t tloc;
