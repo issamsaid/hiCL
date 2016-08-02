@@ -58,6 +58,34 @@ namespace {
         ASSERT_TRUE(hicl == NULL);
     }
 
+    TEST_F(BaseTest, init_singleton) {
+        ASSERT_TRUE(hicl == NULL);
+        hicl_init(DEFAULT);
+        ASSERT_TRUE(hicl != NULL);
+        hicl_init(DEFAULT);
+        hicl_init(DEFAULT);
+        hicl_init(DEFAULT);
+        hicl_init(DEFAULT);
+        hicl_init(DEFAULT);
+        ASSERT_TRUE(hicl != NULL);
+        hicl_release();
+        ASSERT_TRUE(hicl == NULL);
+    }
+
+    TEST_F(BaseTest, release_singleton) {
+        ASSERT_TRUE(hicl == NULL);
+        hicl_init(DEFAULT);
+        ASSERT_TRUE(hicl != NULL);
+        hicl_release();
+        hicl_release();
+        hicl_release();
+        hicl_release();
+        hicl_release();
+        hicl_release();
+        hicl_release();
+        ASSERT_TRUE(hicl == NULL);
+    }
+
     TEST_F(BaseTest, init_all) {
         unsigned int n;
         ASSERT_TRUE(hicl == NULL);

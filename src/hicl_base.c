@@ -60,18 +60,19 @@ void hicl_init(flags_t flags) {
     unsigned int i;
     char tmp_0[__API_STR_SIZE];
     char tmp_1[__API_STR_SIZE];
-    char stime[__API_STR_SIZE];
     cl_platform_id *plt_ids;
     cl_device_id   *dev_ids;
+#if defined(__API_MPI) && ! defined(__API_LOG_STD)
+    char stime[__API_STR_SIZE];
     time_t now          = time(NULL);
     struct tm time_desc = *(localtime(&now));
-
-    strftime(stime, __API_STR_SIZE, "%m%d%y%H%M%S", &time_desc);
-
-#if defined(__API_MPI) && ! defined(__API_LOG_STD)
     int mpi_on, mpi_rank;
 #endif // __API_MPI
     
+    ///
+    /// if hicl == NULL means that the library is not initialized yet.
+    /// This test ensures that hiCL is initialized only once.
+    ///
     if (hicl == NULL) {
         hicl              = (hienv_t) malloc(sizeof(struct __hienv_t));
         hicl->platform_id = NULL;
@@ -84,6 +85,8 @@ void hicl_init(flags_t flags) {
         hicl->fderr = stderr;
 #else
 #ifdef  __API_MPI
+        strftime(stime, __API_STR_SIZE, "%m%d%y%H%M%S", &time_desc);
+
         MPI_Initialized(&mpi_on);
         if (mpi_on) {
             MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
@@ -108,72 +111,80 @@ void hicl_init(flags_t flags) {
             exit(EXIT_FAILURE);
         }
 #endif // __API_LOG_STD
-    }
-    HICL_DEBUG("hicl_init: flags = %#016lx", flags);
-
-    // prepare OpenCL resources lists.
-    create_rbt_address_t_himem_t(&hicl->mems, 
-                               __api_address_cmp, __api_mem_stdalone_release);
-
-    // get the OpenCL desired platform otherwise exit.
-    nb_platforms = __api_plt_count();
-    HICL_EXIT_IF(nb_platforms == 0, "no OpenCL platform found");
-    plt_ids      = (cl_platform_id*)malloc(nb_platforms*sizeof(cl_platform_id));
-    __api_plt_query(plt_ids, nb_platforms);
-    hicl->platform_id = __api_plt_select(plt_ids, nb_platforms, flags);
-    HICL_EXIT_IF(hicl->platform_id == NULL, 
-                 "no '%s' OpenCL platform found", 
-                 __API_PLT_TYPE_STR(flags & (__API_PLT_VENDOR_MASK)));
-    __API_PLT_GET_PTR(hicl->platform_id, CL_PLATFORM_NAME, tmp_0);
-    HICL_PRINT("1 OpenCL platform is loaded: %s (%s)", 
-                tmp_0, __API_PLT_TYPE_STR(flags));
-
-    // try to load the OpenCL devices, otherwise fail to default.
-    nb_devices = __api_dev_count(hicl->platform_id);
-    HICL_EXIT_IF(nb_devices == 0, 
-                 "no OpenCL devices found in platform %s", tmp_0);
-    dev_ids    = (cl_device_id*)malloc(nb_devices*sizeof(cl_device_id));
-    __api_dev_query(hicl->platform_id, dev_ids, nb_devices);
-    nb_devices = __api_dev_select(dev_ids, nb_devices, flags);
-    HICL_EXIT_IF(nb_devices == 0, 
-                 "the desired '%s' OpenCL device cannot be found", 
-                 __API_DEV_TYPE_STR(__api_dev_flags_to_type(flags & (__API_DEV_TYPE_MASK))));
-    HICL_PRINT("%u OpenCL device%s %s loaded",
-               nb_devices,
-               nb_devices == 1 ? "" : "s",
-               nb_devices == 1 ? "is" : "are");
-    for (i=0; i<nb_devices; ++i) {
-        __API_DEV_GET_PTR(dev_ids[i], CL_DEVICE_NAME, tmp_1);
-        HICL_PRINT("\t- %s", tmp_1);
-    }
     
-    // setup an OpenCL context.
-    hicl->context = clCreateContext(NULL, nb_devices, 
-                                  dev_ids, NULL, NULL, &cl_ret);
-    HICL_CHECK(cl_ret, "failed to create an OpenCL context");
-    
-    // setup devices.
-    for (i=0; i<nb_devices; ++i) {
-        list_insert_hidev_t(&hicl->devs, 
-                            list_create_hidev_t(hicl_dev_init(dev_ids[i])));
+        HICL_DEBUG("hicl_init: flags = %#016lx", flags);
+
+        // prepare OpenCL resources lists.
+        create_rbt_address_t_himem_t(&hicl->mems, 
+                                    __api_address_cmp, 
+                                    __api_mem_stdalone_release);
+        // get the OpenCL desired platform otherwise exit.
+        nb_platforms = __api_plt_count();
+        HICL_EXIT_IF(nb_platforms == 0, "no OpenCL platform found");
+        plt_ids      = 
+            (cl_platform_id*)malloc(nb_platforms*sizeof(cl_platform_id));
+        __api_plt_query(plt_ids, nb_platforms);
+        hicl->platform_id = __api_plt_select(plt_ids, nb_platforms, flags);
+        HICL_EXIT_IF(hicl->platform_id == NULL, 
+                     "no '%s' OpenCL platform found", 
+                     __API_PLT_TYPE_STR(flags & (__API_PLT_VENDOR_MASK)));
+        __API_PLT_GET_PTR(hicl->platform_id, CL_PLATFORM_NAME, tmp_0);
+        HICL_PRINT("1 OpenCL platform is loaded: %s (%s)", 
+                    tmp_0, __API_PLT_TYPE_STR(flags));
+
+        // try to load the OpenCL devices, otherwise fail to default.
+        nb_devices = __api_dev_count(hicl->platform_id);
+        HICL_EXIT_IF(nb_devices == 0, 
+                     "no OpenCL devices found in platform %s", tmp_0);
+        dev_ids    = (cl_device_id*)malloc(nb_devices*sizeof(cl_device_id));
+        __api_dev_query(hicl->platform_id, dev_ids, nb_devices);
+        nb_devices = __api_dev_select(dev_ids, nb_devices, flags);
+        HICL_EXIT_IF(nb_devices == 0, 
+                     "the desired '%s' OpenCL device cannot be found", 
+                     __API_DEV_TYPE_STR(
+                            __api_dev_flags_to_type(flags & 
+                                    (__API_DEV_TYPE_MASK))));
+        HICL_PRINT("%u OpenCL device%s %s loaded",
+                   nb_devices,
+                   nb_devices == 1 ? "" : "s",
+                   nb_devices == 1 ? "is" : "are");
+        for (i=0; i<nb_devices; ++i) {
+            __API_DEV_GET_PTR(dev_ids[i], CL_DEVICE_NAME, tmp_1);
+            HICL_PRINT("\t- %s", tmp_1);
+        }
+        
+        // setup an OpenCL context.
+        hicl->context = clCreateContext(NULL, nb_devices, 
+                                      dev_ids, NULL, NULL, &cl_ret);
+        HICL_CHECK(cl_ret, "failed to create an OpenCL context");
+        
+        // setup devices.
+        for (i=0; i<nb_devices; ++i) {
+            list_insert_hidev_t(&hicl->devs, 
+                                list_create_hidev_t(hicl_dev_init(dev_ids[i])));
+        }
+        // setup timer.
+        hicl_timer_uset(__API_TIMER_UNIT);
+        free(plt_ids);
+        free(dev_ids);
     }
-    // setup timer.
-    hicl_timer_uset(__API_TIMER_UNIT);
-    free(plt_ids);
-    free(dev_ids);
 }
 
 void hicl_release() {
-    list_hiknl_t *tmp_knl, *i_knl = hicl->knls;
-    list_hidev_t *tmp_dev, *i_dev = hicl->devs;
+    ///
+    /// if hicl != NULL means that the library is not released yet.
+    /// This test ensures that hiCL is released only once.
+    ///
     if (hicl != NULL) {
+        list_hiknl_t *tmp_knl, *i_knl = hicl->knls;
+        list_hidev_t *tmp_dev, *i_dev = hicl->devs;
         delete_rbt_address_t_himem_t(&hicl->mems);
         while(i_knl != NULL) {
             tmp_knl = i_knl;
             HICL_DEBUG("releasing OpenCL kernel @ %p (%s)", 
                         i_knl->data->id, 
                         __api_knl_name(i_knl->data->id));
-            //delete_rbt_int_mem(&i_knl->data->mems);
+            /// delete_rbt_int_mem(&i_knl->data->mems);
             __api_knl_release(i_knl->data->id);
             free(i_knl->data); i_knl->data = NULL;
             i_knl = i_knl->next;
@@ -193,20 +204,23 @@ void hicl_release() {
                 HICL_WARN("failed to release OpenCL context");
         }
         HICL_PRINT("OpenCL resources are released");
-    }
-#ifndef __API_LOG_STD
-    if (fclose(hicl->fdout)) {
-        fprintf(stderr, "FATAL ERROR: failed to close hicl output log file");
+    
+    #ifndef __API_LOG_STD
+        if (fclose(hicl->fdout)) {
+            fprintf(stderr, 
+                    "FATAL ERROR: failed to close the hiCL output log file");
+            free(hicl); hicl = NULL;
+            exit(EXIT_FAILURE);
+        }
+        if (fclose(hicl->fderr)) {
+            fprintf(stderr, 
+                    "FATAL ERROR: failed to close the hiCL error log file");
+            free(hicl); hicl = NULL;
+            exit(EXIT_FAILURE);
+        }
+    #endif
         free(hicl); hicl = NULL;
-        exit(EXIT_FAILURE);
     }
-    if (fclose(hicl->fderr)) {
-        fprintf(stderr, "FATAL ERROR: failed to close hicl error log file");
-        free(hicl); hicl = NULL;
-        exit(EXIT_FAILURE);
-    }
-#endif
-    free(hicl); hicl = NULL;
 }
 
 void hicl_load(const char *filename, const char *options_format, ...) {
