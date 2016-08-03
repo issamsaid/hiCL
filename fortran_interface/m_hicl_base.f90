@@ -87,7 +87,8 @@ contains
         character(len=*),           intent(in) :: filename
         character(len=*), optional, intent(in) :: options
         if (present(options)) then
-            call c_hicl_load(filename // c_null_char, options // c_null_char)
+            call c_hicl_load(filename // c_null_char, &
+                             trim(options) // c_null_char)
         else
             call c_hicl_load(filename // c_null_char, c_null_char)
         end if
