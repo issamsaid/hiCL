@@ -113,9 +113,22 @@ __api_knl_create_from_program(cl_program program,
                               size_t *num_kernels) {
     char buffer[__API_BUFFER_SIZE];
     cl_kernel *ids;
-    cl_int cl_ret = clBuildProgram(program, 0, NULL, options, NULL, NULL);
     cl_context context;
     cl_uint idx, nb_devices;
+    cl_int cl_ret;
+#ifdef CL_VERSION_1_2
+    if((getenv("HICL_BUILD_OPTIONS")) == NULL)
+        sprintf(buffer, "-cl-kernel-arg-info %s", options);
+    else
+        sprintf(buffer, "-cl-kernel-arg-info %s %s", 
+                getenv("HICL_BUILD_OPTIONS"), options);
+#else
+    if((getenv("HICL_BUILD_OPTIONS")) == NULL)
+        sprintf(buffer, "%s", options);
+    else
+        sprintf(buffer, "%s %s", getenv("HICL_BUILD_OPTIONS"), options);
+#endif 
+    cl_ret = clBuildProgram(program, 0, NULL, buffer, NULL, NULL);
     if (cl_ret != CL_SUCCESS) {
         __API_PROGRAM_GET(program, CL_PROGRAM_CONTEXT, context);
         __API_CONTEXT_GET(context, CL_CONTEXT_NUM_DEVICES, nb_devices);
