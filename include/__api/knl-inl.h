@@ -374,19 +374,6 @@ __api_knl_async_run(cl_kernel kernel, cl_command_queue queue,
 }
 
 PRIVATE void
-__api_knl_sync_run_task(cl_kernel kernel, cl_command_queue queue) {
-    HICL_CHECK(clEnqueueTask(queue, kernel, 0, NULL, NULL),
-                           "failed to run OpenCL task");
-    clFinish(queue);
-}
-
-PRIVATE void
-__api_knl_async_run_task(cl_kernel kernel, cl_command_queue queue) {
-    HICL_CHECK(clEnqueueTask(queue, kernel, 0, NULL, NULL),
-                           "failed to run OpenCL task");
-}
-
-PRIVATE void
 __api_knl_info(cl_kernel kernel, cl_uint num_args) {
     cl_uint i;
     char tmp_0[__API_STR_SIZE], tmp_1[__API_STR_SIZE];

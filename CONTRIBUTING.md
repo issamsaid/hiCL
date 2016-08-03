@@ -11,6 +11,7 @@ in a pull request.
 
 ## Possible rooms to improvement
 We are planning to improve the following features of the **hiCL** library:
+* OpenCL 2.0 compliance.
 * The lookup performance of the hiCL descriptors (kernels, devices, 
   objects).
 * The Fortran calls to run and execute kernels.

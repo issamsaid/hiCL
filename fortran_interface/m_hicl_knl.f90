@@ -259,8 +259,8 @@ contains
     subroutine hicl_knl_set_mem_int32_1d(name, index, arg, size_x)
         character(len=*),        intent(in) :: name
         integer(kind=4),         intent(in) :: index
-        integer(kind=4), target, intent(in) :: arg(size_x)
         integer(kind=4),         intent(in) :: size_x
+        integer(kind=4), target, intent(in) :: arg(size_x)
         call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
     end subroutine hicl_knl_set_mem_int32_1d
 
@@ -282,8 +282,8 @@ contains
     subroutine hicl_knl_set_mem_int64_1d(name, index, arg, size_x)
         character(len=*),        intent(in) :: name
         integer(kind=4),         intent(in) :: index
-        integer(kind=8), target, intent(in) :: arg(size_x)
         integer(kind=4),         intent(in) :: size_x
+        integer(kind=8), target, intent(in) :: arg(size_x)
         call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
     end subroutine hicl_knl_set_mem_int64_1d
 
@@ -305,8 +305,8 @@ contains
     subroutine hicl_knl_set_mem_float_1d(name, index, arg, size_x)
         character(len=*),        intent(in) :: name
         integer(kind=4),         intent(in) :: index
-        real(kind=4),    target, intent(in) :: arg(size_x)
         integer(kind=4),         intent(in) :: size_x
+        real(kind=4),    target, intent(in) :: arg(size_x)
         call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
     end subroutine hicl_knl_set_mem_float_1d
 
@@ -328,8 +328,8 @@ contains
     subroutine hicl_knl_set_mem_double_1d(name, index, arg, size_x)
         character(len=*),        intent(in) :: name
         integer(kind=4),         intent(in) :: index
-        real(kind=8),    target, intent(in) :: arg(size_x)
         integer(kind=4),         intent(in) :: size_x
+        real(kind=8),    target, intent(in) :: arg(size_x)
         call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
     end subroutine hicl_knl_set_mem_double_1d
 
@@ -351,9 +351,9 @@ contains
     subroutine hicl_knl_set_mem_int32_2d(name, index, arg, size_x, size_y)
         character(len=*),        intent(in) :: name
         integer(kind=4),         intent(in) :: index
-        integer(kind=4), target, intent(in) :: arg(size_x, size_y)
         integer(kind=4),         intent(in) :: size_x
         integer(kind=4),         intent(in) :: size_y
+        integer(kind=4), target, intent(in) :: arg(size_x, size_y)
         call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
     end subroutine hicl_knl_set_mem_int32_2d
 
@@ -376,9 +376,9 @@ contains
     subroutine hicl_knl_set_mem_int64_2d(name, index, arg, size_x, size_y)
         character(len=*),        intent(in) :: name
         integer(kind=4),         intent(in) :: index
-        integer(kind=8), target, intent(in) :: arg(size_x, size_y)
         integer(kind=4),         intent(in) :: size_x
         integer(kind=4),         intent(in) :: size_y
+        integer(kind=8), target, intent(in) :: arg(size_x, size_y)
         call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
     end subroutine hicl_knl_set_mem_int64_2d
 
@@ -401,9 +401,9 @@ contains
     subroutine hicl_knl_set_mem_float_2d(name, index, arg, size_x, size_y)
         character(len=*),     intent(in) :: name
         integer(kind=4),      intent(in) :: index
-        real(kind=4), target, intent(in) :: arg(size_x, size_y)
         integer(kind=4),      intent(in) :: size_x
         integer(kind=4),      intent(in) :: size_y
+        real(kind=4), target, intent(in) :: arg(size_x, size_y)
         call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
     end subroutine hicl_knl_set_mem_float_2d
 
@@ -426,9 +426,9 @@ contains
     subroutine hicl_knl_set_mem_double_2d(name, index, arg, size_x, size_y)
         character(len=*),        intent(in) :: name
         integer(kind=4),         intent(in) :: index
-        real(kind=8),    target, intent(in) :: arg(size_x, size_y)
         integer(kind=4),         intent(in) :: size_x
         integer(kind=4),         intent(in) :: size_y
+        real(kind=8),    target, intent(in) :: arg(size_x, size_y)
         call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
     end subroutine hicl_knl_set_mem_double_2d
 
@@ -453,10 +453,10 @@ contains
                                          size_x, size_y, size_z)
         character(len=*),        intent(in) :: name
         integer(kind=4),         intent(in) :: index
-        integer(kind=4), target, intent(in) :: arg(size_x, size_y, size_z)
         integer(kind=4),         intent(in) :: size_x
         integer(kind=4),         intent(in) :: size_y
         integer(kind=4),         intent(in) :: size_z
+        integer(kind=4), target, intent(in) :: arg(size_x, size_y, size_z)
         call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
     end subroutine hicl_knl_set_mem_int32_3d
 
@@ -481,10 +481,10 @@ contains
                                          size_x, size_y, size_z)
         character(len=*),        intent(in) :: name
         integer(kind=4),         intent(in) :: index
-        integer(kind=8), target, intent(in) :: arg(size_x, size_y, size_z)
         integer(kind=4),         intent(in) :: size_x
         integer(kind=4),         intent(in) :: size_y
         integer(kind=4),         intent(in) :: size_z
+        integer(kind=8), target, intent(in) :: arg(size_x, size_y, size_z)
         call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
     end subroutine hicl_knl_set_mem_int64_3d
 
@@ -509,10 +509,10 @@ contains
                                          size_x, size_y, size_z)
         character(len=*),     intent(in) :: name
         integer(kind=4),      intent(in) :: index
-        real(kind=4), target, intent(in) :: arg(size_x, size_y, size_z)
         integer(kind=4),      intent(in) :: size_x
         integer(kind=4),      intent(in) :: size_y
         integer(kind=4),      intent(in) :: size_z
+        real(kind=4), target, intent(in) :: arg(size_x, size_y, size_z)
         call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
     end subroutine hicl_knl_set_mem_float_3d
 
@@ -537,10 +537,10 @@ contains
                                           size_x, size_y, size_z)
         character(len=*),     intent(in) :: name
         integer(kind=4),      intent(in) :: index
-        real(kind=8), target, intent(in) :: arg(size_x, size_y, size_z)
         integer(kind=4),      intent(in) :: size_x
         integer(kind=4),      intent(in) :: size_y
         integer(kind=4),      intent(in) :: size_z
+        real(kind=8), target, intent(in) :: arg(size_x, size_y, size_z)
         call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
     end subroutine hicl_knl_set_mem_double_3d
 
