@@ -83,7 +83,7 @@ popd
 The current version of the <b>hiCL</b> library had been tested on various Linux 
 workstations with the GNU, Cray and Intel compilers. Nevertheless, if you face issues 
 with other compilers you are kindly invited to report them.
-Note that if you are using Cray compilers you have to specify where is the 
+Note that if you are using Cray compilers you have to specify where the 
 Fortran compiler is wrapped. For example if you are using `ftn` you have to add:
 ```
 pushd hiCL
