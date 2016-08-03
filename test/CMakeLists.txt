@@ -49,4 +49,4 @@ add_subdirectory(fortran_interface)
 
 ## Add a custom target that includes the build of all the tests
 add_custom_target(test)
-add_dependencies(test hicl_test hicl_fortran_test)
+add_dependencies(test hicl_test hicl_test_fortran)
