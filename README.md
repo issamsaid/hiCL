@@ -158,12 +158,12 @@ The testing framework is used to thoroughly test <b>hiCL</b> in C/C++
 Fortran ([test/fortran](https://github.com/issamsaid/hiCL/tree/master/test/fortran_interface)). 
 ```
 pushd build
-make test
+make build_tests
 make install -C test // This is needed due to a cmake bug
 popd
 ```
 Alternatively `make hicl_test && make install -C test/src` will only build and 
-install the test suit for the C/C++ interface, and `make hicl_fortran_test && make install -C test/fortran_interface` will build and install the unit tests for the
+install the test suit for the C/C++ interface, and `make hicl_test_fortran && make install -C test/fortran_interface` will build and install the unit tests for the
 Fortran interface.
 Tests should be written for any new code, and changes should be verified to not 
 break existing tests before they are submitted for review. 
