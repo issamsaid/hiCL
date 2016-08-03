@@ -56,11 +56,13 @@ if (NOT OPENCL_INCLUDE_DIRS)
   find_path(OPENCL_INCLUDE_DIRS
     NAMES OpenCL/cl.h CL/cl.h
     HINTS
+        $ENV{CUDA_PATH}/include
+        $ENV{CUDA_ROOT}/include
+        $ENV{CUDATOOLKIT}/include
+        $ENV{CUDATOOLKIT_HOME}/include
         $ENV{AMDAPPSDK}/include
         $ENV{AMDAPPSDKROOT}/include
         $ENV{ATISTREAMSDKROOT}/include
-        $ENV{CUDA_PATH}/include
-        $ENV{CUDA_ROOT}/include
         $ENV{INTELOCLSDKROOT}/include
         $ENV{NVSDKCOMPUTE_ROOT}/include
     PATHS
@@ -79,12 +81,14 @@ endif()
 find_library(OPENCL_LIBRARIES
     NAMES OpenCL
     HINTS
-      $ENV{OPENCL_LIBRARY_DIRS}
-      $ENV{AMDAPPSDKROOT}/lib
-      $ENV{AMDAPPSDK}/lib
-      $ENV{ATISTREAMSDKROOT}/lib
-      $ENV{CUDA_PATH}/lib
-      $ENV{CUDA_ROOT}/lib
+        $ENV{CUDA_PATH}/lib
+        $ENV{CUDA_ROOT}/lib
+        $ENV{CUDATOOLKIT}/lib
+        $ENV{CUDATOOLKIT_HOME}/lib
+        $ENV{OPENCL_LIBRARY_DIRS}
+        $ENV{AMDAPPSDKROOT}/lib
+        $ENV{AMDAPPSDK}/lib
+        $ENV{ATISTREAMSDKROOT}/lib
     DOC "OpenCL dynamic libraries (64 bits) paths"
     PATH_SUFFIXES x86_64 x64 x86_64/sdk x86 Win32 
     PATHS
