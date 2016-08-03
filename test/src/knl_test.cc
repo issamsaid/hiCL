@@ -124,7 +124,7 @@ namespace {
  
         hicl_mem_update(hsrc, WRITE_ONLY);
         populate(hsrc, N);
-        hicl_load("data/foo.cl", "-DSTENCIL=9 -cl-kernel-arg-info");
+        hicl_load("data/foo.cl", "-DSTENCIL=9");
         hicl_knl_set_wrk("test_hicl_1", 1, &g, &l);
         hicl_knl_set_wrk("test_hicl_2", 1, &g, &l);
         
@@ -214,7 +214,7 @@ namespace {
         
         populate(hsrc, N);
         
-        hicl_load("data/foo.cl", "-DSTENCIL=9 -cl-kernel-arg-info");
+        hicl_load("data/foo.cl", "-DSTENCIL=9");
         k1 = hicl_knl_find("test_hicl_1");
         hicl_knl_set_wrk("test_hicl_1", 1, &g, &l);
         hicl_knl_set_mem("test_hicl_1", 0, hsrc);
@@ -256,11 +256,7 @@ namespace {
         hicl_mem_wrap(d, hdst, N, HWA | WRITE_ONLY);
         hicl_mem_update(hsrc, WRITE_ONLY);
         populate(hsrc, N);
-        //
-        // it look like that NVIDIA needs "-cl-kernel-arg-info"
-        // during the build of the OpenCL kernel
-        //
-        hicl_load("data/foo.cl", "-DSTENCIL=9 -cl-kernel-arg-info");
+        hicl_load("data/foo.cl", "-DSTENCIL=9");
         hicl_knl_set_wrk("test_hicl_1", 1, &g, &l);
         
         hicl_timer_tick();
@@ -289,7 +285,7 @@ namespace {
         hicl_mem_wrap(d, hdst, N, HWA | WRITE_ONLY);
         hicl_mem_update(hsrc, WRITE_ONLY);
         populate(hsrc, N);
-        hicl_load("data/foo.cl", "-DSTENCIL=9 -cl-kernel-arg-info");
+        hicl_load("data/foo.cl", "-DSTENCIL=9");
         hicl_knl_set_wrk("test_hicl_1", 1, &g, &l);
         hicl_knl_set_mem("test_hicl_1", 0, hsrc);
         hicl_knl_set_mem("test_hicl_1", 1, hdst);
@@ -382,7 +378,7 @@ namespace {
         flops  = 2+(3*s[0]+1)+(3*s[1]+1)+(3*s[2]+1);
         
         hicl_load("data/stencil_v_3d.cl", 
-                  "-cl-kernel-arg-info -DSTENCIL=%d -DLX=%lu -DLY=%lu", 
+                  "-DSTENCIL=%d -DLX=%lu -DLY=%lu", 
                   s[0], l[0], l[1]);
         
         float *ui;
@@ -456,7 +452,7 @@ namespace {
         flops  = 2+(3*s[0]+1)+(3*s[1]+1)+(3*s[2]+1);
         
         sprintf(options, 
-                "-cl-kernel-arg-info -DSTENCIL=%d -DLX=%lu -DLY=%lu", 
+                "-DSTENCIL=%d -DLX=%lu -DLY=%lu", 
                 s[0], l[0], l[1]);
                         
         hicl_load("data/stencil_v_3d.cl", options);
@@ -532,7 +528,7 @@ namespace {
         flops  = 2+(3*s[0]+1)+(3*s[1]+1)+(3*s[2]+1);
         
         sprintf(options, 
-                "-cl-kernel-arg-info -DSTENCIL=%d -DLX=%lu -DLY=%lu", 
+                "-DSTENCIL=%d -DLX=%lu -DLY=%lu", 
                 s[0], l[0], l[1]);
                         
         hicl_load("data/stencil_v_3d.cl", options);
@@ -608,7 +604,7 @@ namespace {
         flops  = 2+(3*s[0]+1)+(3*s[1]+1)+(3*s[2]+1);
         
         sprintf(options, 
-                "-cl-kernel-arg-info -DSTENCIL=%d -DLX=%lu -DLY=%lu", 
+                "-DSTENCIL=%d -DLX=%lu -DLY=%lu", 
                 s[0], l[0], l[1]);
                         
         hicl_load("data/stencil_v_3d.cl", options);
@@ -684,7 +680,7 @@ namespace {
         flops  = 2+(3*s[0]+1)+(3*s[1]+1)+(3*s[2]+1);
         
         sprintf(options, 
-                "-cl-kernel-arg-info -DSTENCIL=%d -DLX=%lu -DLY=%lu", 
+                "-DSTENCIL=%d -DLX=%lu -DLY=%lu", 
                 s[0], l[0], l[1]);
                         
         hicl_load("data/stencil_v_3d.cl", options);
@@ -760,7 +756,7 @@ namespace {
         flops  = 2+(3*s[0]+1)+(3*s[1]+1)+(3*s[2]+1);
         
         sprintf(options, 
-                "-cl-kernel-arg-info -DSTENCIL=%d -DLX=%lu -DLY=%lu", 
+                "-DSTENCIL=%d -DLX=%lu -DLY=%lu", 
                 s[0], l[0], l[1]);
                         
         hicl_load("data/stencil_v_3d.cl", options);
@@ -834,7 +830,7 @@ namespace {
         size  = (2*s[0] + dim[0])*(2*s[1] + dim[1])*(2*s[2] + dim[2]);
         
         sprintf(options, 
-                "-cl-kernel-arg-info -DSTENCIL=%d -DLX=%lu -DLY=%lu", 
+                "-DSTENCIL=%d -DLX=%lu -DLY=%lu", 
                 s[0], l[0], l[1]);
               
         hicl_load("data/foo.cl", "-DSTENCIL=9");
