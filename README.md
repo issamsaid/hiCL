@@ -81,8 +81,17 @@ cmake -G"Unix Makefiles" ../
 popd
 ```
 The current version of the <b>hiCL</b> library had been tested on various Linux 
-workstations with the GNU and Intel compilers. Nevertheless, if you face issues 
+workstations with the GNU, Cray and Intel compilers. Nevertheless, if you face issues 
 with other compilers you are kindly invited to report them.
+Note that if you are using Cray compilers you have to specify where is the 
+Fortran compiler is wrapped. For example if you are using `ftn` you have to add:
+```
+pushd hiCL
+mkdir build
+pushd build
+cmake -DCMAKE_Fortran_COMPILER=ftn -G"Unix Makefiles" ../
+popd
+```
 If your installed OpenCL implementation is not found by our `cmake` 
 [script](https://github.com/issamsaid/hiCL/tree/master/cmake/FindOpenCL.cmake), 
 where we try to look for your implementation in the usual install directories, 
