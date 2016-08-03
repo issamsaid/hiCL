@@ -140,7 +140,6 @@ __api_knl_create_from_program(cl_program program,
     *num_kernels = i; i = 0;
     __API_PROGRAM_GET_PTR(program, CL_PROGRAM_KERNEL_NAMES, buffer);
     marker = buffer;
-    HICL_DEBUG("building OpenCL kernels: '%s'", marker);
     do {
         marker = __api_strstep(tmp, marker, ";");
         HICL_DEBUG("building OpenCL kernel: '%s'", tmp);
