@@ -259,8 +259,8 @@ contains
     subroutine hicl_knl_set_mem_int32_1d(name, index, arg, size_x)
         character(len=*),        intent(in) :: name
         integer(kind=4),         intent(in) :: index
-        integer(kind=4), target, intent(in) :: arg(size_x)
         integer(kind=4),         intent(in) :: size_x
+        integer(kind=4), target, intent(in) :: arg(size_x)
         call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
     end subroutine hicl_knl_set_mem_int32_1d
 
