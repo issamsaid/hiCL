@@ -318,7 +318,6 @@ contains
     subroutine hicl_mem_update_float_1d_pointer(h, flags)
         real(kind=4), pointer, dimension(:), intent(in) :: h
         integer(kind=c_int64_t),             intent(in) :: flags
-        write(*,*) lbound(h)
         call c_hicl_mem_update(c_loc(h(lbound(h, 1))), flags)
     end subroutine hicl_mem_update_float_1d_pointer
 
@@ -346,7 +345,6 @@ contains
     subroutine hicl_mem_update_float_2d_pointer(h, flags)
         real(kind=4), pointer, dimension(:,:), intent(in) :: h
         integer(kind=c_int64_t),               intent(in) :: flags
-        write(*,*) lbound(h)
         call c_hicl_mem_update(c_loc(h(lbound(h, 1), &
                                        lbound(h, 2))), flags)
     end subroutine hicl_mem_update_float_2d_pointer
@@ -378,7 +376,6 @@ contains
     subroutine hicl_mem_update_float_3d_pointer(h, flags)
         real(kind=4), pointer, dimension(:,:,:), intent(in) :: h
         integer(kind=c_int64_t),                 intent(in) :: flags
-        write(*,*) lbound(h)
         call c_hicl_mem_update(c_loc(h(lbound(h, 1), &
                                        lbound(h, 2), &
                                        lbound(h, 3))), flags)
