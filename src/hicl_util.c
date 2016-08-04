@@ -97,3 +97,13 @@ unsigned int hicl_knl_count() {
     for (i_knl=hicl->knls; i_knl != NULL; i_knl=i_knl->next) n++;
     return n;
 }
+
+///
+/// This is a workaround since some compilers such as the Intel
+/// compiler generates a runtime error if a variadic C function
+/// is interoperable with Fortran.
+/// 
+extern void hicl_load(const char *filename, const char *options, ...);
+void hicl_load_f(const char *filename, const char *options) {
+   hicl_load(filename, options);
+}

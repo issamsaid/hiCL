@@ -51,7 +51,7 @@ module m_hicl_base
             integer(kind=c_int64_t), intent(in), value :: flags
         end subroutine c_hicl_init
 
-        subroutine c_hicl_load(filename, options) bind(c, name = "hicl_load")
+        subroutine c_hicl_load(filename, options) bind(c, name = "hicl_load_f")
             use, intrinsic :: iso_c_binding, only: c_char
             implicit none
             character(kind=c_char), intent(in) :: filename

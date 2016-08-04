@@ -51,14 +51,18 @@ hidev_t hicl_dev_init(cl_device_id id) {
                                     __API_USE_EVENTS ?
                                     CL_QUEUE_PROFILING_ENABLE : 0, &cl_ret);
     HICL_CHECK(cl_ret, "failed to create OpenCL queue");
+    list_insert_hidev_t(&hicl->devs, list_create_hidev_t(d));
     return d;
 }
 
 void hicl_dev_release(hidev_t *dptr) {
     hidev_t d = *dptr;
+    list_hidev_t *tmp_dev;
     if(d) {
         HICL_DEBUG("releasing OpenCL device @ %p", d->id);
         __api_dev_release_queues(d->queue);
+        tmp_dev = list_remove_hidev_t(&hicl->devs, d);
+        list_delete_hidev_t(&tmp_dev);
         free(d); *dptr = NULL;
     }
 }

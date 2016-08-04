@@ -58,6 +58,7 @@ hiknl_t hicl_knl_init(cl_kernel id) {
     }
     create_rbt_int_himem_t(&k->mems, __api_int_cmp, __api_mem_knl_release);
     __API_KNL_GET(id, CL_KERNEL_NUM_ARGS, k->num_args);
+    list_insert_hiknl_t(&hicl->knls, list_create_hiknl_t(k));
     return k;
 }
 
@@ -112,9 +113,7 @@ inline void hicl_knl_build(const char *name, const char *options) {
                                         &const_code, NULL, &cl_ret);
     HICL_CHECK(cl_ret, "failed to create OpenCL program");
     ids = __api_knl_create_from_program(program, options, &num_kernels);
-    for(idx=0; idx<num_kernels; ++idx)
-        list_insert_hiknl_t(&hicl->knls, 
-                            list_create_hiknl_t(hicl_knl_init(ids[idx])));
+    for(idx=0; idx<num_kernels; ++idx) hicl_knl_init(ids[idx]);
 #else
     program = clCreateProgramWithSource(hicl->context, 1,
                                         &const_code, NULL, &cl_ret);
@@ -123,8 +122,7 @@ inline void hicl_knl_build(const char *name, const char *options) {
     for (idx=0; idx<num_kernels; ++idx) {
         __API_KNL_GET(ids[idx], CL_KERNEL_FUNCTION_NAME, tmp);
         hicl_knl_release(tmp);
-        list_insert_hiknl_t(&hicl->knls, 
-                            list_create_hiknl_t(hicl_knl_init(ids[idx])));
+        hicl_knl_init(ids[idx]);
     }
 #endif
     free(ids);

@@ -100,6 +100,7 @@ you can help setting it manually as follows:
 export OPENCL_INCLUDE_DIR="YOUR_OPENCL_HEADERS_PATH"
 export OPENCL_LIBRARY_DIR="YOUR_OPENCL_LIBRARY_PATH"
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$OPENCL_LIBRARY_DIR
+export LIBRARY_PATH=$LIBRARY_PATH:$OPENCL_LIBRARY_DIR
 ```
 To build the library you can run the default target which compiles the C/C++ 
 interface only:

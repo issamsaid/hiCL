@@ -47,9 +47,10 @@ namespace {
         cl_platform_id plt_ids[8];
         cl_device_id dev_ids[8];
         cl_device_type type;
-        bool has_cpu = false, has_gpu = false, has_acc = false;
+        bool has_cpu, has_gpu, has_acc;
         virtual void SetUp() { 
             unsigned int i;
+            has_cpu = false; has_gpu = false; has_acc = false;
             clGetPlatformIDs(0, NULL, &nb_plts);
             clGetPlatformIDs(nb_plts, plt_ids, NULL);
             clGetDeviceIDs(plt_ids[0], CL_DEVICE_TYPE_ALL, 0, NULL, &nb_devs);

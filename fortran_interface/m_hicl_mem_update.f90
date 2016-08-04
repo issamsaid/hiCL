@@ -127,8 +127,8 @@ contains
     !!  hicl_mem_update 1d
     !!
     subroutine hicl_mem_update_int32_1d(h, size_x, flags)
-        integer(kind=4), target, intent(in) :: h(size_x)
         integer(kind=4),         intent(in) :: size_x
+        integer(kind=4), target, intent(in) :: h(size_x)
         integer(kind=c_int64_t), intent(in) :: flags
         call c_hicl_mem_update(c_loc(h), flags)
     end subroutine hicl_mem_update_int32_1d
@@ -140,8 +140,8 @@ contains
     end subroutine hicl_mem_update_int32_1d_allocatable
 
     subroutine hicl_mem_update_int64_1d(h, size_x, flags)
-        integer(kind=8), target, intent(in) :: h(size_x)
         integer(kind=4),         intent(in) :: size_x
+        integer(kind=8), target, intent(in) :: h(size_x)
         integer(kind=c_int64_t), intent(in) :: flags
         call c_hicl_mem_update(c_loc(h), flags)
     end subroutine hicl_mem_update_int64_1d
@@ -153,8 +153,8 @@ contains
     end subroutine hicl_mem_update_int64_1d_allocatable
 
     subroutine hicl_mem_update_float_1d(h, size_x, flags)
-        real,            target, intent(in) :: h(size_x)
         integer(kind=4),         intent(in) :: size_x
+        real,            target, intent(in) :: h(size_x)
         integer(kind=c_int64_t), intent(in) :: flags
         call c_hicl_mem_update(c_loc(h), flags)
      end subroutine hicl_mem_update_float_1d
@@ -166,8 +166,8 @@ contains
     end subroutine hicl_mem_update_float_1d_allocatable
     
     subroutine hicl_mem_update_double_1d(h, size_x, flags)
-        real(kind=8),    target, intent(in) :: h(size_x)
         integer(kind=4),         intent(in) :: size_x
+        real(kind=8),    target, intent(in) :: h(size_x)
         integer(kind=c_int64_t), intent(in) :: flags
         call c_hicl_mem_update(c_loc(h), flags)
     end subroutine hicl_mem_update_double_1d
@@ -182,9 +182,9 @@ contains
     !!  hicl_mem_update 2d
     !!
     subroutine hicl_mem_update_int32_2d(h, size_x, size_y, flags)
-        integer(kind=4), target, intent(in) :: h(size_x, size_y)
         integer(kind=4),         intent(in) :: size_x
         integer(kind=4),         intent(in) :: size_y
+        integer(kind=4), target, intent(in) :: h(size_x, size_y)
         integer(kind=c_int64_t), intent(in) :: flags
         call c_hicl_mem_update(c_loc(h), flags)
     end subroutine hicl_mem_update_int32_2d
@@ -196,9 +196,9 @@ contains
     end subroutine hicl_mem_update_int32_2d_allocatable
 
     subroutine hicl_mem_update_int64_2d(h, size_x, size_y, flags)
-        integer(kind=8), target, intent(in) :: h(size_x, size_y)
         integer(kind=4),         intent(in) :: size_x
         integer(kind=4),         intent(in) :: size_y
+        integer(kind=8), target, intent(in) :: h(size_x, size_y)
         integer(kind=c_int64_t),      intent(in) :: flags
         call c_hicl_mem_update(c_loc(h), flags)
     end subroutine hicl_mem_update_int64_2d
@@ -210,9 +210,9 @@ contains
     end subroutine hicl_mem_update_int64_2d_allocatable
 
     subroutine hicl_mem_update_float_2d(h, size_x, size_y, flags)
-        real,            target, intent(in) :: h(size_x, size_y)
         integer(kind=4),         intent(in) :: size_x
         integer(kind=4),         intent(in) :: size_y
+        real,            target, intent(in) :: h(size_x, size_y)
         integer(kind=c_int64_t), intent(in) :: flags
         call c_hicl_mem_update(c_loc(h), flags)
     end subroutine hicl_mem_update_float_2d
@@ -224,9 +224,9 @@ contains
     end subroutine hicl_mem_update_float_2d_allocatable
     
     subroutine hicl_mem_update_double_2d(h, size_x, size_y, flags)
-        real(kind=8),      target, intent(in) :: h(size_x, size_y)
         integer(kind=4),           intent(in) :: size_x
         integer(kind=4),           intent(in) :: size_y
+        real(kind=8),      target, intent(in) :: h(size_x, size_y)
         integer(kind=c_int64_t),   intent(in) :: flags
         call c_hicl_mem_update(c_loc(h), flags)
     end subroutine hicl_mem_update_double_2d
@@ -241,10 +241,10 @@ contains
     !!  hicl_mem_update 3d
     !!
     subroutine hicl_mem_update_int32_3d(h, size_x, size_y, size_z, flags)
-        integer,         target, intent(in) :: h(size_x, size_y, size_z)
         integer(kind=4),         intent(in) :: size_x
         integer(kind=4),         intent(in) :: size_y
         integer(kind=4),         intent(in) :: size_z
+        integer,         target, intent(in) :: h(size_x, size_y, size_z)
         integer(kind=c_int64_t), intent(in) :: flags
         call c_hicl_mem_update(c_loc(h), flags)
     end subroutine hicl_mem_update_int32_3d
@@ -256,10 +256,10 @@ contains
     end subroutine hicl_mem_update_int32_3d_allocatable
 
     subroutine hicl_mem_update_int64_3d(h, size_x, size_y, size_z, flags)
-        integer(kind=8), target, intent(in) :: h(size_x, size_y, size_z)
         integer(kind=4),         intent(in) :: size_x
         integer(kind=4),         intent(in) :: size_y
         integer(kind=4),         intent(in) :: size_z
+        integer(kind=8), target, intent(in) :: h(size_x, size_y, size_z)
         integer(kind=c_int64_t), intent(in) :: flags
         call c_hicl_mem_update(c_loc(h), flags)
     end subroutine hicl_mem_update_int64_3d
@@ -271,10 +271,10 @@ contains
     end subroutine hicl_mem_update_int64_3d_allocatable
 
     subroutine hicl_mem_update_float_3d(h, size_x, size_y, size_z, flags)
-        real,            target, intent(in) :: h(size_x, size_y, size_z)
         integer(kind=4),         intent(in) :: size_x
         integer(kind=4),         intent(in) :: size_y
         integer(kind=4),         intent(in) :: size_z
+        real,            target, intent(in) :: h(size_x, size_y, size_z)
         integer(kind=c_int64_t), intent(in) :: flags
         call c_hicl_mem_update(c_loc(h), flags)
     end subroutine hicl_mem_update_float_3d
@@ -286,10 +286,10 @@ contains
     end subroutine hicl_mem_update_float_3d_allocatable
 
     subroutine hicl_mem_update_double_3d(h, size_x, size_y, size_z, flags)
-        real(kind=8),      target, intent(in) :: h(size_x, size_y, size_z)
         integer(kind=4),           intent(in) :: size_x
         integer(kind=4),           intent(in) :: size_y
         integer(kind=4),           intent(in) :: size_z
+        real(kind=8),      target, intent(in) :: h(size_x, size_y, size_z)
         integer(kind=c_int64_t),   intent(in) :: flags
         call c_hicl_mem_update(c_loc(h), flags)
     end subroutine hicl_mem_update_double_3d

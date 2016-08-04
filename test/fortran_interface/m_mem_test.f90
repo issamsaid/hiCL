@@ -137,6 +137,7 @@ contains
         integer :: i, j, H, W
         H = 16
         W = 4
+        status=.true.
         allocate(h2d(H,W))
         call hicl_mem_wrap(h2d, d, READ_WRITE)
         call hicl_mem_update(h2d, WRITE_ONLY)

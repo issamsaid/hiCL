@@ -48,10 +48,11 @@ namespace {
     protected:
         unsigned int n;
         cl_device_id *dev_ids;
-        bool has_cpu = false, has_gpu = false, has_acc = false;
+        bool has_cpu, has_gpu, has_acc;
         virtual void SetUp() { 
             unsigned int i;
             cl_device_type type;
+            has_cpu = false; has_gpu = false; has_acc = false;
             hicl_init(ALL);
             n = __api_dev_count(hicl->platform_id); 
             dev_ids = (cl_device_id*)malloc(n*sizeof(cl_device_id));
@@ -65,11 +66,11 @@ namespace {
         }
 
         virtual void TearDown() { 
-            free(dev_ids);    
-            hicl_release(); 
+            hicl_release();
+            free(dev_ids);     
         }
     };
-
+    
     TEST_F(DevTest, hicl_dev_init) {
         hidev_t d = hicl_dev_init(dev_ids[0]);
         ASSERT_TRUE(d != NULL);
@@ -81,7 +82,7 @@ namespace {
         hicl_dev_release(&d);   
         ASSERT_TRUE(d == NULL);
     }
-
+    
     TEST_F(DevTest, hicl_dev_find_default) {
         hidev_t d0   = hicl_dev_find(DEFAULT);
         hidev_t d2   = hicl_dev_find(FIRST);

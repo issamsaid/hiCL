@@ -88,8 +88,8 @@ contains
     !!  hicl_mem_release 1d
     !!
     subroutine hicl_mem_release_int32_1d(h, size_x)
-        integer(kind=4), target, intent(in) :: h(size_x)
         integer(kind=4),         intent(in) :: size_x
+        integer(kind=4), target, intent(in) :: h(size_x)
         call c_hicl_mem_release(c_loc(h))
     end subroutine hicl_mem_release_int32_1d
 
@@ -99,8 +99,8 @@ contains
     end subroutine hicl_mem_release_int32_1d_allocatable
 
     subroutine hicl_mem_release_int64_1d(h, size_x)
-        integer(kind=8), target, intent(in) :: h(size_x)
         integer(kind=4),         intent(in) :: size_x
+        integer(kind=8), target, intent(in) :: h(size_x)
         call c_hicl_mem_release(c_loc(h))
     end subroutine hicl_mem_release_int64_1d
 
@@ -110,8 +110,8 @@ contains
     end subroutine hicl_mem_release_int64_1d_allocatable
 
     subroutine hicl_mem_release_float_1d(h, size_x)
-        real(kind=4), target, intent(in) :: h(size_x)
         integer(kind=4),      intent(in) :: size_x
+        real(kind=4), target, intent(in) :: h(size_x)
         call c_hicl_mem_release(c_loc(h))
     end subroutine hicl_mem_release_float_1d
 
@@ -121,8 +121,8 @@ contains
     end subroutine hicl_mem_release_float_1d_allocatable
 
     subroutine hicl_mem_release_double_1d(h, size_x)
-        real(kind=8), target, intent(in) :: h(size_x)
         integer(kind=4),      intent(in) :: size_x
+        real(kind=8), target, intent(in) :: h(size_x)
         call c_hicl_mem_release(c_loc(h))
     end subroutine hicl_mem_release_double_1d
 
@@ -135,9 +135,9 @@ contains
     !!  hicl_mem_release 2d
     !!
     subroutine hicl_mem_release_int32_2d(h, size_x, size_y)
-        integer(kind=4), target, intent(in) :: h(size_x, size_y)
         integer(kind=4),         intent(in) :: size_x
         integer(kind=4),         intent(in) :: size_y
+        integer(kind=4), target, intent(in) :: h(size_x, size_y)
         call c_hicl_mem_release(c_loc(h))
     end subroutine hicl_mem_release_int32_2d
 
@@ -147,9 +147,9 @@ contains
     end subroutine hicl_mem_release_int32_2d_allocatable
 
     subroutine hicl_mem_release_int64_2d(h, size_x, size_y)
-        integer(kind=8), target, intent(in) :: h(size_x, size_y)
         integer(kind=4),         intent(in) :: size_x
         integer(kind=4),         intent(in) :: size_y
+        integer(kind=8), target, intent(in) :: h(size_x, size_y)
         call c_hicl_mem_release(c_loc(h))
     end subroutine hicl_mem_release_int64_2d
 
@@ -159,9 +159,9 @@ contains
     end subroutine hicl_mem_release_int64_2d_allocatable
 
     subroutine hicl_mem_release_float_2d(h, size_x, size_y)
-        real(kind=4),    target, intent(in) :: h(size_x, size_y)
         integer(kind=4),         intent(in) :: size_x
         integer(kind=4),         intent(in) :: size_y
+        real(kind=4),    target, intent(in) :: h(size_x, size_y)
         call c_hicl_mem_release(c_loc(h))
     end subroutine hicl_mem_release_float_2d
 
@@ -171,9 +171,9 @@ contains
     end subroutine hicl_mem_release_float_2d_allocatbale
 
     subroutine hicl_mem_release_double_2d(h, size_x, size_y)
-        real(kind=8), target, intent(in) :: h(size_x, size_y)
         integer(kind=4),      intent(in) :: size_x
         integer(kind=4),      intent(in) :: size_y
+        real(kind=8), target, intent(in) :: h(size_x, size_y)
         call c_hicl_mem_release(c_loc(h))
     end subroutine hicl_mem_release_double_2d
 
@@ -186,10 +186,10 @@ contains
     !!  hicl_mem_release 3d
     !!
     subroutine hicl_mem_release_int32_3d(h, size_x, size_y, size_z)
-        integer(kind=4), target, intent(in) :: h(size_x, size_y, size_z)
         integer(kind=4),         intent(in) :: size_x
         integer(kind=4),         intent(in) :: size_y
         integer(kind=4),         intent(in) :: size_z
+        integer(kind=4), target, intent(in) :: h(size_x, size_y, size_z)
         call c_hicl_mem_release(c_loc(h))
     end subroutine hicl_mem_release_int32_3d
 
@@ -199,10 +199,10 @@ contains
     end subroutine hicl_mem_release_int32_3d_allocatable
 
     subroutine hicl_mem_release_int64_3d(h, size_x, size_y, size_z)
-        integer(kind=8), target, intent(in) :: h(size_x, size_y, size_z)
         integer(kind=4),         intent(in) :: size_x
         integer(kind=4),         intent(in) :: size_y
         integer(kind=4),         intent(in) :: size_z
+        integer(kind=8), target, intent(in) :: h(size_x, size_y, size_z)
         call c_hicl_mem_release(c_loc(h))
     end subroutine hicl_mem_release_int64_3d
 
@@ -212,10 +212,10 @@ contains
     end subroutine hicl_mem_release_int64_3d_allocatable
 
     subroutine hicl_mem_release_float_3d(h, size_x, size_y, size_z)
-        real(kind=4), target, intent(in) :: h(size_x, size_y, size_z)
         integer(kind=4),      intent(in) :: size_x
         integer(kind=4),      intent(in) :: size_y
         integer(kind=4),      intent(in) :: size_z
+        real(kind=4), target, intent(in) :: h(size_x, size_y, size_z)
         call c_hicl_mem_release(c_loc(h))
     end subroutine hicl_mem_release_float_3d
 
@@ -225,10 +225,10 @@ contains
     end subroutine hicl_mem_release_float_3d_allocatable
 
     subroutine hicl_mem_release_double_3d(h, size_x, size_y, size_z)
-        real(kind=8),    target, intent(in) :: h(size_x, size_y, size_z)
         integer(kind=4),         intent(in) :: size_x
         integer(kind=4),         intent(in) :: size_y
         integer(kind=4),         intent(in) :: size_z
+        real(kind=8),    target, intent(in) :: h(size_x, size_y, size_z)
         call c_hicl_mem_release(c_loc(h))
     end subroutine hicl_mem_release_double_3d
 
