@@ -160,8 +160,7 @@ void hicl_init(flags_t flags) {
         
         // setup devices.
         for (i=0; i<nb_devices; ++i) {
-            list_insert_hidev_t(&hicl->devs, 
-                                list_create_hidev_t(hicl_dev_init(dev_ids[i])));
+            hicl_dev_init(dev_ids[i]);
         }
         // setup timer.
         hicl_timer_uset(__API_TIMER_UNIT);
@@ -243,9 +242,7 @@ void hicl_load(const char *filename, const char *options_format, ...) {
     HICL_DEBUG("loading filename '%s' with options '%s' (program @ %p)",
                filename, options, program);
     knl_ids = __api_knl_create_from_program(program, options, &nb_kernels);
-    for(idx=0; idx<nb_kernels; ++idx)
-        list_insert_hiknl_t(&hicl->knls, 
-                        list_create_hiknl_t(hicl_knl_init(knl_ids[idx])));
+    for(idx=0; idx<nb_kernels; ++idx) hicl_knl_init(knl_ids[idx]);
     free(knl_ids);
     free(code);
     HICL_CHECK(clReleaseProgram(program), "failed to release OpenCL program");
