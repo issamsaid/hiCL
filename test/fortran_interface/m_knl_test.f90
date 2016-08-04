@@ -301,9 +301,9 @@ contains
 
     subroutine setup()
         call hicl_init(ALL)
-        call hicl_load("data/foo.cl", "-cl-kernel-arg-info -D STENCIL=4")
-        call hicl_load("data/bar.cl", "-cl-kernel-arg-info -D STENCIL=4")
         call hicl_dev_find(DEFAULT, d)
+        call hicl_load("data/foo.cl", "-D STENCIL=4")
+        call hicl_load("data/bar.cl", "-D STENCIL=4")
     end subroutine setup
 
     subroutine teardown()

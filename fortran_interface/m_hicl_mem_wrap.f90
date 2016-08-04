@@ -94,9 +94,9 @@ contains
     !! hicl_mem_wrap 1d
     !!
     subroutine hicl_mem_wrap_int32_1d(h, d, size_x, flags)
+        integer,                              intent(in) :: size_x
         integer(kind=4),              target, intent(in) :: h(size_x)
         type(hidev_t),               pointer, intent(in) :: d
-        integer,                              intent(in) :: size_x
         integer(kind=c_int64_t),              intent(in) :: flags
         integer(kind=c_size_t) :: s8
         type(c_ptr) :: tmp
@@ -126,9 +126,9 @@ contains
 
 
     subroutine hicl_mem_wrap_int64_1d(h, d, size_x, flags)
+        integer,                 intent(in) :: size_x
         integer(kind=8), target, intent(in) :: h(size_x)
         type(hidev_t), pointer,  intent(in) :: d
-        integer,                 intent(in) :: size_x
         integer(kind=c_int64_t), intent(in) :: flags
         integer(kind=c_size_t) :: s8
         type(c_ptr) :: tmp
@@ -158,9 +158,9 @@ contains
 
 
     subroutine hicl_mem_wrap_float_1d(h, d, size_x, flags)
+        integer,                           intent(in) :: size_x
         real(kind=4),              target, intent(in) :: h(size_x)
         type(hidev_t),            pointer, intent(in) :: d
-        integer,                           intent(in) :: size_x
         integer(kind=c_int64_t),           intent(in) :: flags
         integer(kind=c_size_t) :: s8
         type(c_ptr) :: tmp
@@ -190,9 +190,9 @@ contains
 
 
     subroutine hicl_mem_wrap_double_1d(h, d, size_x, flags)
+        integer,                           intent(in) :: size_x
         real(kind=8),              target, intent(in) :: h(size_x)
         type(hidev_t),            pointer, intent(in) :: d
-        integer,                           intent(in) :: size_x
         integer(kind=c_int64_t),           intent(in) :: flags
         integer(kind=c_size_t) :: s8
         type(c_ptr) :: tmp
@@ -224,10 +224,10 @@ contains
     !! hicl_mem_wrap 2d
     !!
     subroutine hicl_mem_wrap_int32_2d(h, d, size_x, size_y, flags)
-        integer(kind=4),              target ,intent(in) :: h(size_x, size_y)
-        type(hidev_t),               pointer, intent(in) :: d
         integer,                              intent(in) :: size_x
         integer,                              intent(in) :: size_y
+        integer(kind=4),              target ,intent(in) :: h(size_x, size_y)
+        type(hidev_t),               pointer, intent(in) :: d
         integer(kind=c_int64_t),              intent(in) :: flags
         integer(kind=c_size_t) :: s8
         type(c_ptr) :: tmp
@@ -258,10 +258,10 @@ contains
 
 
     subroutine hicl_mem_wrap_int64_2d(h, d, size_x, size_y, flags)
-        integer(kind=8),              target ,intent(in) :: h(size_x, size_y)
-        type(hidev_t),               pointer, intent(in) :: d
         integer,                              intent(in) :: size_x
         integer,                              intent(in) :: size_y
+        integer(kind=8),              target ,intent(in) :: h(size_x, size_y)
+        type(hidev_t),               pointer, intent(in) :: d
         integer(kind=c_int64_t),              intent(in) :: flags
         integer(kind=c_size_t) :: s8
         type(c_ptr) :: tmp
@@ -292,10 +292,10 @@ contains
 
 
     subroutine hicl_mem_wrap_float_2d(h, d, size_x, size_y, flags)
-        real(kind=4),              target, intent(in) :: h(size_x, size_y)
-        type(hidev_t),            pointer, intent(in) :: d
         integer,                           intent(in) :: size_x
         integer,                           intent(in) :: size_y
+        real(kind=4),              target, intent(in) :: h(size_x, size_y)
+        type(hidev_t),            pointer, intent(in) :: d
         integer(kind=c_int64_t),           intent(in) :: flags
         integer(kind=c_size_t) :: s8
         type(c_ptr) :: tmp
@@ -326,10 +326,10 @@ contains
 
 
     subroutine hicl_mem_wrap_double_2d(h, d, size_x, size_y, flags)
-        real(kind=8),        target, intent(in) :: h(size_x, size_y)
-        type(hidev_t),      pointer, intent(in) :: d
         integer,                     intent(in) :: size_x
         integer,                     intent(in) :: size_y
+        real(kind=8),        target, intent(in) :: h(size_x, size_y)
+        type(hidev_t),      pointer, intent(in) :: d
         integer(kind=c_int64_t),     intent(in) :: flags
         integer(kind=c_size_t) :: s8
         type(c_ptr) :: tmp
@@ -362,11 +362,11 @@ contains
     !! hicl_mem_wrap 3d
     !!
     subroutine hicl_mem_wrap_int32_3d(h, d, size_x, size_y, size_z, flags)
-        integer(kind=4), target ,intent(in) :: h(size_x, size_y, size_z)
-        type(hidev_t),  pointer, intent(in) :: d
         integer,                 intent(in) :: size_x
         integer,                 intent(in) :: size_y
         integer,                 intent(in) :: size_z
+        integer(kind=4), target ,intent(in) :: h(size_x, size_y, size_z)
+        type(hidev_t),  pointer, intent(in) :: d
         integer(kind=c_int64_t), intent(in) :: flags
         integer(kind=c_size_t)              :: s8
         type(c_ptr) :: tmp
@@ -398,11 +398,11 @@ contains
 
     
     subroutine hicl_mem_wrap_int64_3d(h, d, size_x, size_y, size_z, flags)
-        integer(kind=8), target, intent(in) :: h(size_x, size_y, size_z)
-        type(hidev_t),  pointer, intent(in) :: d
         integer,                 intent(in) :: size_x
         integer,                 intent(in) :: size_y
         integer,                 intent(in) :: size_z
+        integer(kind=8), target, intent(in) :: h(size_x, size_y, size_z)
+        type(hidev_t),  pointer, intent(in) :: d
         integer(kind=c_int64_t), intent(in) :: flags
         integer(kind=c_size_t) :: s8
         type(c_ptr) :: tmp
@@ -434,11 +434,11 @@ contains
 
 
     subroutine hicl_mem_wrap_float_3d(h, d, size_x, size_y, size_z, flags)
-        real(kind=4),     target, intent(in) :: h(size_x, size_y, size_z)
-        type(hidev_t),   pointer, intent(in) :: d
         integer,                  intent(in) :: size_x
         integer,                  intent(in) :: size_y
         integer,                  intent(in) :: size_z
+        real(kind=4),     target, intent(in) :: h(size_x, size_y, size_z)
+        type(hidev_t),   pointer, intent(in) :: d
         integer(kind=c_int64_t),  intent(in) :: flags
         integer(kind=c_size_t)               :: s8
         type(c_ptr) :: tmp
@@ -471,11 +471,11 @@ contains
 
     subroutine hicl_mem_wrap_double_3d(h, d, &
                                        size_x, size_y, size_z, flags)
-        real(kind=8),    target, intent(in) :: h(size_x, size_y, size_z)
-        type(hidev_t),  pointer, intent(in) :: d
         integer,                 intent(in) :: size_x
         integer,                 intent(in) :: size_y
         integer,                 intent(in) :: size_z
+        real(kind=8),    target, intent(in) :: h(size_x, size_y, size_z)
+        type(hidev_t),  pointer, intent(in) :: d
         integer(kind=c_int64_t), intent(in) :: flags
         integer(kind=c_size_t)              :: s8
         type(c_ptr) :: tmp
