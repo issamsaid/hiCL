@@ -48,10 +48,11 @@ namespace {
     protected:
         unsigned int n;
         cl_device_id *dev_ids;
-        bool has_cpu = false, has_gpu = false, has_acc = false;
+        bool has_cpu, has_gpu, has_acc;
         virtual void SetUp() { 
             unsigned int i;
             cl_device_type type;
+            has_cpu = false; has_gpu = false; has_acc = false;
             hicl_init(ALL);
             n = __api_dev_count(hicl->platform_id); 
             dev_ids = (cl_device_id*)malloc(n*sizeof(cl_device_id));
