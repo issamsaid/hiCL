@@ -66,11 +66,11 @@ namespace {
         }
 
         virtual void TearDown() { 
-            free(dev_ids);    
-            hicl_release(); 
+            hicl_release();
+            free(dev_ids);     
         }
     };
-
+    
     TEST_F(DevTest, hicl_dev_init) {
         hidev_t d = hicl_dev_init(dev_ids[0]);
         ASSERT_TRUE(d != NULL);
@@ -82,7 +82,7 @@ namespace {
         hicl_dev_release(&d);   
         ASSERT_TRUE(d == NULL);
     }
-
+    
     TEST_F(DevTest, hicl_dev_find_default) {
         hidev_t d0   = hicl_dev_find(DEFAULT);
         hidev_t d2   = hicl_dev_find(FIRST);
