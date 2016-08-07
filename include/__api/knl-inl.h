@@ -356,21 +356,31 @@ __api_knl_set_args_valist(hiknl_t k, va_list list) {
 
 PRIVATE void
 __api_knl_sync_run(cl_kernel kernel, cl_command_queue queue,
-		   cl_uint wrk, const size_t *gws, const size_t *lws,
-		   const size_t *ofs) {
-    HICL_CHECK(clEnqueueNDRangeKernel(queue, kernel, wrk,
-                                    ofs, gws, lws, 0, NULL, NULL),
-                                    "failed to run OpenCL kernel");
+		           cl_uint wrk, const size_t *gws, const size_t *lws,
+		           const size_t *ofs) {
+    cl_int ret;
+    if ((ret=clEnqueueNDRangeKernel(queue, kernel, wrk,
+                                    ofs, gws, lws, 
+                                    0, NULL, NULL)) != CL_SUCCESS) {
+        char tmp[__API_STR_SIZE];
+        __API_KNL_GET_PTR(kernel, CL_KERNEL_FUNCTION_NAME, tmp);
+        HICL_ABORT(ret, "failed to run OpenCL kernel %s", tmp);
+    }
     clFinish(queue);
 }
 
 PRIVATE void
 __api_knl_async_run(cl_kernel kernel, cl_command_queue queue,
-		    cl_uint wrk, const size_t *gws, const size_t *lws, 
-		    const size_t *ofs) {
-    HICL_CHECK(clEnqueueNDRangeKernel(queue, kernel, wrk,
-                                    ofs, gws, lws, 0, NULL, NULL),
-                                    "failed to run OpenCL kernel");
+		            cl_uint wrk, const size_t *gws, const size_t *lws, 
+		            const size_t *ofs) {
+    cl_int ret;
+    if ((ret=clEnqueueNDRangeKernel(queue, kernel, wrk,
+                                    ofs, gws, lws, 
+                                    0, NULL, NULL)) != CL_SUCCESS) {
+        char tmp[__API_STR_SIZE];
+        __API_KNL_GET_PTR(kernel, CL_KERNEL_FUNCTION_NAME, tmp);
+        HICL_ABORT(ret, "failed to run OpenCL kernel %s", tmp);
+    }
 }
 
 PRIVATE void
