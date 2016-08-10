@@ -46,7 +46,7 @@ set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 option(hicl_debug       "Build hiCL with the debug mode."                  OFF)
 option(hicl_verbose     "Build hiCL with the verbose mode activated."       ON)
 option(hicl_use_tty     "Build hiCL with logging into  the terminal."       ON)
-option(hicl_roundup_wrk "Build hiCL with rounding up the workgroup sizes." OFF)
+option(hicl_roundup_wrk "Build hiCL with rounding up the workgroup sizes."  ON)
 
 ## Set the build type (DEFAULT is Release)
 if (NOT CMAKE_BUILD_TYPE)
