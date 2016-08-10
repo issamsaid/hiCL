@@ -131,67 +131,71 @@ address_t hicl_mem_allocate(hidev_t d, size_t size, flags_t flags) {
 }
 */
 himem_t hicl_mem_wrap(hidev_t d, void *h, size_t size, flags_t flags) {
-    cl_int cl_ret;
-    himem_t m;
     HICL_EXIT_IF(d    == NULL, "invalid device");
     HICL_EXIT_IF(size ==    0, "invalid memory size");
     HICL_EXIT_IF(h    == NULL, "invalid memory pointer");
-    m = (himem_t) malloc(sizeof(struct __himem_t));
-    __API_MEM_SET_DEFAULTS(flags);
-    m->flags     = flags | HOST_ALLOCATED;
-    m->pinned    = NULL;
-    m->queue     = d->queue;
-    m->size      = size;
-    m->unit_size = __api_mem_unit_size(m->flags);
-    //__API_MEM_PRINT_FLAGS(m->flags);
-    HICL_DEBUG("attempt to wrap @ %p, size: %12.5f MB", 
-               h, (double)m->size*m->unit_size/1024./1024.);
-    if (__API_MEM_ZERO_COPY(m->flags)) {
-        /// wrap zero-copy buffers in the CPU memory.
-        if (__API_MEM_CPU(m->flags)) {
-            m->id = clCreateBuffer(hicl->context,
-                                   CL_MEM_USE_HOST_PTR | 
-                                   __api_mem_update_flags(m->flags),
-                                   m->size*m->unit_size, h, &cl_ret);
-            HICL_CHECK(cl_ret, "failed to wrap device memory object");
-            // needed by NVIDIA
-            __api_mem_map(m, __api_mem_map_flags(m->flags, CL_TRUE), CL_TRUE);
-        /// wrap zero-copy buffers in the HWA memory.
-        } else if (__API_MEM_HWA(m->flags)) {
-            HICL_EXIT("device zero copy objects are not wrappable yet");
-        } else {
-            HICL_EXIT("invalid memory flags combination for wrapping buffers");
-        }
-        m->h = h;
+    rbn_address_t_himem_t *n;
+    if ((n=find_rbn_address_t_himem_t(&hicl->mems, h)) != hicl->mems.nil) {
+        return n->value;
     } else {
-        /// regular CPU buffers.
-        if (__API_MEM_CPU(m->flags)) {
-            m->h  = h;
-        /// regular HWA buffers.
-        } else if (__API_MEM_HWA(m->flags)) {
-            if (__API_MEM_PINNED(m->flags)) {
-                m->pinned = clCreateBuffer(hicl->context,
-                                          CL_MEM_USE_HOST_PTR | 
-                                          __api_mem_update_flags(m->flags),
-                                          m->size*m->unit_size, h, &cl_ret);
-                HICL_CHECK(cl_ret, "failed to wrap pinned memory object");
+        cl_int cl_ret;
+        himem_t m = (himem_t) malloc(sizeof(struct __himem_t));
+        __API_MEM_SET_DEFAULTS(flags);
+        m->flags     = flags | HOST_ALLOCATED;
+        m->pinned    = NULL;
+        m->queue     = d->queue;
+        m->size      = size;
+        m->unit_size = __api_mem_unit_size(m->flags);
+        //__API_MEM_PRINT_FLAGS(m->flags);
+        HICL_DEBUG("attempt to wrap @ %p, size: %12.5f MB", 
+                   h, (double)m->size*m->unit_size/1024./1024.);
+        if (__API_MEM_ZERO_COPY(m->flags)) {
+            /// wrap zero-copy buffers in the CPU memory.
+            if (__API_MEM_CPU(m->flags)) {
+                m->id = clCreateBuffer(hicl->context,
+                                       CL_MEM_USE_HOST_PTR | 
+                                       __api_mem_update_flags(m->flags),
+                                       m->size*m->unit_size, h, &cl_ret);
+                HICL_CHECK(cl_ret, "failed to wrap device memory object");
+                // needed by NVIDIA
                 __api_mem_map(m, __api_mem_map_flags(m->flags, CL_TRUE), CL_TRUE);
+            /// wrap zero-copy buffers in the HWA memory.
+            } else if (__API_MEM_HWA(m->flags)) {
+                HICL_EXIT("device zero copy objects are not wrappable yet");
             } else {
-                m->h  = h;
+                HICL_EXIT("invalid memory flags combination for wrapping buffers");
             }
-            m->id = clCreateBuffer(hicl->context,
-                                   __api_mem_update_flags(m->flags),
-                                   m->size*m->unit_size, NULL, &cl_ret);
-            HICL_CHECK(cl_ret, "failed to allocate device memory object");
-            __api_mem_htod(m, CL_TRUE);
+            m->h = h;
         } else {
-            HICL_EXIT("invalid memory flags combination for wrapping buffers");
+            /// regular CPU buffers.
+            if (__API_MEM_CPU(m->flags)) {
+                m->h  = h;
+            /// regular HWA buffers.
+            } else if (__API_MEM_HWA(m->flags)) {
+                if (__API_MEM_PINNED(m->flags)) {
+                    m->pinned = clCreateBuffer(hicl->context,
+                                              CL_MEM_USE_HOST_PTR | 
+                                              __api_mem_update_flags(m->flags),
+                                              m->size*m->unit_size, h, &cl_ret);
+                    HICL_CHECK(cl_ret, "failed to wrap pinned memory object");
+                    __api_mem_map(m, __api_mem_map_flags(m->flags, CL_TRUE), CL_TRUE);
+                } else {
+                    m->h  = h;
+                }
+                m->id = clCreateBuffer(hicl->context,
+                                       __api_mem_update_flags(m->flags),
+                                       m->size*m->unit_size, NULL, &cl_ret);
+                HICL_CHECK(cl_ret, "failed to allocate device memory object");
+                __api_mem_htod(m, CL_TRUE);
+            } else {
+                HICL_EXIT("invalid memory flags combination for wrapping buffers");
+            }
         }
+        __API_MEM_CLEAR(m->flags);
+        insert_rbn_address_t_himem_t(&hicl->mems, h, m);
+        create_rbt_hiknl_t_int(&m->knls, __api_knl_cmp, NULL);
+        return m;
     }
-    __API_MEM_CLEAR(m->flags);
-    insert_rbn_address_t_himem_t(&hicl->mems, h, m);
-    create_rbt_hiknl_t_int(&m->knls, __api_knl_cmp, NULL);
-    return m;
 }
 
 void hicl_mem_release(address_t h) {

@@ -31,3 +31,9 @@ script:
   - cd ../test
   - ./bin/hicl_test
   - ./bin/hicl_test_fortran
+#notifications:
+#  email:
+#    recipients:
+#      - said.issam@gmail.com
+#    on_success: [always|never|change] # default: change
+#    on_failure: [always|never|change] # default: always
