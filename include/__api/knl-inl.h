@@ -36,13 +36,17 @@
 /// @brief Private functions used to implement the hiCL kernel descriptor.
 ///
 #include <stdarg.h>
-#include "hiCL/types.h"
+#include <hiCL/types.h>
 #include "__api/config/opencl.h"
 #include "__api/config/private.h"
 #include "__api/config/guard.h"
 #include "__api/config/util.h"
 #include "__api/config/log.h"
 #include "__api/util-inl.h"
+
+CPPGUARD_BEGIN();
+
+//extern void __api_mem_knl_release(himem_t);
 
 #define __API_PROGRAM_GET(program, program_info, value)     \
     HICL_CHECK(clGetProgramInfo(program, program_info,      \
@@ -97,8 +101,6 @@ C_GREEN"\no OpenCL "fmt":\n"C_END, ##__VA_ARGS__)
 
 #define __API_KNL_INFO_LEVEL_2(fmt, ...) fprintf(hicl->fdout,\
 "\t %-22s "fmt"\n", " ", ##__VA_ARGS__)
-
-CPPGUARD_BEGIN()
 
 PRIVATE char*
 __api_knl_name(cl_kernel kernel) {
@@ -245,15 +247,15 @@ __api_knl_set_args_valist(hiknl_t k, va_list list) {
                                          va_arg(list, address_t))->value;
             rbn_int_himem_t *n;
             if ((n = find_rbn_int_himem_t(&k->mems, a)) == k->mems.nil) {
-                HICL_DEBUG("insert @ %p for kernel %s", 
-                         m->id, __api_knl_name(k->id));
+                HICL_DEBUG("mem insert {h=%p, id=%p} for kernel %s", 
+                           m->h, m->id, __api_knl_name(k->id));
                 insert_rbn_int_himem_t(&k->mems, a, m);
                 insert_rbn_hiknl_t_int(&m->knls, k, a);
                 __api_knl_set_arg_cl_mem(k->id, a, &m->id);
             } else {
                 if (m != n->value) {
-                    HICL_DEBUG("modify @ %p for kernel %s",
-                             m->id, __api_knl_name(k->id));
+                    HICL_DEBUG("mem modify {h=%p, id=%p} for kernel %s",
+                               m->h, m->id, __api_knl_name(k->id));
                     n->value = m; 
                     __api_knl_set_arg_cl_mem(k->id, a, &m->id);
                 }
@@ -302,15 +304,15 @@ __api_knl_set_args_valist(hiknl_t k, va_list list) {
                                          va_arg(list, address_t))->value;
             rbn_int_himem_t *n;
             if ((n = find_rbn_int_himem_t(&k->mems, index)) == k->mems.nil) {
-                HICL_DEBUG("insert @ %p for kernel %s", 
-                         m->id, __api_knl_name(k->id));
+                HICL_DEBUG("insert {h=%p, id=%p} for kernel %s", 
+                           m->h, m->id, __api_knl_name(k->id));
                 insert_rbn_int_himem_t(&k->mems, a, m);
                 insert_rbn_hiknl_t_int(&m->knls, k, a);
                 __api_knl_set_arg_cl_mem(k->id, a, &m->id);
             } else {
                 if (m != n->value) {
-                    HICL_DEBUG("modify @ %p for kernel %s",
-                             m->id, __api_knl_name(k->id));
+                    HICL_DEBUG("modify {h=%p, id=%p} for kernel %s",
+                                m->h, m->id, __api_knl_name(k->id));
                     n->value = m; 
                     __api_knl_set_arg_cl_mem(k->id, a, &m->id);
                 }
@@ -384,33 +386,70 @@ __api_knl_async_run(cl_kernel kernel, cl_command_queue queue,
 }
 
 PRIVATE void
-__api_knl_info(cl_kernel kernel, cl_uint num_args) {
-    cl_uint i;
+__api_knl_info(void *pointer) {
+    hiknl_t k = (hiknl_t)pointer;
+    unsigned int i;
     char tmp_0[__API_STR_SIZE], tmp_1[__API_STR_SIZE];
-    __API_KNL_GET_PTR(kernel, CL_KERNEL_FUNCTION_NAME, tmp_0);
-    __API_KNL_INFO_LEVEL_0("kernel @ %p", kernel);
+    __API_KNL_GET_PTR(k->id, CL_KERNEL_FUNCTION_NAME, tmp_0);
+    __API_KNL_INFO_LEVEL_0("kernel {id=%p}", k->id);
     __API_KNL_INFO_LEVEL_1("%s", "name", tmp_0);
-    __API_KNL_INFO_LEVEL_1("%u", "num args", num_args);
+    __API_KNL_INFO_LEVEL_1("%u", "num args", k->num_args);
 #ifdef CL_VERSION_1_2
-    if (num_args > 0) {
-        __API_KNL_ARG_GET_PTR(kernel, 0, CL_KERNEL_ARG_NAME, tmp_0);
-        __API_KNL_ARG_GET_PTR(kernel, 0, CL_KERNEL_ARG_TYPE_NAME, tmp_1);
+    if (k->num_args > 0) {
+        __API_KNL_ARG_GET_PTR(k->id, 0, CL_KERNEL_ARG_NAME, tmp_0);
+        __API_KNL_ARG_GET_PTR(k->id, 0, CL_KERNEL_ARG_TYPE_NAME, tmp_1);
         __API_KNL_INFO_LEVEL_1("%-2d - %-10s (%s)", "args:", 0, tmp_0, tmp_1);
-        for (i=1; i<num_args; ++i) {
-            __API_KNL_ARG_GET_PTR(kernel, i, CL_KERNEL_ARG_NAME, tmp_0);
-            __API_KNL_ARG_GET_PTR(kernel, i, CL_KERNEL_ARG_TYPE_NAME, tmp_1);
+        for (i=1; i<k->num_args; ++i) {
+            __API_KNL_ARG_GET_PTR(k->id, i, CL_KERNEL_ARG_NAME, tmp_0);
+            __API_KNL_ARG_GET_PTR(k->id, i, CL_KERNEL_ARG_TYPE_NAME, tmp_1);
             __API_KNL_INFO_LEVEL_2("%-2d - %-10s (%s)", i, tmp_0, tmp_1);
         }
     }
 #endif // CL_VERSION_1_2
+    __API_KNL_INFO_LEVEL_0("kernel %s has %lu memory objects", 
+                           __api_knl_name(k->id), k->mems.size);
+}
+
+///
+/// @brief Create a hiCL kernel descriptor.
+///
+/// This routine creates a hiCL kernel descriptor, provided an OpenCL cl_kernel,
+/// which contains information about the work size and also the offset, see 
+/// types.h. 
+/// @param id is the OpenCL cl_kernel.
+/// @return a hiCL kernel descriptor.
+///
+PRIVATE hiknl_t __api_knl_init(cl_kernel id) {
+    size_t idx;
+    hiknl_t k = (hiknl_t)malloc(sizeof(struct __hiknl_t));
+    k->id  = id;
+    k->wrk = 0;
+    for(idx=0; idx<__API_KNL_MAX_WORK_SIZE; ++idx) {
+        k->gws[idx]=1;
+        k->lws[idx]=1;
+        k->ofs[idx]=0;
+    }
+    //create_rbt_int_himem_t(&k->mems, __api_int_cmp, __api_mem_knl_release);
+    __API_KNL_GET(id, CL_KERNEL_NUM_ARGS, k->num_args);
+    ulist_put(&hicl->knls, ulist_create(k));
+    return k;
 }
 
 PRIVATE void
-__api_knl_release(cl_kernel kernel) {
-    if (clReleaseKernel(kernel) != CL_SUCCESS)
+__api_knl_release(void *pointer) {
+    hiknl_t k = (hiknl_t)pointer;
+#ifdef __API_DEBUG
+    unsigned int nb_refs;
+    __API_KNL_GET(k->id, CL_KERNEL_REFERENCE_COUNT, nb_refs);
+    HICL_DEBUG("releasing OpenCL kernel %s (mem count = %lu)", 
+                __api_knl_name(k->id), k->mems.size);
+#endif // __API_DEBUG
+    delete_rbt_int_himem_t(&k->mems);
+    if (clReleaseKernel(k->id) != CL_SUCCESS)
         HICL_FAIL("failed to release OpenCL kernel");
+    free(k); k = NULL;
 }
 
-CPPGUARD_END()
+CPPGUARD_END();
 
 #endif  // __API_KNL_INL_H_

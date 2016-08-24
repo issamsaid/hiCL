@@ -33,7 +33,7 @@
 /// @author Issam SAID
 /// @brief The implementation of the hiCL utilities.
 ///
-#include "hiCL/util.h"
+#include <hiCL/util.h>
 #include "__api/plt-inl.h"
 #include "__api/dev-inl.h"
 #include "__api/mem-inl.h"
@@ -62,9 +62,7 @@ flags_t hicl_str_to_flags_t(const char* str) {
     return flags;
 }
 
-bool hicl_has(flags_t flags) {
-    return hicl_count(flags) > 0;
-}
+bool hicl_has(flags_t flags) { return hicl_count(flags) > 0; }
 
 unsigned int hicl_count(flags_t flags) {
     cl_platform_id id, *plt_ids = NULL;
@@ -91,12 +89,7 @@ unsigned int hicl_mem_count() {
     else return 0;
 }
 
-unsigned int hicl_knl_count() {
-    list_hiknl_t *i_knl;
-    unsigned int n = 0;
-    for (i_knl=hicl->knls; i_knl != NULL; i_knl=i_knl->next) n++;
-    return n;
-}
+unsigned int hicl_knl_count() { return ulist_size(&hicl->knls); }
 
 ///
 /// This is a workaround since some compilers such as the Intel

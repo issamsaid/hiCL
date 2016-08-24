@@ -49,7 +49,7 @@
 #include <stdbool.h>
 #include <assert.h>
 
-CPPGUARD_BEGIN()
+CPPGUARD_BEGIN();
 
 #define BLACK              0
 #define RED                1

@@ -148,16 +148,6 @@ void    hicl_mem_dtoh(address_t h, cl_bool blocking);
 ///
 void    hicl_mem_htod(address_t h, cl_bool blocking);
 
-///
-/// @brief Print information about a given hiCL memory descriptor.
-///
-/// This routine shows information about a given memory object, which include
-/// the size, the number of references, etc.
-/// @param h is the host memory pointer that identifies the descriptor.
-/// @return Nothing.
-///
-void    hicl_mem_info(address_t h);
-
 CPPGUARD_END()
 
 #endif  // HICL_MEM_H_

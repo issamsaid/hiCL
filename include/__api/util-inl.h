@@ -40,11 +40,17 @@
 #include <string.h>
 #include <sys/types.h>
 #include <time.h>
-#include "hiCL/types.h"
+#include <hiCL/types.h>
 #include "__api/config/opencl.h"
 #include "__api/config/private.h"
 #include "__api/config/guard.h"
 #include "__api/config/log.h"
+
+CPPGUARD_BEGIN();
+
+extern hienv_t hicl;
+
+extern void hicl_release();
 
 #ifdef  __API_DEBUG
 #define HICL_DEBUG(fmt,...)                                              \
@@ -134,11 +140,6 @@
     HICL_CHECK(clGetContextInfo(context, context_info, sizeof(value),   \
                               value, NULL),                             \
              "failed to query context info")
-
-CPPGUARD_BEGIN()
-
-extern void hicl_release();
-extern hienv_t hicl;
 
 PRIVATE int
 __api_address_cmp(address_t cur_ptr, address_t otr_ptr) {
@@ -330,6 +331,6 @@ __api_event_time(cl_event event) {
     return end-start;
 }
 
-CPPGUARD_END()
+CPPGUARD_END();
 
 #endif  // __API_UTIL_INL_H_

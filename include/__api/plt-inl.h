@@ -37,15 +37,15 @@
 ///
 #include <stdio.h>
 #include <string.h>
-#include "hiCL/flags.h"
-#include "hiCL/types.h"
+#include <hiCL/flags.h>
+#include <hiCL/types.h>
 #include "__api/config/opencl.h"
 #include "__api/config/private.h"
 #include "__api/config/guard.h"
 #include "__api/config/util.h"
 #include "__api/util-inl.h"
 
-CPPGUARD_BEGIN()
+CPPGUARD_BEGIN();
 
 #define __API_PLT_VENDOR_MASK DEFAULT | AMD | APPLE | INTEL | NVIDIA
 
@@ -174,6 +174,6 @@ __api_plt_info(cl_platform_id id, FILE* fdout) {
     }
 }
 
-CPPGUARD_END()
+CPPGUARD_END();
 
 #endif  // __API_PLT_INL_H_

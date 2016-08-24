@@ -33,12 +33,11 @@
 /// @author Issam SAID
 /// @brief The implementation of the hiCL memory objects manipulation routines.
 ///
-#include "hiCL/mem.h"
+#include <hiCL/mem.h>
 #include <stdio.h>
 #include "__api/config/mem.h"
 #include "__api/mem-inl.h"
 #include "__api/rbt-inl.h"
-#include "__api/list-inl.h"
 
 GENERATE_RBT_BODY(address_t, himem_t);
 GENERATE_RBT_BODY(hiknl_t, int);
@@ -147,8 +146,6 @@ himem_t hicl_mem_wrap(hidev_t d, void *h, size_t size, flags_t flags) {
         m->size      = size;
         m->unit_size = __api_mem_unit_size(m->flags);
         //__API_MEM_PRINT_FLAGS(m->flags);
-        HICL_DEBUG("attempt to wrap @ %p, size: %12.5f MB", 
-                   h, (double)m->size*m->unit_size/1024./1024.);
         if (__API_MEM_ZERO_COPY(m->flags)) {
             /// wrap zero-copy buffers in the CPU memory.
             if (__API_MEM_CPU(m->flags)) {
@@ -194,6 +191,8 @@ himem_t hicl_mem_wrap(hidev_t d, void *h, size_t size, flags_t flags) {
         __API_MEM_CLEAR(m->flags);
         insert_rbn_address_t_himem_t(&hicl->mems, h, m);
         create_rbt_hiknl_t_int(&m->knls, __api_knl_cmp, NULL);
+        HICL_DEBUG("mem wrap   {h=%p, id=%p} (size= %12.5f MB)", 
+                   m->h, m->id, (double)m->size*m->unit_size/1024./1024.);
         return m;
     }
 }
@@ -290,8 +289,4 @@ void hicl_mem_htod(address_t h, cl_bool blocking) {
         //}
     }
     //__api_mem_touch(m);
-}
-
-void hicl_mem_info(address_t h) {
-    __api_mem_info(find_rbn_address_t_himem_t(&hicl->mems, h)->value);
 }

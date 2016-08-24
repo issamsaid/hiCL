@@ -33,11 +33,11 @@
 /// @author Issam SAID
 /// @brief The implementation of the main routines to setup hiCL.
 ///
-#include "hiCL/base.h"
-#include "hiCL/dev.h"
-#include "hiCL/mem.h"
-#include "hiCL/knl.h"
-#include "hiCL/timer.h"
+#include <hiCL/base.h>
+#include <hiCL/dev.h>
+#include <hiCL/mem.h>
+#include <hiCL/knl.h>
+#include <hiCL/timer.h>
 
 #include "__api/config/dev.h"
 #include "__api/config/knl.h"
@@ -159,9 +159,10 @@ void hicl_init(flags_t flags) {
         HICL_CHECK(cl_ret, "failed to create an OpenCL context");
         
         // setup devices.
-        for (i=0; i<nb_devices; ++i) {
-            hicl_dev_init(dev_ids[i]);
+        for (i=0; i<nb_devices; ++i) { 
+            __api_dev_init(dev_ids[i]); 
         }
+
         // setup timer.
         hicl_timer_uset(__API_TIMER_UNIT);
         free(plt_ids);
@@ -175,35 +176,15 @@ void hicl_release() {
     /// This test ensures that hiCL is released only once.
     ///
     if (hicl != NULL) {
-        list_hiknl_t *tmp_knl, *i_knl = hicl->knls;
-        list_hidev_t *tmp_dev, *i_dev = hicl->devs;
         delete_rbt_address_t_himem_t(&hicl->mems);
-        while(i_knl != NULL) {
-            tmp_knl = i_knl;
-            HICL_DEBUG("releasing OpenCL kernel @ %p (%s)", 
-                        i_knl->data->id, 
-                        __api_knl_name(i_knl->data->id));
-            /// delete_rbt_int_mem(&i_knl->data->mems);
-            __api_knl_release(i_knl->data->id);
-            free(i_knl->data); i_knl->data = NULL;
-            i_knl = i_knl->next;
-            list_delete_hiknl_t(&tmp_knl);
-        }
-        while(i_dev != NULL) {
-            tmp_dev = i_dev;
-            HICL_DEBUG("releasing OpenCL device @ %p", i_dev->data->id);
-            __api_dev_release_queues(i_dev->data->queue);
-            free(i_dev->data); i_dev->data = NULL;
-            i_dev = i_dev->next;
-            list_delete_hidev_t(&tmp_dev);
-        }
+        ulist_delete(&hicl->knls, __api_knl_release);
+        ulist_delete(&hicl->devs, __api_dev_release);
         if(hicl->context) {
             HICL_DEBUG("releasing OpenCL context @ %p", hicl->context);
             if (clReleaseContext(hicl->context) != CL_SUCCESS)
                 HICL_WARN("failed to release OpenCL context");
         }
         HICL_PRINT("OpenCL resources are released");
-    
     #ifndef __API_LOG_STD
         if (fclose(hicl->fdout)) {
             fprintf(stderr, 
@@ -242,19 +223,15 @@ void hicl_load(const char *filename, const char *options_format, ...) {
     HICL_DEBUG("loading filename '%s' with options '%s' (program @ %p)",
                filename, options, program);
     knl_ids = __api_knl_create_from_program(program, options, &nb_kernels);
-    for(idx=0; idx<nb_kernels; ++idx) hicl_knl_init(knl_ids[idx]);
+    for(idx=0; idx<nb_kernels; ++idx) __api_knl_init(knl_ids[idx]);
     free(knl_ids);
     free(code);
     HICL_CHECK(clReleaseProgram(program), "failed to release OpenCL program");
 }
 
 void hicl_info() {
-    list_hidev_t *i_dev;
-    list_hiknl_t *i_knl;
     __api_plt_info(hicl->platform_id, hicl->fdout);
-    for (i_dev=hicl->devs; i_dev != NULL; i_dev=i_dev->next)
-        hicl_dev_info(i_dev->data);
-    walk_value_rbt_address_t_himem_t(&hicl->mems, __api_mem_info);
-    for (i_knl=hicl->knls; i_knl != NULL; i_knl=i_knl->next)
-        __api_knl_info(i_knl->data->id, i_knl->data->num_args);
+    ulist_walk(&hicl->devs, __api_dev_info);
+    //walk_value_rbt_address_t_himem_t(&hicl->mems, __api_mem_info);
+    ulist_walk(&hicl->knls, __api_knl_info);
 }

@@ -33,44 +33,18 @@
 /// @author Issam SAID
 /// @brief The implementation of the hiCL devices manipulation routines.
 ///
-#include "hiCL/dev.h"
+#include <hiCL/dev.h>
 #include <stdio.h>
 #include <string.h>
 
 #include "__api/config/util.h"
 #include "__api/dev-inl.h"
-#include "__api/list-inl.h"
-
-GENERATE_LIST_BODY(hidev_t);
-
-hidev_t hicl_dev_init(cl_device_id id) {
-    cl_int cl_ret;
-    hidev_t d    = (hidev_t)malloc(sizeof(struct __hidev_t));
-    d->id    = id; 
-    d->queue = clCreateCommandQueue(hicl->context, id,
-                                    __API_USE_EVENTS ?
-                                    CL_QUEUE_PROFILING_ENABLE : 0, &cl_ret);
-    HICL_CHECK(cl_ret, "failed to create OpenCL queue");
-    list_insert_hidev_t(&hicl->devs, list_create_hidev_t(d));
-    return d;
-}
-
-void hicl_dev_release(hidev_t *dptr) {
-    hidev_t d = *dptr;
-    list_hidev_t *tmp_dev;
-    if(d) {
-        HICL_DEBUG("releasing OpenCL device @ %p", d->id);
-        __api_dev_release_queues(d->queue);
-        tmp_dev = list_remove_hidev_t(&hicl->devs, d);
-        list_delete_hidev_t(&tmp_dev);
-        free(d); *dptr = NULL;
-    }
-}
 
 hidev_t hicl_dev_find(flags_t flags) {
-    list_hidev_t *i_dev;
+    ulist_t *i_dev;
+    hidev_t      d;
     cl_int i_dev_idx = 0, idx;
-    cl_device_type i_devype, type;
+    cl_device_type i_dev_type, type;
     flags_t hidev_type_flags  = flags & (__API_DEV_TYPE_MASK);
     flags_t dev_index_flags = flags & (__API_DEV_INDEX_MASK);
     HICL_EXIT_IF(!__API_DEV_CHECK_TYPE_FLAGS(hidev_type_flags), 
@@ -88,8 +62,9 @@ hidev_t hicl_dev_find(flags_t flags) {
     HICL_DEBUG("hicl_dev_find: index from flags %u", idx);
     
     for (i_dev=hicl->devs; i_dev != NULL; i_dev=i_dev->next) {
-        __API_DEV_GET(i_dev->data->id, CL_DEVICE_TYPE, i_devype);
-        if ((i_devype & type) && (i_dev_idx++ == idx)) return i_dev->data;
+        d = (hidev_t)i_dev->data;
+        __API_DEV_GET(d->id, CL_DEVICE_TYPE, i_dev_type);
+        if ((i_dev_type & type) && (i_dev_idx++ == idx)) return d;
     }
     HICL_EXIT("device not found (type = %s, index = %d)",
               __API_DEV_TYPE_STR(type), idx);
@@ -98,7 +73,5 @@ hidev_t hicl_dev_find(flags_t flags) {
 bool hicl_dev_support(hidev_t d, char* extension) {
     return __api_dev_extension_supported(d->id, extension);
 }
-
-void hicl_dev_info(hidev_t d) { return __api_dev_info(d->id, hicl->fdout); }
 
 void hicl_dev_wait(hidev_t d) { clFinish(d->queue); }

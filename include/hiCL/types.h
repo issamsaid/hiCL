@@ -42,13 +42,13 @@
 ///
 #include <stdio.h>
 #include <stdint.h>
+#include <ulist/ulist.h>
 #include "__api/config/opencl.h"
 #include "__api/config/guard.h"
 #include "__api/config/knl.h"
-#include "__api/list-inl.h"
 #include "__api/rbt-inl.h"
 
-CPPGUARD_BEGIN()
+CPPGUARD_BEGIN();
 
 typedef uint64_t flags_t;
 typedef void     *address_t;
@@ -57,8 +57,6 @@ typedef struct __himem_t *himem_t;
 typedef struct __hiknl_t *hiknl_t;
 typedef struct __hienv_t *hienv_t;
 
-GENERATE_LIST_HEADER(hidev_t);
-GENERATE_LIST_HEADER(hiknl_t);
 GENERATE_RBT_HEADER(address_t, himem_t);
 GENERATE_RBT_HEADER(int, himem_t);
 GENERATE_RBT_HEADER(hiknl_t, int);
@@ -87,7 +85,7 @@ struct __himem_t {
     cl_mem id;              ///< the OpenCL identifier of the memory object.  
     cl_mem pinned;          ///< an memory object used if the memory is pinned.
     cl_command_queue queue; ///< a queue used to manipulate the memory object.
-    void* h;                ///< a pointer that corresponds 
+    void* h;                ///< a pointer to the host memory.
     rbt_hiknl_t_int knls;   ///< a red-black tree of the kernels using this memory.
 };
 
@@ -115,13 +113,13 @@ struct __hiknl_t {
 struct __hienv_t {
     cl_platform_id platform_id; ///< the OpenCL platform, we only handle one platform.  
     cl_context context;         ///< the OpenCL context. 
-    list_hidev_t *devs;         ///< a list of the used devices.
-    list_hiknl_t *knls;         ///< a list of the used kernels.
+    ulist_t *devs;              ///< a list of the used devices.
+    ulist_t *knls;              ///< a list of the used kernels.
     rbt_address_t_himem_t mems; ///< a red-black tree of the active memory objects.
     FILE* fdout;                ///< a file descriptor for logging.
     FILE* fderr;                ///< a file descriptor for error reporting.
 };
 
-CPPGUARD_END()
+CPPGUARD_END();
 
 #endif  // HICL_TYPES_H_

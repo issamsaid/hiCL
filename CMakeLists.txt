@@ -128,6 +128,37 @@ else ()
 	message(STATUS "... OpenCL libraries     : ${OPENCL_LIBRARIES}")
 endif ()
 
+
+## Fetch and build ulist: https://github.com/issamsaid/ulist/archive/master.zip
+find_package(Threads REQUIRED)
+
+## Enable ExternalProject CMake module
+include(ExternalProject)
+
+## Download and install ulist
+ExternalProject_Add(
+    ulist
+    URL https://github.com/issamsaid/ulist/archive/master.zip
+    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/ulist
+    INSTALL_COMMAND ""
+)
+
+## Get uilst source and binary directories
+ExternalProject_Get_Property(ulist source_dir binary_dir)
+
+## Create a libulist target to be used as a dependency by hiCL
+add_library(libulist IMPORTED STATIC GLOBAL)
+add_dependencies(libulist ulist)
+
+## Set libulist properties
+set_target_properties(libulist PROPERTIES
+    "IMPORTED_LOCATION" "${binary_dir}/ulist/libulist.a"
+    "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
+)
+
+## INTERFACE_INCLUDE_DIRECTORIES
+include_directories("${source_dir}/include")
+
 ## Build the hiCL C/C++ library.
 add_subdirectory(src)
 

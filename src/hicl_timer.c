@@ -33,7 +33,7 @@
 /// @author Issam SAID
 /// @brief The implementation of the hiCL timer manipulation routines.
 ///
-#include "hiCL/timer.h"
+#include <hiCL/timer.h>
 #include <sys/time.h>
 #include <stdint.h>
 #include "__api/config/timer.h"
