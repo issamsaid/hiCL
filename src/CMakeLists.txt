@@ -6,7 +6,7 @@
 ## funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ##
 ## Redistribution and use in source and binary forms, with or without
-## modification, are permetted provided that the following conditions
+## modification, are permitted provided that the following conditions
 ## are met:
 ##
 ## 1. Redistributions of source code must retain the above copyright
@@ -36,9 +36,13 @@
 project (hicl C)
 cmake_minimum_required (VERSION 2.8)
 
+
 ## Build the hiCL C static library.
 include_directories(${CMAKE_SOURCE_DIR}/include)
 file(GLOB C_SRCS "*.c")
 add_library(hicl STATIC ${C_SRCS})
+add_dependencies(hicl libulist)
+add_dependencies(hicl liburb_tree)
+
 set_target_properties(hicl PROPERTIES OUTPUT_NAME "hiCL")
 install(TARGETS hicl ARCHIVE DESTINATION lib)

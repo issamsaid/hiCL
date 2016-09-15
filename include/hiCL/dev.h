@@ -8,7 +8,7 @@
 /// funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ///
 /// Redistribution and use in source and binary forms, with or without
-/// modification, are permetted provided that the following conditions
+/// modification, are permitted provided that the following conditions
 /// are met:
 ///
 /// 1. Redistributions of source code must retain the above copyright
@@ -38,30 +38,10 @@
 /// @details This file describes the library functions used by hiCL to 
 /// initialize, release and manipulate an OpenCL device descriptor.
 ///
-#include "hiCL/types.h"
+#include <stdbool.h>
+#include <hiCL/types.h>
 
 CPPGUARD_BEGIN()
-
-///
-/// @brief Initialize a device descriptor.
-///
-/// This routine creates a hiCL device descriptor, provided an OpenCL device id,
-/// which contains an OpenCL command queue that is associated to the device id,
-/// see types.h.
-/// @param id the OpenCL device id of the descriptor to create.
-/// @return A hiCL device descriptor.
-///
-hidev_t  hicl_dev_init(cl_device_id id);
-
-///
-/// @brief Release the resources associated to a given hiCL device descriptor.
-///
-/// This routine mainly released the OpenCL command queue related to the hiCL
-/// device descriptor.
-/// @param dptr a pointer to the hiCL device descriptor to release.
-/// @return Nothing.
-///
-void hicl_dev_release(hidev_t *dptr);
 
 ///
 /// @brief Select a device descriptor from those initialized by hiCL.
@@ -93,16 +73,6 @@ void hicl_dev_wait(hidev_t d);
 /// @return A boolean to inform if the extension is supported.
 ///
 bool hicl_dev_support(hidev_t d, char* extension);
-
-///
-/// @brief Show information about a given hiCL device.
-///
-/// This routine prints information about the hiCL device,
-/// which includes the vendor, the driver, the extensions, etc.
-/// @param d the hiCL device descriptor.
-/// @return Nothing.
-///
-void hicl_dev_info(hidev_t d);
 
 CPPGUARD_END()
 

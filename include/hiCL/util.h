@@ -8,7 +8,7 @@
 /// funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ///
 /// Redistribution and use in source and binary forms, with or without
-/// modification, are permetted provided that the following conditions
+/// modification, are permitted provided that the following conditions
 /// are met:
 ///
 /// 1. Redistributions of source code must retain the above copyright
@@ -38,11 +38,12 @@
 /// @details this file contains a list of helpers and util functions provided 
 /// by the hiCL library.
 ///
-#include "hiCL/flags.h"
-#include "hiCL/types.h"
+#include <stdbool.h>
+#include <hiCL/flags.h>
+#include <hiCL/types.h>
 #include "__api/config/guard.h"
 
-CPPGUARD_BEGIN()
+CPPGUARD_BEGIN();
 
 ///
 /// @brief Convert a string to hiCL resources flags.
@@ -97,6 +98,6 @@ unsigned int hicl_knl_count();
 ///
 unsigned int hicl_mem_count();
 
-CPPGUARD_END()
+CPPGUARD_END();
 
 #endif  // HICL_UTIL_H_

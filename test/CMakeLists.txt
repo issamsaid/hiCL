@@ -6,7 +6,7 @@
 ## funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ##
 ## Redistribution and use in source and binary forms, with or without
-## modification, are permetted provided that the following conditions
+## modification, are permitted provided that the following conditions
 ## are met:
 ##
 ## 1. Redistributions of source code must retain the above copyright
@@ -37,9 +37,6 @@ project (build_tests)
 cmake_minimum_required (VERSION 2.8)
 
 ## Build googletest/googletest first
-set(BUILD_GMOK OFF CACHE BOOL "" FORCE)
-set(BUILD_GTEST ON CACHE BOOL "" FORCE)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/googletest)
 
 ## Build the hiCL C/C++ unit tests.
 add_subdirectory(src)

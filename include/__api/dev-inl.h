@@ -8,7 +8,7 @@
 /// funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ///
 /// Redistribution and use in source and binary forms, with or without
-/// modification, are permetted provided that the following conditions
+/// modification, are permitted provided that the following conditions
 /// are met:
 ///
 /// 1. Redistributions of source code must retain the above copyright
@@ -37,8 +37,8 @@
 ///
 #include <stdio.h>
 #include <string.h>
-#include "hiCL/flags.h"
-#include "hiCL/types.h"
+#include <hiCL/flags.h>
+#include <hiCL/types.h>
 #include "__api/config/dev.h"
 #include "__api/config/opencl.h"
 #include "__api/config/private.h"
@@ -46,7 +46,9 @@
 #include "__api/config/util.h"
 #include "__api/util-inl.h"     
 
-CPPGUARD_BEGIN()
+CPPGUARD_BEGIN();
+
+extern hienv_t hicl;
 
 #define __API_DEV_TYPE_MASK DEFAULT | ALL | CPU | GPU | ACCELERATOR
 
@@ -131,7 +133,7 @@ CPPGUARD_BEGIN()
      "BAD DEVICE TYPE")
 
 #define __API_DEV_INFO_LEVEL_0(fdout, fmt, ...) fprintf(fdout, \
-C_GREEN"\n\to OpenCL "fmt"\n"C_END, ##__VA_ARGS__)
+HICL_GREEN"\n\to OpenCL "fmt"\n"HICL_END, ##__VA_ARGS__)
 
 #ifdef __API_DEV_LONG_INFO_ENABLED
 #define __API_DEV_INFO_LEVEL_1(fdout, fmt, ...) fprintf(fdout, \
@@ -342,7 +344,9 @@ __api_dev_queue_properties_str(cl_command_queue_properties qp, FILE* fdout) {
 #endif  // __API_DEV_LONG_INFO_ENABLED
 
 PRIVATE void 
-__api_dev_info(cl_device_id id, FILE* fdout) {
+__api_dev_info(void *pointer) {
+    hidev_t     d = (hidev_t)pointer;
+    FILE* fdout   = (hicl == NULL) ? stdout : hicl->fdout;
     cl_device_type device_type;
     char name[__API_STR_SIZE];
     char vendor[__API_STR_SIZE];
@@ -350,13 +354,13 @@ __api_dev_info(cl_device_id id, FILE* fdout) {
     char profile[__API_STR_SIZE];
     char extensions[__API_BUFFER_SIZE];
     char *marker;
-    __API_DEV_GET(id, CL_DEVICE_TYPE, device_type);
-    __API_DEV_GET_PTR(id, CL_DEVICE_NAME, name);
-    __API_DEV_GET_PTR(id, CL_DEVICE_VENDOR, vendor);
-    __API_DEV_GET_PTR(id, CL_DRIVER_VERSION, driver_version);
-    __API_DEV_GET_PTR(id, CL_DEVICE_PROFILE, profile);
-    __API_DEV_GET_PTR(id, CL_DEVICE_EXTENSIONS, extensions);
-    __API_DEV_INFO_LEVEL_0(fdout, "Device @ %p", id);
+    __API_DEV_GET(d->id, CL_DEVICE_TYPE, device_type);
+    __API_DEV_GET_PTR(d->id, CL_DEVICE_NAME, name);
+    __API_DEV_GET_PTR(d->id, CL_DEVICE_VENDOR, vendor);
+    __API_DEV_GET_PTR(d->id, CL_DRIVER_VERSION, driver_version);
+    __API_DEV_GET_PTR(d->id, CL_DEVICE_PROFILE, profile);
+    __API_DEV_GET_PTR(d->id, CL_DEVICE_EXTENSIONS, extensions);
+    __API_DEV_INFO_LEVEL_0(fdout, "Device @ %p", d->id);
     __API_DEV_INFO_LEVEL_1(fdout, "%s", "type",
                               __API_DEV_TYPE_STR(device_type));
     __API_DEV_INFO_LEVEL_1(fdout, "%s", "name", name);
@@ -417,89 +421,89 @@ __api_dev_info(cl_device_id id, FILE* fdout) {
     cl_command_queue_properties queue_properties;
     cl_platform_id platform_id;
 
-    __API_DEV_GET_PTR(id, CL_DEVICE_VERSION,
+    __API_DEV_GET_PTR(d->id, CL_DEVICE_VERSION,
                          device_version);
-    __API_DEV_GET(id, CL_DEVICE_VENDOR_ID,
+    __API_DEV_GET(d->id, CL_DEVICE_VENDOR_ID,
                      vendor_id);
-    __API_DEV_GET(id, CL_DEVICE_MAX_COMPUTE_UNITS,
+    __API_DEV_GET(d->id, CL_DEVICE_MAX_COMPUTE_UNITS,
                      max_compute_units);
-    __API_DEV_GET(id, CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS,
+    __API_DEV_GET(d->id, CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS,
                      max_work_item_dimensions);
-    __API_DEV_GET_PTR(id, CL_DEVICE_MAX_WORK_ITEM_SIZES,
+    __API_DEV_GET_PTR(d->id, CL_DEVICE_MAX_WORK_ITEM_SIZES,
                          max_work_item_sizes);
-    __API_DEV_GET(id, CL_DEVICE_MAX_WORK_GROUP_SIZE,
+    __API_DEV_GET(d->id, CL_DEVICE_MAX_WORK_GROUP_SIZE,
                      max_work_group_size);
-    __API_DEV_GET(id, CL_DEVICE_PREFERRED_VECTOR_WIDTH_CHAR,
+    __API_DEV_GET(d->id, CL_DEVICE_PREFERRED_VECTOR_WIDTH_CHAR,
                      preferred_vector_width_char);
-    __API_DEV_GET(id, CL_DEVICE_PREFERRED_VECTOR_WIDTH_SHORT,
+    __API_DEV_GET(d->id, CL_DEVICE_PREFERRED_VECTOR_WIDTH_SHORT,
                      preferred_vector_width_short);
-    __API_DEV_GET(id, CL_DEVICE_PREFERRED_VECTOR_WIDTH_INT,
+    __API_DEV_GET(d->id, CL_DEVICE_PREFERRED_VECTOR_WIDTH_INT,
                      preferred_vector_width_int);
-    __API_DEV_GET(id, CL_DEVICE_PREFERRED_VECTOR_WIDTH_LONG,
+    __API_DEV_GET(d->id, CL_DEVICE_PREFERRED_VECTOR_WIDTH_LONG,
                      preferred_vector_width_long);
-    __API_DEV_GET(id, CL_DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT,
+    __API_DEV_GET(d->id, CL_DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT,
                      preferred_vector_width_float);
-    __API_DEV_GET(id, CL_DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE,
+    __API_DEV_GET(d->id, CL_DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE,
                      preferred_vector_width_double);
-    __API_DEV_GET(id, CL_DEVICE_MAX_CLOCK_FREQUENCY,
+    __API_DEV_GET(d->id, CL_DEVICE_MAX_CLOCK_FREQUENCY,
                      max_clock_frequency);
-    __API_DEV_GET(id, CL_DEVICE_ADDRESS_BITS,
+    __API_DEV_GET(d->id, CL_DEVICE_ADDRESS_BITS,
                      address_t_bits);
-    __API_DEV_GET(id, CL_DEVICE_MAX_MEM_ALLOC_SIZE,
+    __API_DEV_GET(d->id, CL_DEVICE_MAX_MEM_ALLOC_SIZE,
                      max_mem_alloc_size);
-    __API_DEV_GET(id, CL_DEVICE_IMAGE_SUPPORT,
+    __API_DEV_GET(d->id, CL_DEVICE_IMAGE_SUPPORT,
                      image_support);
-    __API_DEV_GET(id, CL_DEVICE_MAX_READ_IMAGE_ARGS,
+    __API_DEV_GET(d->id, CL_DEVICE_MAX_READ_IMAGE_ARGS,
                      max_read_image_args);
-    __API_DEV_GET(id, CL_DEVICE_MAX_WRITE_IMAGE_ARGS,
+    __API_DEV_GET(d->id, CL_DEVICE_MAX_WRITE_IMAGE_ARGS,
                      max_write_image_args);
-    __API_DEV_GET(id, CL_DEVICE_IMAGE2D_MAX_WIDTH,
+    __API_DEV_GET(d->id, CL_DEVICE_IMAGE2D_MAX_WIDTH,
                      image2d_max_width);
-    __API_DEV_GET(id, CL_DEVICE_IMAGE2D_MAX_HEIGHT,
+    __API_DEV_GET(d->id, CL_DEVICE_IMAGE2D_MAX_HEIGHT,
                      image2d_max_height);
-    __API_DEV_GET(id, CL_DEVICE_IMAGE3D_MAX_WIDTH,
+    __API_DEV_GET(d->id, CL_DEVICE_IMAGE3D_MAX_WIDTH,
                      image3d_max_width);
-    __API_DEV_GET(id, CL_DEVICE_IMAGE3D_MAX_HEIGHT,
+    __API_DEV_GET(d->id, CL_DEVICE_IMAGE3D_MAX_HEIGHT,
                      image3d_max_height);
-    __API_DEV_GET(id, CL_DEVICE_IMAGE3D_MAX_DEPTH,
+    __API_DEV_GET(d->id, CL_DEVICE_IMAGE3D_MAX_DEPTH,
                      image3d_max_depth);
-    __API_DEV_GET(id, CL_DEVICE_MAX_SAMPLERS,
+    __API_DEV_GET(d->id, CL_DEVICE_MAX_SAMPLERS,
                      max_samplers);
-    __API_DEV_GET(id, CL_DEVICE_MAX_PARAMETER_SIZE,
+    __API_DEV_GET(d->id, CL_DEVICE_MAX_PARAMETER_SIZE,
                      max_parameter_size);
-    __API_DEV_GET(id, CL_DEVICE_MEM_BASE_ADDR_ALIGN,
+    __API_DEV_GET(d->id, CL_DEVICE_MEM_BASE_ADDR_ALIGN,
                      mem_base_addr_align);
-    __API_DEV_GET(id, CL_DEVICE_MIN_DATA_TYPE_ALIGN_SIZE,
+    __API_DEV_GET(d->id, CL_DEVICE_MIN_DATA_TYPE_ALIGN_SIZE,
                      min_data_type_align_size);
-    __API_DEV_GET(id, CL_DEVICE_SINGLE_FP_CONFIG,
+    __API_DEV_GET(d->id, CL_DEVICE_SINGLE_FP_CONFIG,
                      single_fp_config);
-    __API_DEV_GET(id, CL_DEVICE_GLOBAL_MEM_CACHE_TYPE,
+    __API_DEV_GET(d->id, CL_DEVICE_GLOBAL_MEM_CACHE_TYPE,
                      global_mem_cache_type);
-    __API_DEV_GET(id, CL_DEVICE_GLOBAL_MEM_CACHE_SIZE,
+    __API_DEV_GET(d->id, CL_DEVICE_GLOBAL_MEM_CACHE_SIZE,
                      global_mem_cache_size);
-    __API_DEV_GET(id, CL_DEVICE_GLOBAL_MEM_CACHELINE_SIZE,
+    __API_DEV_GET(d->id, CL_DEVICE_GLOBAL_MEM_CACHELINE_SIZE,
                      global_mem_cacheline_size);
-    __API_DEV_GET(id, CL_DEVICE_GLOBAL_MEM_SIZE,
+    __API_DEV_GET(d->id, CL_DEVICE_GLOBAL_MEM_SIZE,
                      global_mem_size);
-    __API_DEV_GET(id, CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE,
+    __API_DEV_GET(d->id, CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE,
                      max_constant_buffer_size);
-    __API_DEV_GET(id, CL_DEVICE_MAX_CONSTANT_ARGS,
+    __API_DEV_GET(d->id, CL_DEVICE_MAX_CONSTANT_ARGS,
                      max_constant_args);
-    __API_DEV_GET(id, CL_DEVICE_LOCAL_MEM_TYPE,
+    __API_DEV_GET(d->id, CL_DEVICE_LOCAL_MEM_TYPE,
                      local_mem_type);
-    __API_DEV_GET(id, CL_DEVICE_LOCAL_MEM_SIZE,
+    __API_DEV_GET(d->id, CL_DEVICE_LOCAL_MEM_SIZE,
                      local_mem_size);
-    __API_DEV_GET(id, CL_DEVICE_ERROR_CORRECTION_SUPPORT,
+    __API_DEV_GET(d->id, CL_DEVICE_ERROR_CORRECTION_SUPPORT,
                      error_correction_support);
-    __API_DEV_GET(id, CL_DEVICE_PROFILING_TIMER_RESOLUTION,
+    __API_DEV_GET(d->id, CL_DEVICE_PROFILING_TIMER_RESOLUTION,
                      profiling_timer_resolution);
-    __API_DEV_GET(id, CL_DEVICE_ENDIAN_LITTLE,
+    __API_DEV_GET(d->id, CL_DEVICE_ENDIAN_LITTLE,
                      endian_little);
-    __API_DEV_GET(id, CL_DEVICE_EXECUTION_CAPABILITIES,
+    __API_DEV_GET(d->id, CL_DEVICE_EXECUTION_CAPABILITIES,
                      execution_capabilities);
-    __API_DEV_GET(id, CL_DEVICE_QUEUE_PROPERTIES,
+    __API_DEV_GET(d->id, CL_DEVICE_QUEUE_PROPERTIES,
                      queue_properties);
-    __API_DEV_GET(id, CL_DEVICE_PLATFORM,
+    __API_DEV_GET(d->id, CL_DEVICE_PLATFORM,
                      platform_id);
 
     __API_DEV_INFO_LEVEL_1(fdout, "%s", "device version",
@@ -589,12 +593,37 @@ __api_dev_info(cl_device_id id, FILE* fdout) {
 #endif  // _CL_DEVICE_LONG_INFO_ENABLED
 }
 
-PRIVATE void
-__api_dev_release_queues(cl_command_queue queue) {
-    if (clReleaseCommandQueue(queue) != CL_SUCCESS) 
-        HICL_FAIL("failed to release OpenCL command queue");
+///
+/// @brief Initialize a device descriptor.
+///
+/// This routine creates a hiCL device descriptor, provided an OpenCL device id,
+/// which contains an OpenCL command queue that is associated to the device id,
+/// see types.h.
+/// @param id the OpenCL device id of the descriptor to create.
+/// @return A hiCL device descriptor.
+///
+PRIVATE hidev_t  __api_dev_init(cl_device_id id) {
+    cl_int cl_ret;
+    hidev_t d    = (hidev_t)malloc(sizeof(struct __hidev_t));
+    d->id    = id; 
+    d->queue = clCreateCommandQueue(hicl->context, id,
+                                    __API_USE_EVENTS ?
+                                    CL_QUEUE_PROFILING_ENABLE : 0, &cl_ret);
+    HICL_CHECK(cl_ret, "failed to create OpenCL queue");
+    return d;
 }
 
-CPPGUARD_END()
+PRIVATE void
+__api_dev_release(void *pointer) {
+    hidev_t     d = (hidev_t)pointer;
+    if (d != NULL) {
+        HICL_DEBUG("releasing OpenCL device @ %p", d->id);
+        if (clReleaseCommandQueue(d->queue) != CL_SUCCESS) 
+            HICL_FAIL("failed to release OpenCL command queue");
+        free(d); d = NULL;
+    }
+}
+
+CPPGUARD_END();
 
 #endif  // __API_DEV_INL_H_

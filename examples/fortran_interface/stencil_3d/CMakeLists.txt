@@ -6,7 +6,7 @@
 ## funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ##
 ## Redistribution and use in source and binary forms, with or without
-## modification, are permetted provided that the following conditions
+## modification, are permitted provided that the following conditions
 ## are met:
 ##
 ## 1. Redistributions of source code must retain the above copyright
@@ -42,6 +42,9 @@ add_executable(stencil_3d_fortran ${F_SRCS})
 target_link_libraries (stencil_3d_fortran LINK_PUBLIC hicl_fortran)
 target_link_libraries (stencil_3d_fortran LINK_PUBLIC hicl)
 target_link_libraries (stencil_3d_fortran LINK_PUBLIC OpenCL)
+target_link_libraries (stencil_3d_fortran LINK_PUBLIC libulist)
+target_link_libraries (stencil_3d_fortran LINK_PUBLIC liburb_tree)
+
 add_dependencies(stencil_3d_fortran hicl_fortran)
 install(TARGETS stencil_3d_fortran DESTINATION examples/bin OPTIONAL)
 install(FILES stencil_3d.cl DESTINATION examples/bin OPTIONAL)

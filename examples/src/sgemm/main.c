@@ -6,7 +6,7 @@
 /// funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ///
 /// Redistribution and use in source and binary forms, with or without
-/// modification, are permetted provided that the following conditions
+/// modification, are permitted provided that the following conditions
 /// are met:
 ///
 /// 1. Redistributions of source code must retain the above copyright
@@ -72,7 +72,7 @@ int main(void) {
     ///< Note the '-cl-kernel-arg-info' that is added for NVIDIA GPUs to 
     ///< use some OpenCL 1.2 features.
     ///
-    hicl_load("sgemm.cl", "-cl-kernel-arg-info");
+    hicl_load("sgemm.cl", NULL);
 
     ///
     ///< Get a pointer to the desired device (in this case the default GPU).

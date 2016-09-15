@@ -77,15 +77,6 @@ contains
         deallocate(h)
     end function wrap_pointer
 
-    logical function info() result(status)
-        real(kind=4), allocatable :: h(:)
-        allocate(h(N))
-        call hicl_mem_wrap(h, d, HWA)
-        status = associated(d)
-        call hicl_mem_info(h)
-        deallocate(h)
-    end function info
-
     logical function read_access_buffer() result(status)
         real, allocatable :: h(:)
         allocate(h(N))
@@ -153,8 +144,6 @@ contains
             enddo
         enddo
         status = (hicl_mem_count() == 1)
-        call hicl_mem_release(h2d)
-        status = status .and. (hicl_mem_count() == 0)
         deallocate(h2d)
     end function access_buffer_2d
 
@@ -172,8 +161,6 @@ contains
         call hicl_mem_update(h3d, READ_ONLY)
         
         status = (hicl_mem_count() == 1)
-        call hicl_mem_release(h3d)
-        status = status .and. (hicl_mem_count() == 0)
         deallocate(h3d)
     end function access_buffer_3d
 
@@ -194,8 +181,6 @@ contains
               "mem_test.wrap_allocatable")
         call run(setup, teardown, wrap_pointer, &
               "mem_test.wrap_pointer")
-        call run(setup, teardown, info, &
-              "mem_test.info")
         call run(setup, teardown, read_access_buffer, &
                "mem_test.read_access_buffer")
         call run(setup, teardown, write_access_buffer, &

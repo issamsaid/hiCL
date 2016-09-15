@@ -8,7 +8,7 @@
 /// funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ///
 /// Redistribution and use in source and binary forms, with or without
-/// modification, are permetted provided that the following conditions
+/// modification, are permitted provided that the following conditions
 /// are met:
 ///
 /// 1. Redistributions of source code must retain the above copyright
@@ -38,43 +38,10 @@
 /// @details This file describes the library functions used by hiCL to 
 /// initialize, release and manipulate an OpenCL kernel descriptor.
 ///
-#include "hiCL/types.h"
+#include <hiCL/types.h>
 #include <stdint.h>
 
-CPPGUARD_BEGIN()
-
-///
-/// @brief Create a hiCL kernel descriptor.
-///
-/// This routine creates a hiCL kernel descriptor, provided an OpenCL cl_kernel,
-/// which contains information about the work size and also the offset, see 
-/// types.h. 
-/// @param id is the OpenCL cl_kernel.
-/// @return a hiCL kernel descriptor.
-///
-hiknl_t hicl_knl_init(cl_kernel id);
-
-///
-/// @brief Release a hiCL kernel descriptor.
-///
-/// This routine frees the OpenCL resources related to a given kernel descriptor
-/// identified by a kernel name.
-/// @param name is the string that identifies the kernel descriptor.
-/// @return Nothing.
-///
-void    hicl_knl_release(const char *name);
-
-///
-/// @brief Show information about a given hiCL kernel descriptor.
-///
-/// This routine prints information about the OpenCL resources associated
-/// to a given kernel descriptor. The information include the kernel name,
-/// the number of arguments, the list of memory objects that the kernel 
-/// manipulates, etc.
-/// @param name is the string that identifies the kernel descriptor.
-/// @return Nothing.
-///
-void    hicl_knl_info(const char *name);
+CPPGUARD_BEGIN();
 
 ///
 /// @brief Return a kernel descriptor provided a string.
@@ -276,7 +243,6 @@ void    hicl_knl_sync_exec(const char *name, hidev_t d);
 ///
 double  hicl_knl_timed_exec(const char *name, hidev_t d);
 
-
-CPPGUARD_END()
+CPPGUARD_END();
 
 #endif  // HICL_KNL_H_

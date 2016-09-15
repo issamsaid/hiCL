@@ -8,7 +8,7 @@
 /// funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ///
 /// Redistribution and use in source and binary forms, with or without
-/// modification, are permetted provided that the following conditions
+/// modification, are permitted provided that the following conditions
 /// are met:
 ///
 /// 1. Redistributions of source code must retain the above copyright
@@ -36,12 +36,14 @@
 /// @brief Private functions used to implement the hiCL memory descriptor.
 ///
 #include <stdio.h>
-#include "hiCL/flags.h"
-#include "hiCL/types.h"
+#include <hiCL/flags.h>
+#include <hiCL/types.h>
 #include "__api/config/opencl.h"
 #include "__api/config/private.h"
 #include "__api/config/guard.h"
 #include "__api/util-inl.h"
+
+CPPGUARD_BEGIN();
 
 #define CL_MEMORY_GET(id, mem_info, value)                                  \
     HICL_CHECK(clGetMemObjectInfo(id, mem_info, sizeof(value), &value, NULL), \
@@ -52,7 +54,7 @@
              "failed to query memory info")
 
 #define __API_MEM_INFO_LEVEL_0(fmt, ...) \
-    fprintf(hicl->fdout, C_GREEN"\no OpenCL "fmt":\n"C_END, ##__VA_ARGS__)
+    fprintf(hicl->fdout, HICL_GREEN"\no OpenCL "fmt":\n"HICL_END, ##__VA_ARGS__)
 
 #define __API_MEM_INFO_LEVEL_1(fmt, ...) \
     fprintf(hicl->fdout, "\to %-20s: "fmt"\n", ##__VA_ARGS__)
@@ -134,8 +136,6 @@
 #define __API_MEM_TOUCH_HOST(flags)     (flags |= HOST_DIRTY)
 #define __API_MEM_TOUCH_DEVICE(flags)   (flags |= DEVICE_DIRTY)
 
-CPPGUARD_BEGIN()
-
 PRIVATE size_t
 __api_mem_unit_size(flags_t flags) {
     if (flags & FLOAT)         return sizeof(float);
@@ -187,7 +187,8 @@ __api_mem_map_flags(flags_t flags, cl_bool reverse) {
 PRIVATE void
 __api_mem_map(himem_t m, cl_map_flags flags, cl_bool blocking) {
     cl_int cl_ret;
-    HICL_DEBUG("attempt to map @ %p %s(%12.5f MB)",
+    HICL_DEBUG("mem map    {h=%p, id=%p} %s(size=%12.5f MB)",
+               m->h,
                __API_MEM_PINNED(m->flags) ? m->pinned : m->id,
                __API_MEM_PINNED(m->flags) ? "pinned " : "",
                (double)m->size*m->unit_size/1024./1024.);
@@ -201,8 +202,8 @@ __api_mem_map(himem_t m, cl_map_flags flags, cl_bool blocking) {
 
 PRIVATE void
 __api_mem_unmap(himem_t m, cl_bool blocking) {
-    HICL_DEBUG("attempt to unmap  @ %p (%12.5f MB)", 
-               m->id, (double)m->size*m->unit_size/1024./1024.);
+    HICL_DEBUG("mem unmap  {h=%p, id=%p} (size=%12.5f MB)", 
+               m->h, m->id, (double)m->size*m->unit_size/1024./1024.);
     HICL_CHECK(clEnqueueUnmapMemObject(m->queue,
                                        __API_MEM_PINNED(m->flags) ? 
                                        m->pinned : m->id, 
@@ -216,8 +217,8 @@ __api_mem_htod(himem_t m, cl_bool blocking) {
     HICL_CHECK(clEnqueueWriteBuffer(m->queue, m->id, blocking, 0,
                                   m->size*m->unit_size, m->h, 0, NULL, NULL),
              "failed to write into OpenCL memory");
-    HICL_DEBUG("htod   @ %p -> %p (%12.5f MB)", 
-             m->h, m->id, (double)m->size*m->unit_size/1024./1024.);
+    HICL_DEBUG("mem htod   {h=%p, id=%p} (size=%12.5f MB)", 
+               m->h, m->id, (double)m->size*m->unit_size/1024./1024.);
 }
 
 PRIVATE void 
@@ -225,8 +226,8 @@ __api_mem_dtoh(himem_t m, cl_bool blocking) {
     HICL_CHECK(clEnqueueReadBuffer(m->queue, m->id, blocking, 0,
                                  m->size*m->unit_size, m->h, 0, NULL, NULL),
              "failed to read from OpenCL memory");
-    HICL_DEBUG("dtoh   @ %p -> %p (%12.5f MB)", 
-             m->id, m->h, (double)m->size*m->unit_size/1024./1024.);
+    HICL_DEBUG("mem dtoh   {h=%p, id=%p} (size=%12.5f MB)", 
+               m->h, m->id, (double)m->size*m->unit_size/1024./1024.);
 }
 
 /// @todo This is bugy on AMD discrete GPU 
@@ -250,8 +251,8 @@ __api_mem_dtoh_rect3d(himem_t m,
                                      xpitch*ypitch*m->unit_size, 
                                      m->h, 0, NULL, NULL),
              "failed to read rectangle from OpenCL memory");
-    HICL_DEBUG("dtoh_rect3d   @ %p -> %p (%12.5f MB)", 
-             m->id, m->h, (double)region[0]*region[1]*region[2]/1024./1024.);
+    HICL_DEBUG("mem dtoh_rect3d {h=%p, id=%p} (size=%12.5f MB)", 
+               m->h, m->id, (double)region[0]*region[1]*region[2]/1024./1024.);
 }
 
 /// @todo This is bugy on AMD discrete GPU 
@@ -275,8 +276,8 @@ __api_mem_htod_rect3d(himem_t m,
                                       xpitch*ypitch*m->unit_size, 
                                       m->h, 0, NULL, NULL),
              "failed to write rectangle from OpenCL memory");
-    HICL_DEBUG("htod_rect3d   @ %p -> %p (%12.5f MB)", 
-             m->id, m->h, (double)region[0]*region[1]*region[2]/1024./1024.);
+    HICL_DEBUG("mem htod_rect3d {h=%p, id=%p} (size=%12.5f MB)", 
+               m->h, m->id, (double)region[0]*region[1]*region[2]/1024./1024.);
 }
 
 PRIVATE void
@@ -298,20 +299,22 @@ __api_mem_copy(himem_t src, himem_t dst, cl_bool blocking) {
         __API_MEM_TOUCH_DEVICE(dst->flags);
         if (blocking) clFinish(dst->queue);
     }
-    HICL_DEBUG("copy   @ %p -> %p (%12.5f MB)", 
-             src->id, dst->id, (double)src->size*src->unit_size/1024./1024.);
+    HICL_DEBUG("mem copy from {h=%p, id=%p} to {h=%p, id=%p} (size=%12.5f MB)", 
+               src->h, src->id, dst->h, dst->id, 
+               (double)src->size*src->unit_size/1024./1024.);
 }
 
 PRIVATE void
 __api_mem_touch(himem_t m) {
     if (!__API_MEM_READ_ONLY(m->flags)) {
         __API_MEM_TOUCH_DEVICE(m->flags);
-        HICL_DEBUG("touch  @ %p", m->id);
+        HICL_DEBUG("mem touch  {h=%p, id=%p}", m->h, m->id);
     }
 }
 
 PRIVATE void
-__api_mem_sync(himem_t m) {
+__api_mem_sync(void *pointer) {
+    himem_t m = (himem_t)pointer;
     if (__API_MEM_ZERO_COPY(m->flags)) {
         if (__API_MEM_HOST_DIRTY(m->flags) &&
             !__API_MEM_WRITE_ONLY(m->flags)) {
@@ -333,76 +336,58 @@ __api_mem_sync(himem_t m) {
 
 PRIVATE himem_t
 __api_mem_find(address_t h) {
-    return find_rbn_address_t_himem_t(&hicl->mems, h)->value;
+    return (himem_t)urb_tree_find(&hicl->mems, h, __api_address_cmp)->value;
 }
 
-PRIVATE void
-__api_mem_release(himem_t m) {
-    if (m != NULL) {
-        HICL_DEBUG("himem_t release @ %p (id=%p, hiknl_t size = %lu)", 
-                    m, m->id, m->knls.size);
-        if (__API_MEM_CPU(m->flags)) {
-            if (__API_MEM_ZERO_COPY(m->flags)) {
-                HICL_ABORT(clEnqueueUnmapMemObject(m->queue,
-                                                     __API_MEM_PINNED(m->flags) ? 
-                                                     m->pinned : m->id, 
-                                                     m->h, 0, NULL, NULL), 
+PRIVATE 
+void __api_mem_release(void *pointer) {
+    himem_t m = (himem_t)pointer;
+    if (m != NULL) {   
+        m->refs--; 
+        HICL_DEBUG("mem refs -- {h=%p, id=%p} (refs %u => %u)", 
+                    m->h, m->id, m->refs+1, m->refs);
+        if (m->refs == 0) {
+            HICL_DEBUG("mem release {h=%p, id=%p} (refs count = %u)", 
+                       m->h, m->id, m->refs);
+            if (__API_MEM_CPU(m->flags)) {
+                if (__API_MEM_ZERO_COPY(m->flags)) {
+                    HICL_ABORT(clEnqueueUnmapMemObject(m->queue,
+                                                __API_MEM_PINNED(m->flags) ? 
+                                                m->pinned : m->id, 
+                                                m->h, 0, NULL, NULL), 
                            "failed to unmap host zero-copy memory");
-                HICL_ABORT(clReleaseMemObject(m->id),
+                    HICL_ABORT(clReleaseMemObject(m->id),
                            "failed to release OpenCL memory");
-            } else {
-                free(m->h);
-            }
-        } else if (__API_MEM_HWA(m->flags)) {
-            if (__API_MEM_PINNED(m->flags)) {
-                HICL_ABORT(clReleaseMemObject(m->pinned),
+                } else { free(m->h); }
+            } else if (__API_MEM_HWA(m->flags)) {
+                if (__API_MEM_PINNED(m->flags)) {
+                    HICL_ABORT(clReleaseMemObject(m->pinned),
                            "failed to release pinned memory object");
-            } else if (__API_MEM_ZERO_COPY(m->flags)) {
-                __api_mem_unmap(m, CL_TRUE);
-            } else {
-                if (!__API_MEM_HOST_ALLOCATED(m->flags)) {
-                    free(m->h);
+                } else if (__API_MEM_ZERO_COPY(m->flags)) {
+                    __api_mem_unmap(m, CL_TRUE);
+                } else {
+                    if (!__API_MEM_HOST_ALLOCATED(m->flags)) {
+                        free(m->h);
+                    }
                 }
+                HICL_ABORT(clReleaseMemObject(m->id), 
+                       "failed to release OpenCL memory");
             }
-            HICL_ABORT(clReleaseMemObject(m->id), "failed to release OpenCL memory");
+            free(m); m = NULL;
         }
-        free(m); m = NULL;
     }
 }
 
 PRIVATE void
-__api_mem_skip_from_knl(hiknl_t k, int index) {
-    HICL_DEBUG("skip arg %d of kernel %p", index, k->id);
-    skip_rbn_int_himem_t(&k->mems, index);
-}
-
-PRIVATE void
-__api_mem_stdalone_release(himem_t m) {
-    if (m != NULL) {
-        walk_key_value_rbt_hiknl_t_int(&m->knls, __api_mem_skip_from_knl);
-        delete_rbt_hiknl_t_int(&m->knls);
-        __api_mem_release(m);
-    }
-}
-
-PRIVATE void
-__api_mem_knl_release(himem_t m) {
-    if (m != NULL) {
-        walk_key_value_rbt_hiknl_t_int(&m->knls, __api_mem_skip_from_knl);
-        delete_rbt_hiknl_t_int(&m->knls);
-        skip_rbn_address_t_himem_t(&hicl->mems, m->h);
-        __api_mem_release(m);
-    }
-}
-
-PRIVATE void
-__api_mem_info(himem_t m) {
-    __API_MEM_INFO_LEVEL_0("memory @ %p (%#lx)", m->id, m->flags);
+__api_mem_info(void *pointer) {
+    himem_t m = (himem_t)pointer;
+    __API_MEM_INFO_LEVEL_0("memory object {h=%p, id=%p} (flags=%#lx)", 
+                            m->h, m->id, m->flags);
     __API_MEM_INFO_LEVEL_1("%-12.5f %s", "size", 
                            (double)m->size*m->unit_size/1024./1024., "MB");
     __API_MEM_PRINT_FLAGS(m->flags);
 }
 
-CPPGUARD_END()
+CPPGUARD_END();
 
 #endif  // __API_MEM_INL_H_

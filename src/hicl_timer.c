@@ -6,7 +6,7 @@
 /// funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ///
 /// Redistribution and use in source and binary forms, with or without
-/// modification, are permetted provided that the following conditions
+/// modification, are permitted provided that the following conditions
 /// are met:
 ///
 /// 1. Redistributions of source code must retain the above copyright
@@ -33,7 +33,7 @@
 /// @author Issam SAID
 /// @brief The implementation of the hiCL timer manipulation routines.
 ///
-#include "hiCL/timer.h"
+#include <hiCL/timer.h>
 #include <sys/time.h>
 #include <stdint.h>
 #include "__api/config/timer.h"

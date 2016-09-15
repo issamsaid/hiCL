@@ -8,7 +8,7 @@
 /// funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ///
 /// Redistribution and use in source and binary forms, with or without
-/// modification, are permetted provided that the following conditions
+/// modification, are permitted provided that the following conditions
 /// are met:
 ///
 /// 1. Redistributions of source code must retain the above copyright
@@ -40,7 +40,7 @@
 /// devices and the files (with a '.cl' extention) that contain the 
 /// OpenCL kernels source code.
 ///
-#include "hiCL/types.h"
+#include <hiCL/types.h>
 #include "__api/config/guard.h"
 
 CPPGUARD_BEGIN()

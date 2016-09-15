@@ -6,7 +6,7 @@
 ## funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ##
 ## Redistribution and use in source and binary forms, with or without
-## modification, are permetted provided that the following conditions
+## modification, are permitted provided that the following conditions
 ## are met:
 ##
 ## 1. Redistributions of source code must retain the above copyright
@@ -35,6 +35,10 @@
 ##
 project (hicl_distribution C CXX Fortran)
 cmake_minimum_required (VERSION 2.8)
+
+## Enable ExternalProject CMake module
+include(ExternalProject)
+find_package(Threads REQUIRED)
 
 ## Overwrite the install prefix
 set (CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}")
@@ -99,10 +103,10 @@ if (hicl_roundup_wrk)
 endif (hicl_roundup_wrk)
 
 ## Skip dependencies between builds and installs
-#set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY TRUE) 
+set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY TRUE) 
 
 ## Check whether OpenCL is detected:
-## - The OpenCL library quered in usual directories
+## - The OpenCL library queered in usual directories
 ## - This behavior can be changed with env setting:
 ##   OPENCL_INCLUDE_DIR: contains the OpenCL headers
 ##   OPENCL_LIBRARY_DIR: contains the OpenCL library
@@ -127,6 +131,60 @@ else ()
 	message(STATUS "... OpenCL library paths : ${OPENCL_LIBRARY_DIRS}")
 	message(STATUS "... OpenCL libraries     : ${OPENCL_LIBRARIES}")
 endif ()
+
+
+##
+## Download and install ulist as an external project
+##
+ExternalProject_Add(
+    ulist
+    URL https://github.com/issamsaid/ulist/archive/master.zip
+    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/ulist
+    INSTALL_COMMAND ""
+)
+
+## Get uilst source and binary directories
+ExternalProject_Get_Property(ulist SOURCE_DIR BINARY_DIR)
+
+## Create a libulist target to be used as a dependency by hiCL
+add_library(libulist STATIC IMPORTED GLOBAL)
+add_dependencies(libulist ulist)
+
+## Set libulist properties
+set_target_properties(libulist PROPERTIES
+    "IMPORTED_LOCATION" "${BINARY_DIR}/src/libulist.a"
+    "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
+)
+
+## Include ulist headers
+include_directories("${SOURCE_DIR}/include")
+
+##
+## Download and install urb_tree as an external project
+##
+ExternalProject_Add(
+    urb_tree
+    URL https://github.com/issamsaid/urb_tree/archive/master.zip
+    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/urb_tree
+    INSTALL_COMMAND ""
+)
+
+## Get urb_tree source and binary directories
+ExternalProject_Get_Property(urb_tree SOURCE_DIR BINARY_DIR)
+
+## Create a liburb_tree target to be used as a dependency by hiCL
+add_library(liburb_tree IMPORTED STATIC GLOBAL)
+add_dependencies(liburb_tree urb_tree)
+
+## Set liburb_tree properties
+set_target_properties(liburb_tree PROPERTIES
+    "IMPORTED_LOCATION" "${BINARY_DIR}/src/liburb_tree.a"
+    "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
+)
+
+## Include urb_tree headers
+include_directories("${SOURCE_DIR}/include")
+
 
 ## Build the hiCL C/C++ library.
 add_subdirectory(src)

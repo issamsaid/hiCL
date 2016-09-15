@@ -6,7 +6,7 @@
 /// funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ///
 /// Redistribution and use in source and binary forms, with or without
-/// modification, are permetted provided that the following conditions
+/// modification, are permitted provided that the following conditions
 /// are met:
 ///
 /// 1. Redistributions of source code must retain the above copyright
@@ -70,26 +70,14 @@ namespace {
             free(dev_ids);     
         }
     };
-    
-    TEST_F(DevTest, hicl_dev_init) {
-        hidev_t d = hicl_dev_init(dev_ids[0]);
-        ASSERT_TRUE(d != NULL);
-    }
-
-    TEST_F(DevTest, hicl_dev_release) {
-        hidev_t d = hicl_dev_init(dev_ids[0]);
-        ASSERT_TRUE(d != NULL);
-        hicl_dev_release(&d);   
-        ASSERT_TRUE(d == NULL);
-    }
-    
+        
     TEST_F(DevTest, hicl_dev_find_default) {
         hidev_t d0   = hicl_dev_find(DEFAULT);
         hidev_t d2   = hicl_dev_find(FIRST);
         ASSERT_EQ(d0, d2);
         ASSERT_GE(n, (unsigned int)1);
-        ASSERT_GE(list_size_hidev_t(&hicl->devs), (unsigned int)1);
-        ASSERT_GE(n, list_size_hidev_t(&hicl->devs));
+        ASSERT_GE(ulist_size(&hicl->devs), (unsigned int)1);
+        ASSERT_GE(n, ulist_size(&hicl->devs));
     }
 
     TEST_F(DevTest, hicl_dev_find_all) {
@@ -145,7 +133,7 @@ namespace {
 
     TEST_F(DevTest, hicl_dev_info) {
         hidev_t first = hicl_dev_find(FIRST);
-        hicl_dev_info(first);
+        __api_dev_info(first);
     }
 
     TEST_F(DevTest, hicl_dev_wait) {

@@ -6,7 +6,7 @@
 /// funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ///
 /// Redistribution and use in source and binary forms, with or without
-/// modification, are permetted provided that the following conditions
+/// modification, are permitted provided that the following conditions
 /// are met:
 ///
 /// 1. Redistributions of source code must retain the above copyright
@@ -33,7 +33,7 @@
 /// @author Issam SAID
 /// @brief The implementation of the hiCL utilities.
 ///
-#include "hiCL/util.h"
+#include <hiCL/util.h>
 #include "__api/plt-inl.h"
 #include "__api/dev-inl.h"
 #include "__api/mem-inl.h"
@@ -62,9 +62,7 @@ flags_t hicl_str_to_flags_t(const char* str) {
     return flags;
 }
 
-bool hicl_has(flags_t flags) {
-    return hicl_count(flags) > 0;
-}
+bool hicl_has(flags_t flags) { return hicl_count(flags) > 0; }
 
 unsigned int hicl_count(flags_t flags) {
     cl_platform_id id, *plt_ids = NULL;
@@ -87,16 +85,11 @@ unsigned int hicl_count(flags_t flags) {
 }
 
 unsigned int hicl_mem_count() {
-    if (hicl != NULL) return hicl->mems.size;
+    if (hicl != NULL) return urb_tree_size(&hicl->mems);
     else return 0;
 }
 
-unsigned int hicl_knl_count() {
-    list_hiknl_t *i_knl;
-    unsigned int n = 0;
-    for (i_knl=hicl->knls; i_knl != NULL; i_knl=i_knl->next) n++;
-    return n;
-}
+unsigned int hicl_knl_count() { return ulist_size(&hicl->knls); }
 
 ///
 /// This is a workaround since some compilers such as the Intel

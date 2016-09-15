@@ -61,12 +61,15 @@ inline void hicl_fknl_set_double(hiknl_t k, int index, double d) {
 }
 
 inline void hicl_fknl_set_mem(hiknl_t k, int index, address_t h) {
-    rbn_int_himem_t *n;
-    himem_t m = find_rbn_address_t_himem_t(&hicl->mems, h)->value;
-    if ((n = find_rbn_int_himem_t(&k->mems, index)) == k->mems.nil) {
+    urb_t *n;
+    int *ikey;
+    himem_t m = (himem_t)urb_tree_find(&hicl->mems, h, __api_address_cmp)->value;
+    if ((n = urb_tree_find(&k->mems, &index, __api_int_cmp)) == &urb_sentinel) {
         HICL_DEBUG("insert @ %p for kernel %s", m->id, __api_knl_name(k->id));
-        insert_rbn_int_himem_t(&k->mems, index, m);
-        insert_rbn_hiknl_t_int(&m->knls, k, index);
+        ikey  = (int*)malloc(sizeof(int));
+        *ikey = index;
+        urb_tree_put(&k->mems, urb_tree_create(ikey, m), __api_int_cmp);
+        m->refs++;
         __api_knl_set_arg_cl_mem(k->id, index, &m->id);
     } else {
         if (m != n->value) {
@@ -109,21 +112,21 @@ inline void hicl_fknl_set_ofs(hiknl_t k, size_t *ofs) {
 
 inline void hicl_fknl_exec(hiknl_t k, hidev_t d) {
     HICL_DEBUG("run (async) kernel : %s", __api_knl_name(k->id));
-    walk_value_rbt_int_himem_t(&k->mems, __api_mem_sync);
+    urb_tree_walk(&k->mems, NULL, __api_mem_sync);
     __api_knl_async_run(k->id, d->queue, k->wrk, k->gws, k->lws, k->ofs);
     HICL_DEBUG("");
 }
 
 inline void hicl_fknl_sync_exec(hiknl_t k, hidev_t d) {
     HICL_DEBUG("run (sync) kernel  : %s", __api_knl_name(k->id));
-    walk_value_rbt_int_himem_t(&k->mems, __api_mem_sync);
+    urb_tree_walk(&k->mems, NULL, __api_mem_sync);
     __api_knl_sync_run(k->id, d->queue, k->wrk, k->gws, k->lws, k->ofs);
     HICL_DEBUG("");
 }
 
 inline double hicl_fknl_timed_exec(hiknl_t k, hidev_t d) {
     HICL_DEBUG("run (timed) kernel : %s", __api_knl_name(k->id));
-    walk_value_rbt_int_himem_t(&k->mems, __api_mem_sync);
+    urb_tree_walk(&k->mems, NULL, __api_mem_sync);
     hicl_timer_tick();
     __api_knl_sync_run(k->id, d->queue, k->wrk, k->gws, k->lws, k->ofs);
     HICL_DEBUG("");

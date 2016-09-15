@@ -128,7 +128,7 @@ namespace {
         hicl_init(DEFAULT);
         hicl_load("data/foo.cl", "-DSTENCIL=29");
         hicl_load("data/bar.cl", "-DSTENCIL=29");
-        ASSERT_EQ(list_size_hiknl_t(&hicl->knls), static_cast<unsigned int>(6));
+        ASSERT_EQ(ulist_size(&hicl->knls), static_cast<unsigned int>(6));
         hicl_release();
     }
 

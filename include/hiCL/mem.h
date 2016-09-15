@@ -8,7 +8,7 @@
 /// funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ///
 /// Redistribution and use in source and binary forms, with or without
-/// modification, are permetted provided that the following conditions
+/// modification, are permitted provided that the following conditions
 /// are met:
 ///
 /// 1. Redistributions of source code must retain the above copyright
@@ -38,9 +38,9 @@
 /// @details This file describes the library functions used by hiCL to 
 /// initialize, release and manipulate an OpenCL memory descriptor.
 ///
-#include "hiCL/types.h"
+#include <hiCL/types.h>
 
-CPPGUARD_BEGIN()
+CPPGUARD_BEGIN();
 
 ///
 /// @brief Allocate a memory object on a given device using a preallocated 
@@ -148,16 +148,6 @@ void    hicl_mem_dtoh(address_t h, cl_bool blocking);
 ///
 void    hicl_mem_htod(address_t h, cl_bool blocking);
 
-///
-/// @brief Print information about a given hiCL memory descriptor.
-///
-/// This routine shows information about a given memory object, which include
-/// the size, the number of references, etc.
-/// @param h is the host memory pointer that identifies the descriptor.
-/// @return Nothing.
-///
-void    hicl_mem_info(address_t h);
-
-CPPGUARD_END()
+CPPGUARD_END();
 
 #endif  // HICL_MEM_H_
