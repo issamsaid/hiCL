@@ -34,6 +34,7 @@
 /// @brief Unit testing file for the hiCL memory objects manipulation routines.
 ///
 #include <hiCL/base.h>
+#include <hiCL/flags.h>
 #include <hiCL/knl.h>
 #include <hiCL/mem.h>
 #include <hiCL/timer.h>
@@ -68,9 +69,8 @@ namespace {
         ASSERT_EQ(h, m->h);
         ASSERT_EQ(m,  __api_mem_find(h));
         ASSERT_EQ(m->size*m->unit_size, N*sizeof(float));
-        ASSERT_TRUE(__API_MEM_HWA(m->flags));
-        ASSERT_TRUE(__API_MEM_FLOAT(m->flags));
-        __api_mem_info(h);
+        ASSERT_TRUE(__API_FLAGS_HAVE(m->flags, HWA));
+        ASSERT_TRUE(__API_FLAGS_HAVE(m->flags, FLOAT));
         free(h);
     }
 
@@ -84,9 +84,8 @@ namespace {
         ASSERT_EQ(h, m->h);
         ASSERT_EQ(m,  __api_mem_find(h));
         ASSERT_EQ(m->size*m->unit_size, N*sizeof(float));
-        ASSERT_TRUE(__API_MEM_HWA(m->flags));
-        ASSERT_TRUE(__API_MEM_FLOAT(m->flags));
-        __api_mem_info(h);
+        ASSERT_TRUE(__API_FLAGS_HAVE(m->flags, HWA));
+        ASSERT_TRUE(__API_FLAGS_HAVE(m->flags, FLOAT));
         free(h);
     }
 
@@ -99,10 +98,9 @@ namespace {
         m   = hicl_mem_wrap(d, h, N, HWA | PINNED | INT);
         ASSERT_EQ(m, urb_tree_find(&hicl->mems, h, __api_address_cmp)->value);
         ASSERT_EQ(m->size*m->unit_size, N*sizeof(int));
-        ASSERT_TRUE(__API_MEM_HWA(m->flags));
-        ASSERT_TRUE(__API_MEM_PINNED(m->flags));
-        ASSERT_TRUE(__API_MEM_INT(m->flags));
-        __api_mem_info(h);
+        ASSERT_TRUE(__API_FLAGS_HAVE(m->flags, HWA));
+        ASSERT_TRUE(__API_FLAGS_HAVE(m->flags, PINNED));
+        ASSERT_TRUE(__API_FLAGS_HAVE(m->flags, INT));
         free(h);
     }
 
@@ -113,9 +111,8 @@ namespace {
         ret_val = posix_memalign((void**)(&h), MEM_ALIGN, N*sizeof(float));
         if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
         m    = hicl_mem_wrap(d, h, N, READ_ONLY);
-        ASSERT_TRUE(__API_MEM_READ_ONLY(m->flags));
+        ASSERT_TRUE(__API_FLAGS_HAVE(m->flags, READ_ONLY));
         ASSERT_EQ(m, urb_tree_find(&hicl->mems, h, __api_address_cmp)->value);
-        __api_mem_info(h);
         free(h);
     }
 
@@ -127,8 +124,7 @@ namespace {
         if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
         m = hicl_mem_wrap(d, h, N, WRITE_ONLY);
         ASSERT_EQ(m, urb_tree_find(&hicl->mems, h, __api_address_cmp)->value);
-        ASSERT_TRUE(__API_MEM_WRITE_ONLY(m->flags));
-        __api_mem_info(h);
+        ASSERT_TRUE(__API_FLAGS_HAVE(m->flags, WRITE_ONLY));
         free(h);
     }
 
@@ -140,9 +136,8 @@ namespace {
         if (ret_val) {fprintf(stderr, "Failed to allocate memory\n"); FAIL();}
         m = hicl_mem_wrap(d, h, N, CPU | ZERO_COPY);
         ASSERT_EQ(m, urb_tree_find(&hicl->mems, h, __api_address_cmp)->value);
-        ASSERT_TRUE(__API_MEM_CPU(m->flags));
-        ASSERT_TRUE(__API_MEM_ZERO_COPY(m->flags));
-        //__api_mem_info(h);
+        ASSERT_TRUE(__API_FLAGS_HAVE(m->flags, CPU));
+        ASSERT_TRUE(__API_FLAGS_HAVE(m->flags, ZERO_COPY));
         free(h);
     }
 
@@ -160,7 +155,6 @@ namespace {
         for (i = 0; i < N; ++i) h[i] = i;
         hicl_mem_update(h, READ_ONLY);
         for (i = 0; i < N; ++i) ASSERT_FLOAT_EQ(((float*)m->h)[i], i*1.f);
-        __api_mem_info(h);
         free(h);
     }
 

@@ -149,21 +149,6 @@ namespace {
         ASSERT_EQ(2, urb_tree_size(&k1->mems));
         ASSERT_EQ(5, urb_tree_size(&k2->mems));
         ASSERT_EQ(6, urb_tree_size(&hicl->mems));
-
-        // __api_mem_release(hsrc);
-        // __api_mem_release(hdst2);
-        // __api_mem_release(ha);
-        // __api_mem_release(hb);
-        // __api_mem_release(hc);
-
-        // ASSERT_EQ(1, urb_tree_size(&k1->mems));
-        // ASSERT_EQ(0, urb_tree_size(&k2->mems));
-        // ASSERT_EQ(1, urb_tree_size(&hicl->mems));
-        // __api_knl_release(hicl_knl_find("test_hicl_2"));
-        // ASSERT_EQ(1, urb_tree_size(&hicl->mems));
-        
-        // __api_knl_release(hicl_knl_find("test_hicl_1"));
-        // ASSERT_EQ(0, urb_tree_size(&hicl->mems));
         
         free(hsrc);
         free(hdst1);
