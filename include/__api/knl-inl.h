@@ -46,12 +46,12 @@
 
 CPPGUARD_BEGIN();
 
-#define __API_PROGRAM_GET(program, program_info, value)     \
+#define __API_PRG_GET(program, program_info, value)         \
     HICL_CHECK(clGetProgramInfo(program, program_info,      \
                               sizeof(value), &value, NULL), \
                "failed to query OpenCL program info")
 
-#define __API_PROGRAM_GET_PTR(program, program_info, value) \
+#define __API_PRG_GET_PTR(program, program_info, value)     \
     HICL_CHECK(clGetProgramInfo(program, program_info,      \
                               sizeof(value), value, NULL),  \
                "failed to query OpenCL program info")
@@ -130,7 +130,7 @@ __api_knl_create_from_program(cl_program program,
 #endif 
     cl_ret = clBuildProgram(program, 0, NULL, buffer, NULL, NULL);
     if (cl_ret != CL_SUCCESS) {
-        __API_PROGRAM_GET(program, CL_PROGRAM_CONTEXT, context);
+        __API_PRG_GET(program, CL_PROGRAM_CONTEXT, context);
         __API_CONTEXT_GET(context, CL_CONTEXT_NUM_DEVICES, nb_devices);
         cl_device_id ids[nb_devices];
         __API_CONTEXT_GET_PTR(context, CL_CONTEXT_DEVICES, ids);
@@ -148,10 +148,10 @@ __api_knl_create_from_program(cl_program program,
 #ifdef CL_VERSION_1_2
     size_t i;
     char tmp[__API_STR_SIZE], *marker;
-    __API_PROGRAM_GET(program, CL_PROGRAM_NUM_KERNELS, i);
+    __API_PRG_GET(program, CL_PROGRAM_NUM_KERNELS, i);
     ids = (cl_kernel*) malloc(sizeof(cl_kernel)*i);
     *num_kernels = i; i = 0;
-    __API_PROGRAM_GET_PTR(program, CL_PROGRAM_KERNEL_NAMES, buffer);
+    __API_PRG_GET_PTR(program, CL_PROGRAM_KERNEL_NAMES, buffer);
     marker = buffer;
     do {
         marker = __api_strstep(tmp, marker, ";");
@@ -216,7 +216,7 @@ __api_knl_extract_code(cl_kernel k, const char* name, char* container) {
                                 0, NULL, &code_size),
                "failed to query OpenCL program source size");
     char code[code_size];
-    __API_PROGRAM_GET_PTR(program, CL_PROGRAM_SOURCE, code);
+    __API_PRG_GET_PTR(program, CL_PROGRAM_SOURCE, code);
     if (strstr(code, name) == NULL) return -1;
     s = code;
     while (pch == NULL) {
@@ -244,7 +244,7 @@ __api_knl_get_arg_types(cl_kernel k, int n,
     HICL_CHECK(clGetProgramInfo(program, CL_PROGRAM_SOURCE, 0, NULL, &code_size),
                "failed to query OpenCL program source size");
     char code[code_size];
-    __API_PROGRAM_GET_PTR(program, CL_PROGRAM_SOURCE, code);
+    __API_PRG_GET_PTR(program, CL_PROGRAM_SOURCE, code);
     f = strstr(code, name);
     s = strstr(f, "(");
     e = strstr(f, ")");

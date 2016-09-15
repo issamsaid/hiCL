@@ -45,11 +45,11 @@
 
 CPPGUARD_BEGIN();
 
-#define CL_MEMORY_GET(id, mem_info, value)                                  \
+#define __API_MEM_GET(id, mem_info, value)                                    \
     HICL_CHECK(clGetMemObjectInfo(id, mem_info, sizeof(value), &value, NULL), \
              "failed to query memory info")
 
-#define CL_MEMORY_GET_PTR(id, kernel_info, value)                         \
+#define __API_MEM_GET_PTR(id, kernel_info, value)                           \
     HICL_CHECK(clGetMemObjectInfo(id, mem_info, sizeof(value), value, NULL),\
              "failed to query memory info")
 
@@ -62,17 +62,17 @@ CPPGUARD_BEGIN();
 #define __API_MEM_INFO_LEVEL_2(fmt, ...) \
     fprintf(hicl->fdout, "\t %-22s "fmt"\n", " ", ##__VA_ARGS__)
 
-#define __API_MEM_READ_ONLY(flags)        (flags & READ_ONLY)
-#define __API_MEM_WRITE_ONLY(flags)       (flags & WRITE_ONLY)
-#define __API_MEM_READ_WRITE(flags)       (flags & READ_WRITE)
-#define __API_MEM_READ_WRITE_OR_WRITE_ONLY(flags) \
-    (flags & (READ_WRITE | WRITE_ONLY))
+// #define __API_MEM_READ_ONLY(flags)        (flags & READ_ONLY)
+// #define __API_MEM_WRITE_ONLY(flags)       (flags & WRITE_ONLY)
+// #define __API_MEM_READ_WRITE(flags)       (flags & READ_WRITE)
+// #define __API_MEM_READ_WRITE_OR_WRITE_ONLY(flags) \
+//     (flags & (READ_WRITE | WRITE_ONLY))
 
-#define __API_MEM_CPU(flags)              (flags & CPU)
-#define __API_MEM_HWA(flags)              (flags & HWA)
-#define __API_MEM_PINNED(flags)           (flags & PINNED)
-#define __API_MEM_ZERO_COPY(flags)        (flags & ZERO_COPY)
-#define __API_MEM_HOST_ALLOCATED(flags)   (flags & HOST_ALLOCATED)
+// #define __API_MEM_CPU(flags)              (flags & CPU)
+// #define __API_MEM_HWA(flags)              (flags & HWA)
+// #define __API_MEM_PINNED(flags)           (flags & PINNED)
+// #define __API_MEM_ZERO_COPY(flags)        (flags & ZERO_COPY)
+// #define __API_MEM_HOST_ALLOCATED(flags)   (flags & HOST_ALLOCATED)
 
 #define __API_MEM_CHAR(flags)             (flags & CHAR)
 #define __API_MEM_INT(flags)              (flags & INT)
@@ -86,43 +86,43 @@ CPPGUARD_BEGIN();
 #define __API_MEM_HOST_DIRTY(flags)       (flags & HOST_DIRTY)
 #define __API_MEM_DEVICE_DIRTY(flags)     (flags & DEVICE_DIRTY)
 
-#define __API_MEM_PRINT_FLAGS(flags)                             \
-    __API_MEM_INFO_LEVEL_1("%s %s | %s | %s", "flags",           \
-    __API_MEM_CPU(flags)              ? "CPU":                   \
-    __API_MEM_HWA(flags)              ? "HWA": "UNKNOW",         \
-    __API_MEM_PINNED(flags)           ? "| PINNED":              \
-    __API_MEM_ZERO_COPY(flags)        ? "| ZERO_COPY":           \
-    __API_MEM_HOST_ALLOCATED(flags)   ? "| HOST_ALLOCATED" : "", \
-    __API_MEM_READ_WRITE(flags)       ? "READ_WRITE":            \
-    __API_MEM_READ_ONLY(flags)        ? "READ_ONLY":             \
-    __API_MEM_WRITE_ONLY(flags)       ? "WRITE_ONLY": "UNKNOW",  \
-    __API_MEM_CHAR(flags)             ? "CHAR":                  \
-    __API_MEM_INT(flags)              ? "INT":                   \
-    __API_MEM_UNSIGNED_INT(flags)     ? "UNSIGNED INT" :         \
-    __API_MEM_LONG(flags)             ? "LONG" :                 \
-    __API_MEM_UNSIGNED_LONG(flags)    ? "UNSIGNED LONG" :        \
-    __API_MEM_SIZET(flags)            ? "SIZET"  :               \
-    __API_MEM_FLOAT(flags)            ? "FLOAT"  :               \
-    __API_MEM_DOUBLE(flags)           ? "DOUBLE" : "UNKNOWN")
+#define __API_MEM_PRINT_FLAGS(flags)                                     \
+    __API_MEM_INFO_LEVEL_1("%s %s | %s | %s", "flags",                   \
+    __API_FLAGS_HAVE(flags, CPU)              ? "CPU":                   \
+    __API_FLAGS_HAVE(flags, HWA)              ? "HWA": "UNKNOW",         \
+    __API_FLAGS_HAVE(flags, PINNED)           ? "| PINNED":              \
+    __API_FLAGS_HAVE(flags, ZERO_COPY)        ? "| ZERO_COPY":           \
+    __API_FLAGS_HAVE(flags, HOST_ALLOCATED)   ? "| HOST_ALLOCATED" : "", \
+    __API_FLAGS_HAVE(flags, READ_WRITE)       ? "READ_WRITE":            \
+    __API_FLAGS_HAVE(flags, READ_ONLY)        ? "READ_ONLY":             \
+    __API_FLAGS_HAVE(flags, WRITE_ONLY)       ? "WRITE_ONLY": "UNKNOW",  \
+    __API_FLAGS_HAVE(flags, CHAR)             ? "CHAR":                  \
+    __API_FLAGS_HAVE(flags, INT)              ? "INT":                   \
+    __API_FLAGS_HAVE(flags, UNSIGNED_INT)     ? "UNSIGNED INT" :         \
+    __API_FLAGS_HAVE(flags, LONG)             ? "LONG" :                 \
+    __API_FLAGS_HAVE(flags, UNSIGNED_LONG)    ? "UNSIGNED LONG" :        \
+    __API_FLAGS_HAVE(flags, SIZET)            ? "SIZET"  :               \
+    __API_FLAGS_HAVE(flags, FLOAT)            ? "FLOAT"  :               \
+    __API_FLAGS_HAVE(flags, DOUBLE)           ? "DOUBLE" : "UNKNOWN")
 
 #define __API_MEM_SET_DEFAULTS(flags)         \
-    if ((!__API_MEM_CPU(flags))           &&  \
-        (!__API_MEM_HWA(flags))           &&  \
-        (!__API_MEM_PINNED(flags))        &&  \
-        (!__API_MEM_ZERO_COPY(flags)))        \
+    if ((!__API_FLAGS_HAVE(flags, CPU))           &&  \
+        (!__API_FLAGS_HAVE(flags, HWA))           &&  \
+        (!__API_FLAGS_HAVE(flags, PINNED))        &&  \
+        (!__API_FLAGS_HAVE(flags, ZERO_COPY)))        \
         flags |= HWA;                         \
-    if ((!__API_MEM_READ_ONLY(flags))     &&  \
-        (!__API_MEM_WRITE_ONLY(flags))    &&  \
-        (!__API_MEM_READ_WRITE(flags)))       \
+    if ((!__API_FLAGS_HAVE(flags, READ_ONLY))     &&  \
+        (!__API_FLAGS_HAVE(flags, WRITE_ONLY))    &&  \
+        (!__API_FLAGS_HAVE(flags, READ_WRITE)))       \
         flags |= READ_WRITE;                  \
-    if ((!__API_MEM_CHAR(flags))          &&  \
-        (!__API_MEM_INT(flags))           &&  \
-        (!__API_MEM_UNSIGNED_INT(flags))  &&  \
-        (!__API_MEM_LONG(flags))          &&  \
-        (!__API_MEM_UNSIGNED_LONG(flags)) &&  \
-        (!__API_MEM_SIZET(flags))         &&  \
-        (!__API_MEM_FLOAT(flags))         &&  \
-        (!__API_MEM_DOUBLE(flags)))           \
+    if ((!__API_FLAGS_HAVE(flags, CHAR))          &&  \
+        (!__API_FLAGS_HAVE(flags, INT))           &&  \
+        (!__API_FLAGS_HAVE(flags, UNSIGNED_INT))  &&  \
+        (!__API_FLAGS_HAVE(flags, LONG))          &&  \
+        (!__API_FLAGS_HAVE(flags, UNSIGNED_LONG)) &&  \
+        (!__API_FLAGS_HAVE(flags, SIZET))         &&  \
+        (!__API_FLAGS_HAVE(flags, FLOAT))         &&  \
+        (!__API_FLAGS_HAVE(flags, DOUBLE)))           \
         flags |= FLOAT
 
 #define CLEAR_HOST                      0xFFFFFFFFFEFFFFFF
@@ -152,11 +152,11 @@ __api_mem_unit_size(flags_t flags) {
 PRIVATE cl_mem_flags
 __api_mem_alloc_flags(flags_t flags) {
     cl_mem_flags mem_flags = 0;
-    if (__API_MEM_CPU(flags)) {
+    if (__API_FLAGS_HAVE(flags, CPU)) {
        mem_flags |= 
           (flags & ZERO_COPY)   ? CL_MEM_ALLOC_HOST_PTR : 0; 
     }
-    if (__API_MEM_HWA(flags)) {
+    if (__API_FLAGS_HAVE(flags, HWA)) {
       mem_flags |= 
         (flags & PINNED)    ? CL_MEM_ALLOC_HOST_PTR         :
         (flags & ZERO_COPY) ? CL_MEM_USE_PERSISTENT_MEM_AMD : 0; /// FIXME AMD ONLY
@@ -189,11 +189,11 @@ __api_mem_map(himem_t m, cl_map_flags flags, cl_bool blocking) {
     cl_int cl_ret;
     HICL_DEBUG("mem map    {h=%p, id=%p} %s(size=%12.5f MB)",
                m->h,
-               __API_MEM_PINNED(m->flags) ? m->pinned : m->id,
-               __API_MEM_PINNED(m->flags) ? "pinned " : "",
+               __API_FLAGS_HAVE(m->flags, PINNED) ? m->pinned : m->id,
+               __API_FLAGS_HAVE(m->flags, PINNED) ? "pinned " : "",
                (double)m->size*m->unit_size/1024./1024.);
     m->h = clEnqueueMapBuffer(m->queue, 
-                              __API_MEM_PINNED(m->flags) ? m->pinned : m->id,
+                              __API_FLAGS_HAVE(m->flags, PINNED) ? m->pinned : m->id,
                               blocking,
                               flags, 0, m->size*m->unit_size, 0,
                               NULL, NULL, &cl_ret);
@@ -205,7 +205,7 @@ __api_mem_unmap(himem_t m, cl_bool blocking) {
     HICL_DEBUG("mem unmap  {h=%p, id=%p} (size=%12.5f MB)", 
                m->h, m->id, (double)m->size*m->unit_size/1024./1024.);
     HICL_CHECK(clEnqueueUnmapMemObject(m->queue,
-                                       __API_MEM_PINNED(m->flags) ? 
+                                       __API_FLAGS_HAVE(m->flags, PINNED) ? 
                                        m->pinned : m->id, 
                                        m->h, 0, NULL, NULL),
              "failed to unmap memory region");
@@ -282,7 +282,7 @@ __api_mem_htod_rect3d(himem_t m,
 
 PRIVATE void
 __api_mem_copy(himem_t src, himem_t dst, cl_bool blocking) {
-    if (__API_MEM_ZERO_COPY(src->flags)) {
+    if (__API_FLAGS_HAVE(src->flags, ZERO_COPY)) {
         dst->flags     = src->flags;
         dst->h         = src->h;
         dst->id        = src->id;
@@ -290,7 +290,7 @@ __api_mem_copy(himem_t src, himem_t dst, cl_bool blocking) {
         dst->unit_size = src->unit_size;
     } else {
         if ((__API_MEM_HOST_DIRTY(src->flags)) &&
-            (! __API_MEM_READ_ONLY(src->flags))) {
+            (! __API_FLAGS_HAVE(src->flags, READ_ONLY))) {
             __api_mem_htod(src, blocking);
         }
         HICL_CHECK(clEnqueueCopyBuffer(dst->queue, src->id, dst->id, 0, 0,
@@ -306,7 +306,7 @@ __api_mem_copy(himem_t src, himem_t dst, cl_bool blocking) {
 
 PRIVATE void
 __api_mem_touch(himem_t m) {
-    if (!__API_MEM_READ_ONLY(m->flags)) {
+    if (!__API_FLAGS_HAVE(m->flags, READ_ONLY)) {
         __API_MEM_TOUCH_DEVICE(m->flags);
         HICL_DEBUG("mem touch  {h=%p, id=%p}", m->h, m->id);
     }
@@ -315,18 +315,18 @@ __api_mem_touch(himem_t m) {
 PRIVATE void
 __api_mem_sync(void *pointer) {
     himem_t m = (himem_t)pointer;
-    if (__API_MEM_ZERO_COPY(m->flags)) {
+    if (__API_FLAGS_HAVE(m->flags, ZERO_COPY)) {
         if (__API_MEM_HOST_DIRTY(m->flags) &&
-            !__API_MEM_WRITE_ONLY(m->flags)) {
+            !__API_FLAGS_HAVE(m->flags, WRITE_ONLY)) {
             __api_mem_unmap(m, CL_TRUE);
             __API_MEM_CLEAR_HOST(m->flags);
-            if (__API_MEM_READ_ONLY(m->flags)) 
+            if (__API_FLAGS_HAVE(m->flags, READ_ONLY)) 
                 __api_mem_map(m,
                               __api_mem_map_flags(m->flags, CL_TRUE), CL_TRUE);
         }
     } else {
         if (__API_MEM_HOST_DIRTY(m->flags) && 
-            !__API_MEM_WRITE_ONLY(m->flags)) {
+            !__API_FLAGS_HAVE(m->flags, WRITE_ONLY)) {
             __api_mem_htod(m, CL_FALSE);
             __API_MEM_CLEAR_HOST(m->flags);
         }
@@ -349,24 +349,24 @@ void __api_mem_release(void *pointer) {
         if (m->refs == 0) {
             HICL_DEBUG("mem release {h=%p, id=%p} (refs count = %u)", 
                        m->h, m->id, m->refs);
-            if (__API_MEM_CPU(m->flags)) {
-                if (__API_MEM_ZERO_COPY(m->flags)) {
+            if (__API_FLAGS_HAVE(m->flags, CPU)) {
+                if (__API_FLAGS_HAVE(m->flags, ZERO_COPY)) {
                     HICL_ABORT(clEnqueueUnmapMemObject(m->queue,
-                                                __API_MEM_PINNED(m->flags) ? 
+                                                __API_FLAGS_HAVE(m->flags, PINNED) ? 
                                                 m->pinned : m->id, 
                                                 m->h, 0, NULL, NULL), 
                            "failed to unmap host zero-copy memory");
                     HICL_ABORT(clReleaseMemObject(m->id),
                            "failed to release OpenCL memory");
                 } else { free(m->h); }
-            } else if (__API_MEM_HWA(m->flags)) {
-                if (__API_MEM_PINNED(m->flags)) {
+            } else if (__API_FLAGS_HAVE(m->flags, HWA)) {
+                if (__API_FLAGS_HAVE(m->flags, PINNED)) {
                     HICL_ABORT(clReleaseMemObject(m->pinned),
                            "failed to release pinned memory object");
-                } else if (__API_MEM_ZERO_COPY(m->flags)) {
+                } else if (__API_FLAGS_HAVE(m->flags, ZERO_COPY)) {
                     __api_mem_unmap(m, CL_TRUE);
                 } else {
-                    if (!__API_MEM_HOST_ALLOCATED(m->flags)) {
+                    if (!__API_FLAGS_HAVE(m->flags, HOST_ALLOCATED)) {
                         free(m->h);
                     }
                 }

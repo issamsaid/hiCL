@@ -34,6 +34,7 @@
 /// @brief The implementation of the hiCL memory objects manipulation routines.
 ///
 #include <hiCL/mem.h>
+#include <hiCL/flags.h>
 #include <stdio.h>
 #include "__api/config/mem.h"
 #include "__api/mem-inl.h"
@@ -55,9 +56,9 @@ himem_t hicl_mem_wrap(hidev_t d, void *h, size_t size, flags_t flags) {
         m->size      = size;
         m->unit_size = __api_mem_unit_size(m->flags);
         //__API_MEM_PRINT_FLAGS(m->flags);
-        if (__API_MEM_ZERO_COPY(m->flags)) {
+        if (__API_FLAGS_HAVE(m->flags, ZERO_COPY)) {
             /// wrap zero-copy buffers in the CPU memory.
-            if (__API_MEM_CPU(m->flags)) {
+            if (__API_FLAGS_HAVE(m->flags, CPU)) {
                 m->id = clCreateBuffer(hicl->context,
                                        CL_MEM_USE_HOST_PTR | 
                                        __api_mem_update_flags(m->flags),
@@ -66,7 +67,7 @@ himem_t hicl_mem_wrap(hidev_t d, void *h, size_t size, flags_t flags) {
                 // needed by NVIDIA
                 __api_mem_map(m, __api_mem_map_flags(m->flags, CL_TRUE), CL_TRUE);
             /// wrap zero-copy buffers in the HWA memory.
-            } else if (__API_MEM_HWA(m->flags)) {
+            } else if (__API_FLAGS_HAVE(m->flags, HWA)) {
                 HICL_EXIT("device zero copy objects are not wrappable yet");
             } else {
                 HICL_EXIT("invalid memory flags combination for wrapping buffers");
@@ -74,11 +75,11 @@ himem_t hicl_mem_wrap(hidev_t d, void *h, size_t size, flags_t flags) {
             m->h = h;
         } else {
             /// regular CPU buffers.
-            if (__API_MEM_CPU(m->flags)) {
+            if (__API_FLAGS_HAVE(m->flags, CPU)) {
                 m->h  = h;
             /// regular HWA buffers.
-            } else if (__API_MEM_HWA(m->flags)) {
-                if (__API_MEM_PINNED(m->flags)) {
+            } else if (__API_FLAGS_HAVE(m->flags, HWA)) {
+                if (__API_FLAGS_HAVE(m->flags, PINNED)) {
                     m->pinned = clCreateBuffer(hicl->context,
                                               CL_MEM_USE_HOST_PTR | 
                                               __api_mem_update_flags(m->flags),
@@ -108,7 +109,7 @@ himem_t hicl_mem_wrap(hidev_t d, void *h, size_t size, flags_t flags) {
 void hicl_mem_update(address_t h, flags_t f) {
     himem_t m = (himem_t)urb_tree_find(&hicl->mems, 
                                         h, __api_address_cmp)->value;
-    if (__API_MEM_ZERO_COPY(m->flags)) {
+    if (__API_FLAGS_HAVE(m->flags, ZERO_COPY)) {
         if (__API_MEM_DEVICE_DIRTY(m->flags)) {
             __api_mem_map(m, __api_mem_map_flags(f, CL_FALSE), CL_TRUE);
             __API_MEM_CLEAR_DEVICE(m->flags);
@@ -119,7 +120,8 @@ void hicl_mem_update(address_t h, flags_t f) {
             __API_MEM_CLEAR_DEVICE(m->flags);
         }
     }
-    if (__API_MEM_READ_WRITE_OR_WRITE_ONLY(f)) __API_MEM_TOUCH_HOST(m->flags);
+    if (__API_FLAGS_HAVE(f, READ_WRITE) || __API_FLAGS_HAVE(f, WRITE_ONLY))
+        __API_MEM_TOUCH_HOST(m->flags);
 }
 
 void hicl_mem_pop(address_t h, int ix, int ex, 
@@ -127,7 +129,7 @@ void hicl_mem_pop(address_t h, int ix, int ex,
                     int xpitch, int ypitch, cl_bool blocking) {
     himem_t m = (himem_t)urb_tree_find(&hicl->mems, 
                                         h, __api_address_cmp)->value;
-    if (__API_MEM_ZERO_COPY(m->flags)) {
+    if (__API_FLAGS_HAVE(m->flags, ZERO_COPY)) {
         if (__API_MEM_DEVICE_DIRTY(m->flags)) {
             __api_mem_map(m, CL_MAP_READ, CL_TRUE);
             __API_MEM_CLEAR_DEVICE(m->flags);
@@ -147,7 +149,7 @@ void hicl_mem_push(address_t h, int ix, int ex,
                      int xpitch, int ypitch, cl_bool blocking) {
     himem_t m = (himem_t)urb_tree_find(&hicl->mems, 
                                         h, __api_address_cmp)->value;
-    if (__API_MEM_ZERO_COPY(m->flags)) {
+    if (__API_FLAGS_HAVE(m->flags, ZERO_COPY)) {
         if (__API_MEM_DEVICE_DIRTY(m->flags)) {
             __api_mem_map(m, CL_MAP_READ, CL_TRUE);
             __API_MEM_CLEAR_DEVICE(m->flags);
@@ -165,7 +167,7 @@ void hicl_mem_push(address_t h, int ix, int ex,
 void hicl_mem_dtoh(address_t h, cl_bool blocking) {
     himem_t m = (himem_t)urb_tree_find(&hicl->mems, 
                                         h, __api_address_cmp)->value;
-    if (__API_MEM_ZERO_COPY(m->flags)) {
+    if (__API_FLAGS_HAVE(m->flags, ZERO_COPY)) {
         if (__API_MEM_DEVICE_DIRTY(m->flags)) {
             __api_mem_map(m, CL_MAP_READ, CL_TRUE);
             __API_MEM_CLEAR_DEVICE(m->flags);
@@ -181,12 +183,12 @@ void hicl_mem_dtoh(address_t h, cl_bool blocking) {
 void hicl_mem_htod(address_t h, cl_bool blocking) {
     himem_t m = (himem_t)urb_tree_find(&hicl->mems, 
                                         h, __api_address_cmp)->value;
-    if (__API_MEM_ZERO_COPY(m->flags)) {
+    if (__API_FLAGS_HAVE(m->flags, ZERO_COPY)) {
         //if (__API_MEM_HOST_DIRTY(m->flags) &&
         //    !__API_MEM_WRITE_ONLY(m->flags)) {
             __api_mem_unmap(m, CL_TRUE);
             __API_MEM_CLEAR_HOST(m->flags);
-            if (__API_MEM_READ_ONLY(m->flags))
+            if (__API_FLAGS_HAVE(m->flags, READ_ONLY))
                 __api_mem_map(m,
                               __api_mem_map_flags(m->flags, CL_TRUE), CL_TRUE);
         //}
