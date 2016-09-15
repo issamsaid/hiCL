@@ -6,7 +6,7 @@
 /// funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ///
 /// Redistribution and use in source and binary forms, with or without
-/// modification, are permetted provided that the following conditions
+/// modification, are permitted provided that the following conditions
 /// are met:
 ///
 /// 1. Redistributions of source code must retain the above copyright
@@ -42,8 +42,6 @@
 #include "__api/mem-inl.h"
 #include "__api/knl-inl.h"
 
-GENERATE_RBT_BODY(int, himem_t);
-
 inline hiknl_t hicl_knl_find(const char *name) {
     ulist_t *i_knl;
     hiknl_t      k;
@@ -61,40 +59,20 @@ inline hiknl_t hicl_knl_find(const char *name) {
 
 inline void hicl_knl_build(const char *name, const char *options) {
     cl_int cl_ret;
-    char tmp[__API_STR_SIZE], names[__API_BUFFER_SIZE];
+    char tmp[__API_BUFFER_SIZE];
+    const char *const_code;
     cl_program program;
-    size_t idx, num_kernels, code_size;
+    size_t num_kernels;
     cl_kernel *ids;
     hiknl_t k = hicl_knl_find(name);
-    __API_KNL_GET(k->id, CL_KERNEL_PROGRAM, program);
-    HICL_CHECK(clGetProgramInfo(program, CL_PROGRAM_SOURCE, 0, NULL, &code_size),
-               "failed to query OpenCL program source size");
-    char code[code_size], *marker;
-    __API_PROGRAM_GET_PTR(program, CL_PROGRAM_SOURCE, code);
-    const char *const_code = code;
-#ifdef CL_VERSION_1_2
-    __API_PROGRAM_GET_PTR(program, CL_PROGRAM_KERNEL_NAMES, names);
-    marker = names;
-    do {
-        marker  = __api_strstep(tmp, marker, ";");
-        __api_knl_release((void*)k);
-    } while(marker != NULL);
+    HICL_EXIT_IF(__api_knl_extract_code(k->id, name, tmp), 
+                 "failed to extract kernel code in order to re-build it");
+    const_code = tmp;
     program = clCreateProgramWithSource(hicl->context, 1,
                                         &const_code, NULL, &cl_ret);
     HICL_CHECK(cl_ret, "failed to create OpenCL program");
-    ids = __api_knl_create_from_program(program, options, &num_kernels);
-    for(idx=0; idx<num_kernels; ++idx) hicl_knl_init(ids[idx]);
-#else
-    program = clCreateProgramWithSource(hicl->context, 1,
-                                        &const_code, NULL, &cl_ret);
-    HICL_CHECK(cl_ret, "failed to create OpenCL program");
-    ids = __api_knl_create_from_program(program, options, &num_kernels);
-    for (idx=0; idx<num_kernels; ++idx) {
-        __API_KNL_GET(ids[idx], CL_KERNEL_FUNCTION_NAME, tmp);
-        __api_knl_release((void*)k);
-        hicl_knl_init(ids[idx]);
-    }
-#endif
+    ids   = __api_knl_create_from_program(program, options, &num_kernels);
+    k->id = ids[0];
     free(ids);
     HICL_CHECK(clReleaseProgram(program), "failed to release OpenCL program");
 }
@@ -121,17 +99,20 @@ inline void hicl_knl_set_double(const char *name, int index, double d) {
 
 inline void hicl_knl_set_mem(const char *name, int index, address_t h) {
     hiknl_t k = hicl_knl_find(name);
-    rbn_int_himem_t *n;
-    rbn_address_t_himem_t *i;
+    urb_t *n, *i;
+    int *ikey;
     himem_t m;
-    HICL_EXIT_IF((i=find_rbn_address_t_himem_t(&hicl->mems, 
-                                               h)) == hicl->mems.nil,
+    HICL_EXIT_IF((i = urb_tree_find(&hicl->mems, h, __api_address_cmp)) == 
+                  &urb_sentinel,
                  "memory object not found, check if it is already wrapped");
-    m = i->value;
-    if ((n = find_rbn_int_himem_t(&k->mems, index)) == k->mems.nil) {
+    m = (himem_t)i->value;
+    if ((n = urb_tree_find(&k->mems, &index, __api_int_cmp)) == 
+         &urb_sentinel) {
         HICL_DEBUG("mem insert {h=%p, id=%p} for kernel %s", m->h, m->id, name);
-        insert_rbn_int_himem_t(&k->mems, index, m);
-        insert_rbn_hiknl_t_int(&m->knls, k, index);
+        ikey  = (int*)malloc(sizeof(int));
+        *ikey = index;
+        urb_tree_put(&k->mems, urb_tree_create(ikey, m), __api_int_cmp);
+        m->refs++;
         __api_knl_set_arg_cl_mem(k->id, index, &m->id);
     } else {
         if (m != n->value) {
@@ -193,7 +174,7 @@ inline void hicl_knl_run(const char *name, hidev_t d, ...) {
     __api_knl_set_args_valist(k, list);
     va_end(list);
     HICL_DEBUG("run (async) kernel : %s", name);
-    walk_value_rbt_int_himem_t(&k->mems, __api_mem_sync);
+    urb_tree_walk(&k->mems, NULL, __api_mem_sync);
     __api_knl_async_run(k->id, d->queue, k->wrk, k->gws, k->lws, k->ofs);
     HICL_DEBUG("");
 }
@@ -205,7 +186,7 @@ inline void hicl_knl_sync_run(const char *name, hidev_t d, ...) {
     __api_knl_set_args_valist(k, list);
     va_end(list);
     HICL_DEBUG("exec (sync) kernel  : %s", name);
-    walk_value_rbt_int_himem_t(&k->mems, __api_mem_sync);
+    urb_tree_walk(&k->mems, NULL, __api_mem_sync);
     __api_knl_sync_run(k->id, d->queue, k->wrk, k->gws, k->lws, k->ofs);
     HICL_DEBUG("");
 }
@@ -217,7 +198,7 @@ inline double hicl_knl_timed_run(const char *name, hidev_t d, ...) {
     __api_knl_set_args_valist(k, list);
     va_end(list);
     HICL_DEBUG("run (timed) kernel : %s", name);
-    walk_value_rbt_int_himem_t(&k->mems, __api_mem_sync);
+    urb_tree_walk(&k->mems, NULL, __api_mem_sync);
     hicl_timer_tick();
     __api_knl_sync_run(k->id, d->queue, k->wrk, k->gws, k->lws, k->ofs);
     HICL_DEBUG("");
@@ -227,7 +208,7 @@ inline double hicl_knl_timed_run(const char *name, hidev_t d, ...) {
 inline void hicl_knl_exec(const char *name, hidev_t d) {
     hiknl_t k = hicl_knl_find(name);
     HICL_DEBUG("exec (async) kernel : %s", name);
-    walk_value_rbt_int_himem_t(&k->mems, __api_mem_sync);
+    urb_tree_walk(&k->mems, NULL, __api_mem_sync);
     __api_knl_async_run(k->id, d->queue, k->wrk, k->gws, k->lws, k->ofs);
     HICL_DEBUG("");
 }
@@ -235,7 +216,7 @@ inline void hicl_knl_exec(const char *name, hidev_t d) {
 inline void hicl_knl_sync_exec(const char *name, hidev_t d) {
     hiknl_t k = hicl_knl_find(name);
     HICL_DEBUG("exec (sync) kernel  : %s", name);
-    walk_value_rbt_int_himem_t(&k->mems, __api_mem_sync);
+    urb_tree_walk(&k->mems, NULL, __api_mem_sync);
     __api_knl_sync_run(k->id, d->queue, k->wrk, k->gws, k->lws, k->ofs);
     HICL_DEBUG("");
 }
@@ -243,7 +224,7 @@ inline void hicl_knl_sync_exec(const char *name, hidev_t d) {
 inline double hicl_knl_timed_exec(const char *name, hidev_t d) {
     hiknl_t k = hicl_knl_find(name);
     HICL_DEBUG("exec (timed) kernel : %s", name);
-    walk_value_rbt_int_himem_t(&k->mems, __api_mem_sync);
+    urb_tree_walk(&k->mems, NULL, __api_mem_sync);
     hicl_timer_tick();
     __api_knl_sync_run(k->id, d->queue, k->wrk, k->gws, k->lws, k->ofs);
     HICL_DEBUG("");

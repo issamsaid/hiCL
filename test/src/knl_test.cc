@@ -6,7 +6,7 @@
 /// funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ///
 /// Redistribution and use in source and binary forms, with or without
-/// modification, are permetted provided that the following conditions
+/// modification, are permitted provided that the following conditions
 /// are met:
 ///
 /// 1. Redistributions of source code must retain the above copyright
@@ -72,12 +72,7 @@ namespace {
         hicl_knl_build("test_hicl_1", "-DSTENCIL=29");
         hicl_knl_build("test_hicl_2", "-DSTENCIL=29");
         hicl_knl_build("test_hicl_6", "-DSTENCIL=29");
-        ASSERT_EQ(list_size_hiknl_t(&hicl->knls), static_cast<unsigned int>(6));
-    }
-
-    TEST_F(KnlTest, release) {
-        hicl_load("data/foo.cl", "-DSTENCIL=9");
-        hicl_knl_release("test_hicl_1");
+        ASSERT_EQ(ulist_size(&hicl->knls), static_cast<unsigned int>(6));
     }
 
     void populate(float* buffer, size_t size) {
@@ -151,24 +146,24 @@ namespace {
         k1 = hicl_knl_find("test_hicl_1");
         k2 = hicl_knl_find("test_hicl_2");
 
-        ASSERT_EQ(2, k1->mems.size);
-        ASSERT_EQ(5, k2->mems.size);
-        ASSERT_EQ(6, hicl->mems.size);
+        ASSERT_EQ(2, urb_tree_size(&k1->mems));
+        ASSERT_EQ(5, urb_tree_size(&k2->mems));
+        ASSERT_EQ(6, urb_tree_size(&hicl->mems));
 
-        hicl_mem_release(hsrc);
-        hicl_mem_release(hdst2);
-        hicl_mem_release(ha);
-        hicl_mem_release(hb);
-        hicl_mem_release(hc);
+        // __api_mem_release(hsrc);
+        // __api_mem_release(hdst2);
+        // __api_mem_release(ha);
+        // __api_mem_release(hb);
+        // __api_mem_release(hc);
 
-        ASSERT_EQ(1, k1->mems.size);
-        ASSERT_EQ(0, k2->mems.size);
-        ASSERT_EQ(1, hicl->mems.size);
-        hicl_knl_release("test_hicl_2");
-        ASSERT_EQ(1, hicl->mems.size);
+        // ASSERT_EQ(1, urb_tree_size(&k1->mems));
+        // ASSERT_EQ(0, urb_tree_size(&k2->mems));
+        // ASSERT_EQ(1, urb_tree_size(&hicl->mems));
+        // __api_knl_release(hicl_knl_find("test_hicl_2"));
+        // ASSERT_EQ(1, urb_tree_size(&hicl->mems));
         
-        hicl_knl_release("test_hicl_1");
-        ASSERT_EQ(0, hicl->mems.size);
+        // __api_knl_release(hicl_knl_find("test_hicl_1"));
+        // ASSERT_EQ(0, urb_tree_size(&hicl->mems));
         
         free(hsrc);
         free(hdst1);
@@ -223,16 +218,16 @@ namespace {
         hicl_knl_sync_exec("test_hicl_1", d);
         hicl_mem_update(hdst1, READ_ONLY);
         for (i = 0; i < N; ++i) ASSERT_FLOAT_EQ(hdst1[i], i);
-        ASSERT_EQ(k1->mems.size, 2);
-        ASSERT_EQ(hicl->mems.size, 3);
+        ASSERT_EQ(urb_tree_size(&k1->mems), 2);
+        ASSERT_EQ(urb_tree_size(&hicl->mems), 3);
         hicl_knl_set_mem("test_hicl_1", 0, hsrc);
         hicl_knl_set_mem("test_hicl_1", 1, hdst2);
         hicl_knl_set_int32("test_hicl_1", 2, N);
         hicl_knl_sync_exec("test_hicl_1", d);
         hicl_mem_update(hdst2, READ_ONLY);
         for (i = 0; i <N; ++i) ASSERT_FLOAT_EQ(hdst2[i], i);
-        ASSERT_EQ(k1->mems.size, 2);
-        ASSERT_EQ(hicl->mems.size, 3);
+        ASSERT_EQ(urb_tree_size(&k1->mems), 2);
+        ASSERT_EQ(urb_tree_size(&hicl->mems), 3);
         free(hsrc);
         free(hdst1);
         free(hdst2);
@@ -372,7 +367,7 @@ namespace {
         size_t size;
         int dim[3] = {DIM, DIM, DIM}, s[3] = {4, 4, 4};
         size_t l[3] = {16, 16, 1};
-        size_t g[3] = {dim[0]/4, dim[1], 1};
+        size_t g[3] = {(size_t)dim[0]/4, (size_t)dim[1], 1};
 
         size   = (2*s[0] + dim[0])*(2*s[1] + dim[1])*(2*s[2] + dim[2]);
         flops  = 2+(3*s[0]+1)+(3*s[1]+1)+(3*s[2]+1);

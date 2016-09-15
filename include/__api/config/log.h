@@ -8,7 +8,7 @@
 /// funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ///
 /// Redistribution and use in source and binary forms, with or without
-/// modification, are permetted provided that the following conditions
+/// modification, are permitted provided that the following conditions
 /// are met:
 ///
 /// 1. Redistributions of source code must retain the above copyright
@@ -52,29 +52,32 @@
 /// @brief Set the debug mode of hiCL up.
 ///
 #ifdef __API_DEBUG
+
 #ifndef __API_VERBOSE
 #define __API_VERBOSE
 #endif // __API_VERBOSE         
+
 #ifndef __API_LOG_STD
 #define __API_LOG_STD
 #endif // __API_LOG_STD 
+
 #endif // __API_DEBUG           
 
-#ifdef __API_LOG_STD
 ///
 /// @brief Terminal colors (only available if out/err to tty).
 ///
-#define C_GREEN  "\x1B[32m"
-#define C_PURPLE "\x1B[35m"
-#define C_YELLOW "\x1B[33m"
-#define C_RED    "\x1B[31m"
-#define C_END    "\x1B[0m"
+#ifdef __API_LOG_STD
+#define HICL_GREEN  "\x1B[32m"
+#define HICL_PURPLE "\x1B[35m"
+#define HICL_YELLOW "\x1B[33m"
+#define HICL_RED    "\x1B[31m"
+#define HICL_END    "\x1B[0m"
 #else
-#define C_GREEN  ""
-#define C_PURPLE ""
-#define C_YELLOW ""
-#define C_RED    ""
-#define C_END    ""
+#define HICL_GREEN  ""
+#define HICL_PURPLE ""
+#define HICL_YELLOW ""
+#define HICL_RED    ""
+#define HICL_END    ""
 #endif  // __API_LOG_STD
 
 #endif  // __API_CONFIG_LOG_H_

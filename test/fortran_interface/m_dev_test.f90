@@ -124,14 +124,6 @@ contains
               .not. hicl_dev_support(dev0, "fake")
     end function extension_supported
 
-    logical function info() result(status)
-        type(hidev_t), pointer :: dev0
-        call hicl_dev_find(DEFAULT, dev0)
-        status = associated(dev0) 
-        call hicl_dev_info(dev0)
-    end function info
-
-
     subroutine setup()
         call hicl_init(ALL)
     end subroutine setup
@@ -155,7 +147,6 @@ contains
               "dev_test.acc_dev")
         call run(setup, teardown, extension_supported, &
               "dev_test.extension_supported")
-        call run(setup, teardown, info, "dev_test.info")
     end subroutine dev_test
 
 end module m_dev_test

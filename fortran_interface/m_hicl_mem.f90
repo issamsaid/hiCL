@@ -43,11 +43,8 @@ module m_hicl_mem
     use, intrinsic :: iso_c_binding
     use m_hicl_flags
     use m_hicl_types
-
     use m_hicl_mem_interface
     use m_hicl_mem_wrap
     use m_hicl_mem_release
     use m_hicl_mem_update
-    use m_hicl_mem_info
-
 end module m_hicl_mem

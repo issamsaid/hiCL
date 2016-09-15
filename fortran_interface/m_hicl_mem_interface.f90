@@ -113,12 +113,6 @@ module m_hicl_mem_interface
             integer(kind=c_int),  value, intent(in) :: ypitch
             logical(kind=c_bool), value, intent(in) :: blocking
         end subroutine c_hicl_mem_push
-
-        subroutine c_hicl_mem_info(c_ptr_m) &
-            bind(c, name="hicl_mem_info")
-            use, intrinsic :: iso_c_binding, only: c_ptr
-            type(c_ptr), value, intent(in) :: c_ptr_m
-        end subroutine c_hicl_mem_info
     end interface
 
 end module m_hicl_mem_interface

@@ -8,7 +8,7 @@
 /// funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ///
 /// Redistribution and use in source and binary forms, with or without
-/// modification, are permetted provided that the following conditions
+/// modification, are permitted provided that the following conditions
 /// are met:
 ///
 /// 1. Redistributions of source code must retain the above copyright
@@ -133,7 +133,7 @@ extern hienv_t hicl;
      "BAD DEVICE TYPE")
 
 #define __API_DEV_INFO_LEVEL_0(fdout, fmt, ...) fprintf(fdout, \
-C_GREEN"\n\to OpenCL "fmt"\n"C_END, ##__VA_ARGS__)
+HICL_GREEN"\n\to OpenCL "fmt"\n"HICL_END, ##__VA_ARGS__)
 
 #ifdef __API_DEV_LONG_INFO_ENABLED
 #define __API_DEV_INFO_LEVEL_1(fdout, fmt, ...) fprintf(fdout, \
@@ -346,7 +346,7 @@ __api_dev_queue_properties_str(cl_command_queue_properties qp, FILE* fdout) {
 PRIVATE void 
 __api_dev_info(void *pointer) {
     hidev_t     d = (hidev_t)pointer;
-    FILE* fdout   = hicl->fdout;
+    FILE* fdout   = (hicl == NULL) ? stdout : hicl->fdout;
     cl_device_type device_type;
     char name[__API_STR_SIZE];
     char vendor[__API_STR_SIZE];
@@ -610,7 +610,6 @@ PRIVATE hidev_t  __api_dev_init(cl_device_id id) {
                                     __API_USE_EVENTS ?
                                     CL_QUEUE_PROFILING_ENABLE : 0, &cl_ret);
     HICL_CHECK(cl_ret, "failed to create OpenCL queue");
-    ulist_put(&hicl->devs, ulist_create(d));
     return d;
 }
 

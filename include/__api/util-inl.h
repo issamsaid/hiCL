@@ -8,7 +8,7 @@
 /// funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ///
 /// Redistribution and use in source and binary forms, with or without
-/// modification, are permetted provided that the following conditions
+/// modification, are permitted provided that the following conditions
 /// are met:
 ///
 /// 1. Redistributions of source code must retain the above copyright
@@ -54,7 +54,7 @@ extern void hicl_release();
 
 #ifdef  __API_DEBUG
 #define HICL_DEBUG(fmt,...)                                              \
-    fprintf(hicl->fdout, C_PURPLE"[HICL DBG]: "fmt".\n"C_END, ##__VA_ARGS__)
+    fprintf(hicl->fdout, HICL_PURPLE"[HICL DBG]: "fmt".\n"HICL_END, ##__VA_ARGS__)
 #else 
 #define HICL_DEBUG(fmt,...) 
 #endif  // __API_DEBUG
@@ -62,14 +62,14 @@ extern void hicl_release();
 #ifdef __API_VERBOSE                             
 #define HICL_PRINT(fmt,...)                                             \
     fprintf(hicl->fdout,                                                  \
-            C_GREEN"[HICL MSG]: "fmt".\n"C_END, ##__VA_ARGS__)
+            HICL_GREEN"[HICL MSG]: "fmt".\n"HICL_END, ##__VA_ARGS__)
 #define HICL_WARN(fmt,...)                                              \
     fprintf(hicl->fdout,                                                  \
-            C_YELLOW"[HICL WRN]: "fmt".\n"C_END, ##__VA_ARGS__)
+            HICL_YELLOW"[HICL WRN]: "fmt".\n"HICL_END, ##__VA_ARGS__)
 #define HICL_WARN_IF(predicate, fmt,...)                                \
     if (predicate) {                                                    \
         fprintf(hicl->fdout,                                              \
-                C_YELLOW"[HICL WRN]: "fmt".\n"C_END, ##__VA_ARGS__);    \
+                HICL_YELLOW"[HICL WRN]: "fmt".\n"HICL_END, ##__VA_ARGS__);    \
     }
 #else 
 #define HICL_PRINT(fmt,...) 
@@ -79,14 +79,14 @@ extern void hicl_release();
 
 #define HICL_FAIL(fmt,...)                                              \
     {                                                                   \
-        fprintf(stderr, C_RED"[HICL FATAL]: "fmt" @%s:%d.\n"C_END,      \
+        fprintf(stderr, HICL_RED"[HICL FATAL]: "fmt" @%s:%d.\n"HICL_END,      \
                 ##__VA_ARGS__, __FILE__, __LINE__);                     \
         exit(EXIT_FAILURE);                                             \
     }
 
 #define HICL_FAIL_IF(predicate, fmt,...)                                \
     if (predicate) {                                                    \
-        fprintf(stderr, C_RED"[HICL FATAL]: "fmt" @%s:%d.\n"C_END,      \
+        fprintf(stderr, HICL_RED"[HICL FATAL]: "fmt" @%s:%d.\n"HICL_END,      \
                 ##__VA_ARGS__, __FILE__, __LINE__);                     \
         exit(EXIT_FAILURE);                                             \
     }
@@ -95,7 +95,7 @@ extern void hicl_release();
     {                                                                   \
         if(status != CL_SUCCESS) {                                      \
             fprintf(stderr,                                             \
-                    C_RED"[HICL ABORT(%s)]: "fmt" @%s:%d.\n"C_END,      \
+                    HICL_RED"[HICL ABORT(%s)]: "fmt" @%s:%d.\n"HICL_END,      \
                     __api_error_msg(status),                            \
                     ##__VA_ARGS__, __FILE__, __LINE__);                 \
             exit(EXIT_FAILURE);                                         \
@@ -104,7 +104,7 @@ extern void hicl_release();
 
 #define HICL_EXIT(fmt,...)                                              \
     {                                                                   \
-        fprintf(hicl->fderr, C_RED"[HICL ERR]: "fmt" @%s:%d.\n"C_END,     \
+        fprintf(hicl->fderr, HICL_RED"[HICL ERR]: "fmt" @%s:%d.\n"HICL_END,     \
             ##__VA_ARGS__, __FILE__, __LINE__);                         \
         hicl_release();                                                 \
         exit(EXIT_FAILURE);                                             \
@@ -112,7 +112,7 @@ extern void hicl_release();
 
 #define HICL_EXIT_IF(predicate, fmt,...)                                \
     if (predicate) {                                                    \
-        fprintf(hicl->fderr, C_RED"[HICL ERR]: "fmt" @%s:%d.\n"C_END,     \
+        fprintf(hicl->fderr, HICL_RED"[HICL ERR]: "fmt" @%s:%d.\n"HICL_END,     \
                 ##__VA_ARGS__, __FILE__, __LINE__);                     \
         hicl_release();                                                 \
         exit(EXIT_FAILURE);                                             \
@@ -122,7 +122,7 @@ extern void hicl_release();
     {                                                                   \
         if(status != CL_SUCCESS) {                                      \
             fprintf(hicl->fderr,                                          \
-                    C_RED"[HICL ERR(%s)]: "fmt" @%s:%d.\n"C_END,        \
+                    HICL_RED"[HICL ERR(%s)]: "fmt" @%s:%d.\n"HICL_END,        \
                     __api_error_msg(status),                            \
                     ##__VA_ARGS__, __FILE__, __LINE__);                 \
             hicl_release();                                             \
@@ -142,17 +142,20 @@ extern void hicl_release();
              "failed to query context info")
 
 PRIVATE int
-__api_address_cmp(address_t cur_ptr, address_t otr_ptr) {
+__api_address_cmp(void *cur_ptr, void *otr_ptr) {
     return (int64_t)cur_ptr - (int64_t)otr_ptr;
 }
 
 PRIVATE int
-__api_int_cmp(int cur, int otr) {
-    return cur - otr;
+__api_int_cmp(void *cur, void *otr) {
+    return *(int*)cur - *(int*)otr;
 }
 
+PRIVATE void
+__api_int_del(void *i) { free(i); }
+
 PRIVATE int
-__api_knl_cmp(hiknl_t cur, hiknl_t otr) {
+__api_knl_cmp(void *cur, void *otr) {
     return (int64_t)cur - (int64_t)otr;
 }
 

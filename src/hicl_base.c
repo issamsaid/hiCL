@@ -6,7 +6,7 @@
 /// funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ///
 /// Redistribution and use in source and binary forms, with or without
-/// modification, are permetted provided that the following conditions
+/// modification, are permitted provided that the following conditions
 /// are met:
 ///
 /// 1. Redistributions of source code must retain the above copyright
@@ -79,7 +79,7 @@ void hicl_init(flags_t flags) {
         hicl->context     = NULL;
         hicl->devs        = NULL;
         hicl->knls        = NULL;
-        //hicl->mems        = NULL;
+        hicl->mems        = &urb_sentinel;
 #ifdef __API_LOG_STD 
         hicl->fdout = stdout;
         hicl->fderr = stderr;
@@ -114,10 +114,6 @@ void hicl_init(flags_t flags) {
     
         HICL_DEBUG("hicl_init: flags = %#016lx", flags);
 
-        // prepare OpenCL resources lists.
-        create_rbt_address_t_himem_t(&hicl->mems, 
-                                    __api_address_cmp, 
-                                    __api_mem_stdalone_release);
         // get the OpenCL desired platform otherwise exit.
         nb_platforms = __api_plt_count();
         HICL_EXIT_IF(nb_platforms == 0, "no OpenCL platform found");
@@ -155,13 +151,12 @@ void hicl_init(flags_t flags) {
         
         // setup an OpenCL context.
         hicl->context = clCreateContext(NULL, nb_devices, 
-                                      dev_ids, NULL, NULL, &cl_ret);
+                                        dev_ids, NULL, NULL, &cl_ret);
         HICL_CHECK(cl_ret, "failed to create an OpenCL context");
         
         // setup devices.
-        for (i=0; i<nb_devices; ++i) { 
-            __api_dev_init(dev_ids[i]); 
-        }
+        for (i=0; i<nb_devices; ++i) 
+            ulist_put(&hicl->devs, ulist_create(__api_dev_init(dev_ids[i]))); 
 
         // setup timer.
         hicl_timer_uset(__API_TIMER_UNIT);
@@ -170,14 +165,41 @@ void hicl_init(flags_t flags) {
     }
 }
 
+void hicl_load(const char *filename, const char *options_format, ...) {
+    cl_program program;
+    cl_int cl_ret;
+    size_t idx, nb_kernels, code_size;
+    char *code;
+    cl_kernel *knl_ids;
+    char options[__API_STR_SIZE];
+    va_list args;
+    va_start(args, options_format);
+    vsprintf(options, options_format, args);
+    va_end(args);
+    code_size = __api_tell_file(filename);
+    code      = (char*)malloc(code_size+1);
+    __api_read_from_file(code, code_size+1, filename);
+    program = clCreateProgramWithSource(hicl->context, 1,
+                                        (const char**)&code, NULL, &cl_ret);
+    HICL_CHECK(cl_ret, "failed to create OpenCL program");
+    HICL_DEBUG("loading filename '%s' with options '%s' (program @ %p)",
+               filename, options, program);
+    knl_ids = __api_knl_create_from_program(program, options, &nb_kernels);
+    for(idx=0; idx<nb_kernels; ++idx) 
+        ulist_put(&hicl->knls, ulist_create(__api_knl_init(knl_ids[idx])));
+    free(knl_ids);
+    free(code);
+    HICL_CHECK(clReleaseProgram(program), "failed to release OpenCL program");
+}
+
 void hicl_release() {
     ///
     /// if hicl != NULL means that the library is not released yet.
     /// This test ensures that hiCL is released only once.
     ///
     if (hicl != NULL) {
-        delete_rbt_address_t_himem_t(&hicl->mems);
         ulist_delete(&hicl->knls, __api_knl_release);
+        urb_tree_delete(&hicl->mems, NULL, __api_mem_release);
         ulist_delete(&hicl->devs, __api_dev_release);
         if(hicl->context) {
             HICL_DEBUG("releasing OpenCL context @ %p", hicl->context);
@@ -203,35 +225,9 @@ void hicl_release() {
     }
 }
 
-void hicl_load(const char *filename, const char *options_format, ...) {
-    cl_program program;
-    cl_int cl_ret;
-    size_t idx, nb_kernels, code_size;
-    char *code;
-    cl_kernel *knl_ids;
-    char options[__API_STR_SIZE];
-    va_list args;
-    va_start(args, options_format);
-    vsprintf(options, options_format, args);
-    va_end(args);
-    code_size = __api_tell_file(filename);
-    code      = (char*)malloc(code_size+1);
-    __api_read_from_file(code, code_size+1, filename);
-    program = clCreateProgramWithSource(hicl->context, 1,
-                                        (const char**)&code, NULL, &cl_ret);
-    HICL_CHECK(cl_ret, "failed to create OpenCL program");
-    HICL_DEBUG("loading filename '%s' with options '%s' (program @ %p)",
-               filename, options, program);
-    knl_ids = __api_knl_create_from_program(program, options, &nb_kernels);
-    for(idx=0; idx<nb_kernels; ++idx) __api_knl_init(knl_ids[idx]);
-    free(knl_ids);
-    free(code);
-    HICL_CHECK(clReleaseProgram(program), "failed to release OpenCL program");
-}
-
 void hicl_info() {
     __api_plt_info(hicl->platform_id, hicl->fdout);
     ulist_walk(&hicl->devs, __api_dev_info);
-    //walk_value_rbt_address_t_himem_t(&hicl->mems, __api_mem_info);
+    urb_tree_walk(&hicl->mems, NULL, __api_mem_info);
     ulist_walk(&hicl->knls, __api_knl_info);
 }

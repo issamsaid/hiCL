@@ -8,7 +8,7 @@
 /// funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ///
 /// Redistribution and use in source and binary forms, with or without
-/// modification, are permetted provided that the following conditions
+/// modification, are permitted provided that the following conditions
 /// are met:
 ///
 /// 1. Redistributions of source code must retain the above copyright
@@ -45,8 +45,6 @@
 #include "__api/util-inl.h"
 
 CPPGUARD_BEGIN();
-
-//extern void __api_mem_knl_release(himem_t);
 
 #define __API_PROGRAM_GET(program, program_info, value)     \
     HICL_CHECK(clGetProgramInfo(program, program_info,      \
@@ -94,7 +92,7 @@ CPPGUARD_BEGIN();
 
 
 #define __API_KNL_INFO_LEVEL_0(fmt, ...) fprintf(hicl->fdout,\
-C_GREEN"\no OpenCL "fmt":\n"C_END, ##__VA_ARGS__)
+HICL_GREEN"\no OpenCL "fmt":\n"HICL_END, ##__VA_ARGS__)
 
 #define __API_KNL_INFO_LEVEL_1(fmt, ...) fprintf(hicl->fdout,\
 "\to %-20s: "fmt"\n", ##__VA_ARGS__)
@@ -203,21 +201,48 @@ __api_knl_set_arg_double(cl_kernel k, int idx, double *ptr) {
 PRIVATE void
 __api_knl_set_arg_cl_mem(cl_kernel k, int idx, cl_mem *ptr) {
     HICL_CHECK(clSetKernelArg(k, idx, sizeof(cl_mem), (void*)ptr),
-             "failed to set argument n° %d (pointer) for kernel %s", 
-             idx, __api_knl_name(k));
+               "failed to set argument n° %d (pointer) for kernel %s", 
+               idx, __api_knl_name(k));
+}
+
+PRIVATE int
+__api_knl_extract_code(cl_kernel k, const char* name, char* container) {
+    cl_program program;
+    size_t code_size, length;
+    char *pch = NULL, *s =NULL, *e = NULL;
+    __API_KNL_GET(k, CL_KERNEL_PROGRAM, program);
+    HICL_CHECK(clGetProgramInfo(program, 
+                                CL_PROGRAM_SOURCE, 
+                                0, NULL, &code_size),
+               "failed to query OpenCL program source size");
+    char code[code_size];
+    __API_PROGRAM_GET_PTR(program, CL_PROGRAM_SOURCE, code);
+    if (strstr(code, name) == NULL) return -1;
+    s = code;
+    while (pch == NULL) {
+        s   = strstr(s, "kernel");
+        pch = strstr(s, name);
+        s   = s+6;
+    }
+    s = s-6;
+    e = strstr(s, "}");
+    length = strlen(s)-strlen(e+1)+1;
+    strncpy(container, s, length);
+    container[length-1] = '\0';
+    return 0;
 }
 
 #ifndef CL_VERSION_1_2
 PRIVATE void
 __api_knl_get_arg_types(cl_kernel k, int n, 
-                           char name[], char types[][__API_STR_SIZE]) {
+                        char name[], char types[][__API_STR_SIZE]) {
     cl_int cl_ret, i;
     cl_program program;
     size_t code_size;
     char tmp[__API_BUFFER_SIZE], *pch, *f, *s, *e;
     __API_KNL_GET(k, CL_KERNEL_PROGRAM, program);
     HICL_CHECK(clGetProgramInfo(program, CL_PROGRAM_SOURCE, 0, NULL, &code_size),
-             "failed to query OpenCL program source size");
+               "failed to query OpenCL program source size");
     char code[code_size];
     __API_PROGRAM_GET_PTR(program, CL_PROGRAM_SOURCE, code);
     f = strstr(code, name);
@@ -237,23 +262,29 @@ __api_knl_get_arg_types(cl_kernel k, int n,
 PRIVATE void
 __api_knl_set_args_valist(hiknl_t k, va_list list) {
     cl_uint a;
+    int *ikey;
     char tmp[__API_STR_SIZE];
     cl_kernel kernel = k->id;
 #ifdef CL_VERSION_1_2
     for (a = 0; a < k->num_args; ++a) {
         __API_KNL_ARG_GET_PTR(kernel, a, CL_KERNEL_ARG_TYPE_NAME, tmp);
         if (strstr(tmp, "*")) {
-            himem_t m = find_rbn_address_t_himem_t(&hicl->mems, 
-                                         va_arg(list, address_t))->value;
-            rbn_int_himem_t *n;
-            if ((n = find_rbn_int_himem_t(&k->mems, a)) == k->mems.nil) {
+            himem_t m = (himem_t)urb_tree_find(&hicl->mems, 
+                                               va_arg(list, address_t), 
+                                               __api_address_cmp)->value;
+            urb_t *n;
+            if ((n = urb_tree_find(&k->mems, 
+                                   &a, __api_int_cmp)) == &urb_sentinel) {
                 HICL_DEBUG("mem insert {h=%p, id=%p} for kernel %s", 
                            m->h, m->id, __api_knl_name(k->id));
-                insert_rbn_int_himem_t(&k->mems, a, m);
-                insert_rbn_hiknl_t_int(&m->knls, k, a);
+                ikey  = (int*)malloc(sizeof(int));
+                *ikey = a;
+                urb_tree_put(&k->mems, urb_tree_create(ikey, (void*)m), 
+                             __api_int_cmp);
+                m->refs++;
                 __api_knl_set_arg_cl_mem(k->id, a, &m->id);
             } else {
-                if (m != n->value) {
+                if (m != (himem_t)n->value) {
                     HICL_DEBUG("mem modify {h=%p, id=%p} for kernel %s",
                                m->h, m->id, __api_knl_name(k->id));
                     n->value = m; 
@@ -300,14 +331,22 @@ __api_knl_set_args_valist(hiknl_t k, va_list list) {
     __api_knl_get_arg_types(kernel, k->num_args, tmp, types);
     for (a = 0; a < k->num_args; ++a) {
         if (strstr(types[a], "*")) {
-            himem_t m = find_rbn_address_t_himem_t(&hicl->mems, 
-                                         va_arg(list, address_t))->value;
-            rbn_int_himem_t *n;
-            if ((n = find_rbn_int_himem_t(&k->mems, index)) == k->mems.nil) {
+            himem_t m = urb_tree_find(&hicl->mems, 
+                                      va_arg(list, address_t), 
+                                      __api_address_cmp)->value;
+            urb_t *n;
+            if ((n = urb_tree_find(&k->mems, &a, __api_int_cmp)) == 
+                 &urb_sentinel) {
                 HICL_DEBUG("insert {h=%p, id=%p} for kernel %s", 
                            m->h, m->id, __api_knl_name(k->id));
-                insert_rbn_int_himem_t(&k->mems, a, m);
-                insert_rbn_hiknl_t_int(&m->knls, k, a);
+                ikey  = (int*)malloc(sizeof(int));
+                *ikey = a;
+                urb_tree_put(&k->mems, urb_tree_create(ikey, (void*)m), 
+                             __api_int_cmp);
+                //ival  = (int*)malloc(sizeof(int));
+                //*ival = a;
+                //urb_tree_put(&m->knls, urb_tree_create(k, ival), __api_knl_cmp);
+                m->refs++;
                 __api_knl_set_arg_cl_mem(k->id, a, &m->id);
             } else {
                 if (m != n->value) {
@@ -407,7 +446,7 @@ __api_knl_info(void *pointer) {
     }
 #endif // CL_VERSION_1_2
     __API_KNL_INFO_LEVEL_0("kernel %s has %lu memory objects", 
-                           __api_knl_name(k->id), k->mems.size);
+                           __api_knl_name(k->id), urb_tree_size(&k->mems));
 }
 
 ///
@@ -429,9 +468,8 @@ PRIVATE hiknl_t __api_knl_init(cl_kernel id) {
         k->lws[idx]=1;
         k->ofs[idx]=0;
     }
-    //create_rbt_int_himem_t(&k->mems, __api_int_cmp, __api_mem_knl_release);
+    k->mems = &urb_sentinel;
     __API_KNL_GET(id, CL_KERNEL_NUM_ARGS, k->num_args);
-    ulist_put(&hicl->knls, ulist_create(k));
     return k;
 }
 
@@ -442,9 +480,9 @@ __api_knl_release(void *pointer) {
     unsigned int nb_refs;
     __API_KNL_GET(k->id, CL_KERNEL_REFERENCE_COUNT, nb_refs);
     HICL_DEBUG("releasing OpenCL kernel %s (mem count = %lu)", 
-                __api_knl_name(k->id), k->mems.size);
+                __api_knl_name(k->id), urb_tree_size(&k->mems));
 #endif // __API_DEBUG
-    delete_rbt_int_himem_t(&k->mems);
+    urb_tree_delete(&k->mems, __api_int_del, __api_mem_release);
     if (clReleaseKernel(k->id) != CL_SUCCESS)
         HICL_FAIL("failed to release OpenCL kernel");
     free(k); k = NULL;

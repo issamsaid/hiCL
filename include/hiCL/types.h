@@ -8,7 +8,7 @@
 /// funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ///
 /// Redistribution and use in source and binary forms, with or without
-/// modification, are permetted provided that the following conditions
+/// modification, are permitted provided that the following conditions
 /// are met:
 ///
 /// 1. Redistributions of source code must retain the above copyright
@@ -43,10 +43,10 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <ulist/ulist.h>
+#include <urb_tree/urb_tree.h>
 #include "__api/config/opencl.h"
 #include "__api/config/guard.h"
 #include "__api/config/knl.h"
-#include "__api/rbt-inl.h"
 
 CPPGUARD_BEGIN();
 
@@ -56,10 +56,6 @@ typedef struct __hidev_t *hidev_t;
 typedef struct __himem_t *himem_t;
 typedef struct __hiknl_t *hiknl_t;
 typedef struct __hienv_t *hienv_t;
-
-GENERATE_RBT_HEADER(address_t, himem_t);
-GENERATE_RBT_HEADER(int, himem_t);
-GENERATE_RBT_HEADER(hiknl_t, int);
 
 ///
 /// @brief The hiCL device descriptor.
@@ -85,8 +81,9 @@ struct __himem_t {
     cl_mem id;              ///< the OpenCL identifier of the memory object.  
     cl_mem pinned;          ///< an memory object used if the memory is pinned.
     cl_command_queue queue; ///< a queue used to manipulate the memory object.
-    void* h;                ///< a pointer to the host memory.
-    rbt_hiknl_t_int knls;   ///< a red-black tree of the kernels using this memory.
+    void *h;                ///< a pointer to the host memory.
+    unsigned int refs;
+    //urb_t *knls;            ///< a red-black tree of the kernels using this memory.
 };
 
 ///
@@ -101,7 +98,7 @@ struct __hiknl_t {
     cl_uint wrk;                         ///< the work dimensions.
     cl_uint num_args;                    ///< the number of arguments.
     cl_kernel id;                        ///< the OpenCL identifier.
-    rbt_int_himem_t mems;                ///< a red-black tree of the memory 
+    urb_t *mems;                         ///< a red-black tree of the memory 
                                          ///  objects used by the kernel.
 };
 
@@ -115,7 +112,7 @@ struct __hienv_t {
     cl_context context;         ///< the OpenCL context. 
     ulist_t *devs;              ///< a list of the used devices.
     ulist_t *knls;              ///< a list of the used kernels.
-    rbt_address_t_himem_t mems; ///< a red-black tree of the active memory objects.
+    urb_t   *mems;              ///< a red-black tree of the active memory objects.
     FILE* fdout;                ///< a file descriptor for logging.
     FILE* fderr;                ///< a file descriptor for error reporting.
 };

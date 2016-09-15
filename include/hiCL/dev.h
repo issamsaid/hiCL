@@ -8,7 +8,7 @@
 /// funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ///
 /// Redistribution and use in source and binary forms, with or without
-/// modification, are permetted provided that the following conditions
+/// modification, are permitted provided that the following conditions
 /// are met:
 ///
 /// 1. Redistributions of source code must retain the above copyright
@@ -38,7 +38,8 @@
 /// @details This file describes the library functions used by hiCL to 
 /// initialize, release and manipulate an OpenCL device descriptor.
 ///
-#include "hiCL/types.h"
+#include <stdbool.h>
+#include <hiCL/types.h>
 
 CPPGUARD_BEGIN()
 

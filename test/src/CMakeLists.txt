@@ -43,8 +43,11 @@ include_directories(${gtest_SOURCE_DIR}/include)
 file(GLOB CXX_SRCS "*.cc")
 
 add_executable(hicl_test ${CXX_SRCS})
+
 # Link the executable to the hiCL, OpenCL and gtest libraries
 target_link_libraries (hicl_test LINK_PUBLIC hicl)
+target_link_libraries (hicl_test LINK_PUBLIC libulist)
+target_link_libraries (hicl_test LINK_PUBLIC liburb_tree)
 target_link_libraries (hicl_test LINK_PUBLIC OpenCL)
 target_link_libraries (hicl_test LINK_PUBLIC gtest)
 add_dependencies(hicl_test hicl)

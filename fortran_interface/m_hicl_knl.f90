@@ -44,12 +44,6 @@ module m_hicl_knl
     private
 
     interface        
-        subroutine c_hicl_knl_info(name) &
-            bind(c, name="hicl_knl_info")
-              use, intrinsic :: iso_c_binding, only: c_char
-            character(kind=c_char), intent(in) :: name
-        end subroutine c_hicl_knl_info
-
         type(c_ptr) &
         function c_hicl_knl_find(name) &
             bind(c, name="hicl_knl_find")
@@ -143,7 +137,6 @@ module m_hicl_knl
         end subroutine c_hicl_knl_exec
     end interface
     
-    public :: hicl_knl_info
     public :: hicl_knl_build    
     public :: hicl_knl_set_wrk
 
@@ -197,11 +190,6 @@ module m_hicl_knl
     public :: hicl_knl_timed_exec
     
 contains
-
-    subroutine hicl_knl_info(name)
-        character(len=*), intent(in) :: name
-        call c_hicl_knl_info(name // c_null_char)
-    end subroutine hicl_knl_info
     
     subroutine hicl_knl_build(name, options)
         character(len=*),           intent(in) :: name

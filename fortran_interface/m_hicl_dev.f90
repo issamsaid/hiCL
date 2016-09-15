@@ -46,26 +46,10 @@ module m_hicl_dev
 
     interface
         type(c_ptr) &
-        function c_hicl_dev_init(dev_id) bind(c, name="hicl_dev_init")
-            use iso_c_binding, only: c_ptr
-            type(c_ptr), value, intent(in) :: dev_id
-        end function c_hicl_dev_init
-
-        subroutine c_hicl_dev_release(c_dev_ptr) bind(c, name="hicl_dev_release")
-            use iso_c_binding, only: c_ptr
-            type(c_ptr), value, intent(in) :: c_dev_ptr            
-        end subroutine c_hicl_dev_release
-
-        type(c_ptr) &
         function c_hicl_dev_find(flags) bind(c, name="hicl_dev_find")
             use iso_c_binding, only: c_ptr, c_int64_t
             integer(kind=c_int64_t), value, intent(in) :: flags
         end function c_hicl_dev_find
-
-        subroutine c_hicl_dev_info(c_dev_ptr) bind(c, name="hicl_dev_info")
-            use iso_c_binding, only: c_ptr
-            type(c_ptr), value, intent(in) :: c_dev_ptr
-        end subroutine c_hicl_dev_info
 
         subroutine c_hicl_dev_wait(c_dev_ptr) bind(c, name = "hicl_dev_wait")
             use iso_c_binding, only: c_ptr
@@ -81,36 +65,17 @@ module m_hicl_dev
         end function c_hicl_dev_support
     end interface
 
-    public :: hicl_dev_init
-    public :: hicl_dev_release
     public :: hicl_dev_find
-    public :: hicl_dev_info
     public :: hicl_dev_wait
     public :: hicl_dev_support
 
 contains
-
-    subroutine hicl_dev_init(d, dev_id)
-        type(c_ptr),        value, intent(in) :: dev_id
-        type(hidev_t), pointer, intent(inout) :: d
-        call c_f_pointer(c_hicl_dev_init(dev_id), d)
-    end subroutine hicl_dev_init
-
-    subroutine hicl_dev_release(d) 
-        type(hidev_t), pointer, intent(inout) :: d
-        call c_hicl_dev_release(c_loc(d))
-    end subroutine hicl_dev_release
 
     subroutine hicl_dev_find(flags, d)
         integer(kind=c_int64_t),  value, intent(in) :: flags
         type(hidev_t),       pointer, intent(inout) :: d
         call c_f_pointer(c_hicl_dev_find(flags), d)
     end subroutine hicl_dev_find
-
-    subroutine hicl_dev_info(d)
-        type(hidev_t), pointer, intent(in) :: d
-        call c_hicl_dev_info(c_loc(d))
-    end subroutine hicl_dev_info
     
     subroutine hicl_dev_wait(d)
         type(hidev_t), pointer, intent(in) :: d

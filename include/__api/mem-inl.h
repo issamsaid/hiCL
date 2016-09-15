@@ -8,7 +8,7 @@
 /// funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ///
 /// Redistribution and use in source and binary forms, with or without
-/// modification, are permetted provided that the following conditions
+/// modification, are permitted provided that the following conditions
 /// are met:
 ///
 /// 1. Redistributions of source code must retain the above copyright
@@ -42,7 +42,6 @@
 #include "__api/config/private.h"
 #include "__api/config/guard.h"
 #include "__api/util-inl.h"
-#include "__api/knl-inl.h"
 
 CPPGUARD_BEGIN();
 
@@ -55,7 +54,7 @@ CPPGUARD_BEGIN();
              "failed to query memory info")
 
 #define __API_MEM_INFO_LEVEL_0(fmt, ...) \
-    fprintf(hicl->fdout, C_GREEN"\no OpenCL "fmt":\n"C_END, ##__VA_ARGS__)
+    fprintf(hicl->fdout, HICL_GREEN"\no OpenCL "fmt":\n"HICL_END, ##__VA_ARGS__)
 
 #define __API_MEM_INFO_LEVEL_1(fmt, ...) \
     fprintf(hicl->fdout, "\to %-20s: "fmt"\n", ##__VA_ARGS__)
@@ -314,7 +313,8 @@ __api_mem_touch(himem_t m) {
 }
 
 PRIVATE void
-__api_mem_sync(himem_t m) {
+__api_mem_sync(void *pointer) {
+    himem_t m = (himem_t)pointer;
     if (__API_MEM_ZERO_COPY(m->flags)) {
         if (__API_MEM_HOST_DIRTY(m->flags) &&
             !__API_MEM_WRITE_ONLY(m->flags)) {
@@ -336,66 +336,45 @@ __api_mem_sync(himem_t m) {
 
 PRIVATE himem_t
 __api_mem_find(address_t h) {
-    return find_rbn_address_t_himem_t(&hicl->mems, h)->value;
+    return (himem_t)urb_tree_find(&hicl->mems, h, __api_address_cmp)->value;
 }
 
-PRIVATE void
-__api_mem_release(himem_t m) {
-    if (m != NULL) {
-        HICL_DEBUG("mem release {h=%p, id=%p} (knl count = %lu)", 
-                    m->h, m->id, m->knls.size);
-        if (__API_MEM_CPU(m->flags)) {
-            if (__API_MEM_ZERO_COPY(m->flags)) {
-                HICL_ABORT(clEnqueueUnmapMemObject(m->queue,
-                                                     __API_MEM_PINNED(m->flags) ? 
-                                                     m->pinned : m->id, 
-                                                     m->h, 0, NULL, NULL), 
+PRIVATE 
+void __api_mem_release(void *pointer) {
+    himem_t m = (himem_t)pointer;
+    if (m != NULL) {   
+        m->refs--; 
+        HICL_DEBUG("mem refs -- {h=%p, id=%p} (refs %u => %u)", 
+                    m->h, m->id, m->refs+1, m->refs);
+        if (m->refs == 0) {
+            HICL_DEBUG("mem release {h=%p, id=%p} (refs count = %u)", 
+                       m->h, m->id, m->refs);
+            if (__API_MEM_CPU(m->flags)) {
+                if (__API_MEM_ZERO_COPY(m->flags)) {
+                    HICL_ABORT(clEnqueueUnmapMemObject(m->queue,
+                                                __API_MEM_PINNED(m->flags) ? 
+                                                m->pinned : m->id, 
+                                                m->h, 0, NULL, NULL), 
                            "failed to unmap host zero-copy memory");
-                HICL_ABORT(clReleaseMemObject(m->id),
+                    HICL_ABORT(clReleaseMemObject(m->id),
                            "failed to release OpenCL memory");
-            } else {
-                free(m->h);
-            }
-        } else if (__API_MEM_HWA(m->flags)) {
-            if (__API_MEM_PINNED(m->flags)) {
-                HICL_ABORT(clReleaseMemObject(m->pinned),
+                } else { free(m->h); }
+            } else if (__API_MEM_HWA(m->flags)) {
+                if (__API_MEM_PINNED(m->flags)) {
+                    HICL_ABORT(clReleaseMemObject(m->pinned),
                            "failed to release pinned memory object");
-            } else if (__API_MEM_ZERO_COPY(m->flags)) {
-                __api_mem_unmap(m, CL_TRUE);
-            } else {
-                if (!__API_MEM_HOST_ALLOCATED(m->flags)) {
-                    free(m->h);
+                } else if (__API_MEM_ZERO_COPY(m->flags)) {
+                    __api_mem_unmap(m, CL_TRUE);
+                } else {
+                    if (!__API_MEM_HOST_ALLOCATED(m->flags)) {
+                        free(m->h);
+                    }
                 }
-            }
-            HICL_ABORT(clReleaseMemObject(m->id), 
+                HICL_ABORT(clReleaseMemObject(m->id), 
                        "failed to release OpenCL memory");
+            }
+            free(m); m = NULL;
         }
-        free(m); m = NULL;
-    }
-}
-
-PRIVATE void
-__api_mem_skip_from_knl(hiknl_t k, int index) {
-    HICL_DEBUG("skip arg %d of kernel %s", index, __api_knl_name(k->id));
-    skip_rbn_int_himem_t(&k->mems, index);
-}
-
-PRIVATE void
-__api_mem_stdalone_release(himem_t m) {
-    if (m != NULL) {
-        walk_key_value_rbt_hiknl_t_int(&m->knls, __api_mem_skip_from_knl);
-        delete_rbt_hiknl_t_int(&m->knls);
-        __api_mem_release(m);
-    }
-}
-
-PRIVATE void
-__api_mem_knl_release(himem_t m) {
-    if (m != NULL) {
-        walk_key_value_rbt_hiknl_t_int(&m->knls, __api_mem_skip_from_knl);
-        delete_rbt_hiknl_t_int(&m->knls);
-        skip_rbn_address_t_himem_t(&hicl->mems, m->h);
-        __api_mem_release(m);
     }
 }
 

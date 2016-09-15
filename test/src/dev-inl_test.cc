@@ -6,7 +6,7 @@
 /// funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ///
 /// Redistribution and use in source and binary forms, with or without
-/// modification, are permetted provided that the following conditions
+/// modification, are permitted provided that the following conditions
 /// are met:
 ///
 /// 1. Redistributions of source code must retain the above copyright
@@ -33,10 +33,10 @@
 /// @author Issam SAID
 /// @brief Unit testing file for the devices manipulation private functions.
 ///
-#include "hiCL/flags.h"
+#include <hiCL/flags.h>
 #include "__api/plt-inl.h"
 #include "__api/dev-inl.h"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 namespace {
 
@@ -200,10 +200,6 @@ namespace {
 
     TEST_F(DevInlTest, __api_dev_compiler_available) {
         ASSERT_TRUE(__api_dev_compiler_available(dev_ids[0]));
-    }
-
-    TEST_F(DevInlTest, __api_dev_info) {
-        __api_dev_info(dev_ids[0], stdout);
     }
 
 }  // namespace

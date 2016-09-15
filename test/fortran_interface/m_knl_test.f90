@@ -56,12 +56,6 @@ module m_knl_test
 
 contains
 
-    logical function info() result(status)
-        implicit none
-        call hicl_knl_info("test_hicl_1")
-        status = (hicl_knl_count() > 0)
-    end function info
-
     logical function build() result(status)
         implicit none
         call hicl_knl_build("test_hicl_1", "-DSTENCIL=29");
@@ -252,7 +246,7 @@ contains
         cpu = 0.
         call init_buffer(src, nt)
 
-        call hicl_load("data/add_source_2d.cl", "-cl-kernel-arg-info")
+        call hicl_load("data/add_source_2d.cl")
         call hicl_dev_find(DEFAULT, d)
         call hicl_mem_wrap(src, d, ior(HWA, READ_ONLY))
         call hicl_mem_wrap(fld, d, ior(HWA, READ_WRITE))
@@ -311,8 +305,6 @@ contains
     end subroutine teardown
 
     subroutine knl_test()
-        call run(setup, teardown, info, &
-              "knl_test.info")
         call run(setup, teardown, build, &
               "knl_test.build")
         call run(setup, teardown, set_wrk, &
