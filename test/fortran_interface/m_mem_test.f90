@@ -144,8 +144,6 @@ contains
             enddo
         enddo
         status = (hicl_mem_count() == 1)
-        call hicl_mem_release(h2d)
-        status = status .and. (hicl_mem_count() == 0)
         deallocate(h2d)
     end function access_buffer_2d
 
@@ -163,8 +161,6 @@ contains
         call hicl_mem_update(h3d, READ_ONLY)
         
         status = (hicl_mem_count() == 1)
-        call hicl_mem_release(h3d)
-        status = status .and. (hicl_mem_count() == 0)
         deallocate(h3d)
     end function access_buffer_3d
 

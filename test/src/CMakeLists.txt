@@ -6,7 +6,7 @@
 ## funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ##
 ## Redistribution and use in source and binary forms, with or without
-## modification, are permetted provided that the following conditions
+## modification, are permitted provided that the following conditions
 ## are met:
 ##
 ## 1. Redistributions of source code must retain the above copyright
@@ -67,13 +67,11 @@ file(GLOB CXX_SRCS "*.cc")
 
 add_executable(hicl_test ${CXX_SRCS})
 
-# Link the executable to the hiCL, OpenCL and gtest libraries
+## Link the executable to the hiCL, OpenCL, ulist and urb_tree and gtest
 target_link_libraries (hicl_test LINK_PUBLIC hicl)
 target_link_libraries (hicl_test LINK_PUBLIC libulist)
 target_link_libraries (hicl_test LINK_PUBLIC liburb_tree)
 target_link_libraries (hicl_test LINK_PUBLIC OpenCL)
 target_link_libraries (hicl_test LINK_PUBLIC libgtest)
 add_dependencies(hicl_test hicl)
-install(TARGETS hicl_test 
-        DESTINATION test/bin 
-        OPTIONAL)
+install(TARGETS hicl_test DESTINATION test/bin OPTIONAL)

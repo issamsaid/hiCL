@@ -45,6 +45,5 @@ module m_hicl_mem
     use m_hicl_types
     use m_hicl_mem_interface
     use m_hicl_mem_wrap
-    use m_hicl_mem_release
     use m_hicl_mem_update
 end module m_hicl_mem

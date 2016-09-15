@@ -6,7 +6,7 @@
 ## funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ##
 ## Redistribution and use in source and binary forms, with or without
-## modification, are permetted provided that the following conditions
+## modification, are permitted provided that the following conditions
 ## are met:
 ##
 ## 1. Redistributions of source code must retain the above copyright
@@ -106,7 +106,7 @@ endif (hicl_roundup_wrk)
 set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY TRUE) 
 
 ## Check whether OpenCL is detected:
-## - The OpenCL library quered in usual directories
+## - The OpenCL library queered in usual directories
 ## - This behavior can be changed with env setting:
 ##   OPENCL_INCLUDE_DIR: contains the OpenCL headers
 ##   OPENCL_LIBRARY_DIR: contains the OpenCL library

@@ -6,7 +6,7 @@
 ## funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ##
 ## Redistribution and use in source and binary forms, with or without
-## modification, are permetted provided that the following conditions
+## modification, are permitted provided that the following conditions
 ## are met:
 ##
 ## 1. Redistributions of source code must retain the above copyright
@@ -41,6 +41,9 @@ file(GLOB C_SRCS "*.c")
 add_executable(sgemm ${C_SRCS})
 target_link_libraries (sgemm LINK_PUBLIC hicl)
 target_link_libraries (sgemm LINK_PUBLIC OpenCL)
+target_link_libraries (sgemm LINK_PUBLIC libulist)
+target_link_libraries (sgemm LINK_PUBLIC liburb_tree)
+
 add_dependencies(sgemm hicl)
 install(TARGETS sgemm DESTINATION examples/bin OPTIONAL)
 install(FILES sgemm.cl DESTINATION examples/bin OPTIONAL)

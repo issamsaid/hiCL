@@ -138,24 +138,24 @@ make all install
 popd
 ```
 
-## Generating the documentation
-The documentation of the library can be generated, in the [doc](https://github.com/issamsaid/hiCL/tree/master/doc) subdirectory,
-with the help of [doxygen](http://www.stack.nl/~dimitri/doxygen/) by simply running:
-```
-pushd build
-make doc
-popd
-```
-It is now up to you to read the documentation and check the examples in order 
-to use <b>hiCL</b> to write your own OpenCL codes for scientific purposes.
+## Dependencies
+<b>hiCL</b> uses internally the 
+[ulist](https://github.com/issamsaid/ulist/tree/master) and
+[urb_tree](https://github.com/issamsaid/urb_tree/tree/master) libraries (
+respectively a generic linked list library and a red-black trees generic
+libraries) in order to track and efficiently manipulate 
+the OpenCL resources. It also relies on the 
+[googletest](https://github.com/google/googletest/) framework for unit 
+testing.
 
 ## Using the library
 In order to use the <b>hiCL</b> C/C++ link your code against libhiCL.a 
 additionally to the OpenCL library (by adding 
-`-lhiCL -lOpenCL` to your linker options), 
+`-lhiCL -lulist -lurb_tree -lOpenCL` to your linker options), 
 however if your code is based on Fortran the 
 latter should linked against both the C/C++ library and the Fortran interface (
-with the help of the options `-lhiCL_fortran -lhiCL -lOpenCL`).<br/>
+with the help of the options `-lhiCL_fortran -lhiCL -lulist -lurb_tree -lOpenCL`).<br/>
+
 
 ## Testing
 If you want to work with the latest build, you are invited to fetch from the 
@@ -200,6 +200,19 @@ pupd
 Alternatively `make c_examples && make install -C examples/src` will only build and 
 install the C/C++ examples, and `make fortran_examples && make install -C examples/fortran_interface` will build and install the Fortran examples.
 The examples binaries can be browsed in the `test/bin` subdirectory.
+
+
+## Generating the documentation
+The documentation of the library can be generated, in the [doc](https://github.com/issamsaid/hiCL/tree/master/doc) subdirectory,
+with the help of [doxygen](http://www.stack.nl/~dimitri/doxygen/) by simply running:
+```
+pushd build
+make doc
+popd
+```
+It is now up to you to read the documentation and check the examples in order 
+to use <b>hiCL</b> to write your own OpenCL codes for scientific purposes.
+
 
 ## Continuous integration
 We use [Travis CI](https://travis-ci.org/issamsaid/hiCL) for the continuous 

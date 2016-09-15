@@ -6,7 +6,7 @@
 ## funded by TOTAL, and written by Issam SAID <said.issam@gmail.com>.
 ##
 ## Redistribution and use in source and binary forms, with or without
-## modification, are permetted provided that the following conditions
+## modification, are permitted provided that the following conditions
 ## are met:
 ##
 ## 1. Redistributions of source code must retain the above copyright
@@ -41,6 +41,9 @@ file(GLOB F_SRCS "*.f90")
 add_executable(hicl_test_fortran ${F_SRCS})
 target_link_libraries (hicl_test_fortran LINK_PUBLIC hicl_fortran)
 target_link_libraries (hicl_test_fortran LINK_PUBLIC hicl)
+target_link_libraries (hicl_test_fortran LINK_PUBLIC libulist)
+target_link_libraries (hicl_test_fortran LINK_PUBLIC liburb_tree)
 target_link_libraries (hicl_test_fortran LINK_PUBLIC OpenCL)
+
 add_dependencies(hicl_test_fortran hicl_fortran)
 install(TARGETS hicl_test_fortran DESTINATION test/bin OPTIONAL)

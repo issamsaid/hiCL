@@ -48,6 +48,7 @@ program sgemm_fortran
     integer(kind=8), dimension(3) :: local  = (/16_8, 16_8, 1_8/)
 
     type(hidev_t),        pointer :: device
+    integer(kind=4)               :: n4 = N
 
 	write(*,*) "... start of the hiCL sgemm Fortran example"
 
@@ -61,7 +62,7 @@ program sgemm_fortran
     !!< Note the '-cl-kernel-arg-info' that is added for NVIDIA GPUs to 
     !!< use some OpenCL 1.2 features.
     !! 
-    call hicl_load("sgemm.cl", "-cl-kernel-arg-info");
+    call hicl_load("sgemm.cl");
 
 	!!
     !!< Get a pointer to the desired device (in this case the default GPU).
@@ -89,7 +90,7 @@ program sgemm_fortran
     call hicl_knl_set("sgemm", 0, a)
     call hicl_knl_set("sgemm", 1, b)
     call hicl_knl_set("sgemm", 2, c)
-    call hicl_knl_set("sgemm", 3, N)
+    call hicl_knl_set("sgemm", 3, n4)
         
     !! 
     !!< Run the kernel on the default GPU.
