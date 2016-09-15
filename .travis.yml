@@ -28,8 +28,10 @@ script:
   - make install -C fortran_interface
   - make install -C test
   - cd ../test
+  - ls */*
   - ./bin/hicl_test
   - ./bin/hicl_test_fortran
+
 #notifications:
 #  email:
 #    recipients:
