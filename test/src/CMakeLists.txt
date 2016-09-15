@@ -36,9 +36,32 @@
 project (hicl_test CXX)
 cmake_minimum_required (VERSION 2.8)
 
-## Include the hiCL and the googletest headers
+## Download and install googletest
+ExternalProject_Add(
+    gtest
+    URL https://github.com/google/googletest/archive/master.zip
+    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/gtest
+    INSTALL_COMMAND ""
+)
+
+## Get googletest source and binary directories from CMake project
+ExternalProject_Get_Property(gtest SOURCE_DIR BINARY_DIR)
+
+## Create a libgtest target to be used as a dependency by test programs
+add_library(libgtest IMPORTED STATIC GLOBAL)
+add_dependencies(libgtest gtest)
+
+## Set libgtest properties
+set_target_properties(libgtest PROPERTIES
+    "IMPORTED_LOCATION" "${BINARY_DIR}/googlemock/gtest/libgtest.a"
+    "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
+)
+
+## Include the googletest headers
+include_directories("${SOURCE_DIR}/googletest/include")
+
+## Include the hiCL headers
 include_directories(${CMAKE_SOURCE_DIR}/include)
-include_directories(${gtest_SOURCE_DIR}/include)
 
 file(GLOB CXX_SRCS "*.cc")
 
@@ -49,7 +72,7 @@ target_link_libraries (hicl_test LINK_PUBLIC hicl)
 target_link_libraries (hicl_test LINK_PUBLIC libulist)
 target_link_libraries (hicl_test LINK_PUBLIC liburb_tree)
 target_link_libraries (hicl_test LINK_PUBLIC OpenCL)
-target_link_libraries (hicl_test LINK_PUBLIC gtest)
+target_link_libraries (hicl_test LINK_PUBLIC libgtest)
 add_dependencies(hicl_test hicl)
 install(TARGETS hicl_test 
         DESTINATION test/bin 

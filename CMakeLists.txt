@@ -103,7 +103,7 @@ if (hicl_roundup_wrk)
 endif (hicl_roundup_wrk)
 
 ## Skip dependencies between builds and installs
-#set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY TRUE) 
+set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY TRUE) 
 
 ## Check whether OpenCL is detected:
 ## - The OpenCL library quered in usual directories

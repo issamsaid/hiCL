@@ -37,9 +37,6 @@ project (build_tests)
 cmake_minimum_required (VERSION 2.8)
 
 ## Build googletest/googletest first
-set(BUILD_GMOK OFF CACHE BOOL "" FORCE)
-set(BUILD_GTEST ON CACHE BOOL "" FORCE)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/googletest)
 
 ## Build the hiCL C/C++ unit tests.
 add_subdirectory(src)
