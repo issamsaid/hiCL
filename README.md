@@ -147,6 +147,14 @@ libraries) in order to track and efficiently manipulate
 the OpenCL resources. It also relies on the 
 [googletest](https://github.com/google/googletest/) framework for unit 
 testing.
+Those libraries are automatically downloaded, compiled and installed when
+building <b>hiCL</b>. Alternatively you can set the path to those libraries
+if they are already installed on your system as follows:
+```
+export ULIST_DIR="YOUR_PATH_TO_ULIST"
+export URB_TREE_DIR="YOUR_PATH_TO_URB_TREE"
+export GTEST_DIR="YOUR_PATH_TO_GTEST"
+```
 
 ## Using the library
 In order to use the <b>hiCL</b> C/C++ link your code against libhiCL.a 

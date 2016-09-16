@@ -36,6 +36,18 @@
 project (hicl_test CXX)
 cmake_minimum_required (VERSION 2.8)
 
+##
+## Use the gtest framework if the user sets its path 
+## or download and install it as an external project
+##
+if (DEFINED ENV{GTEST_DIR})
+    include_directories("$ENV{GTEST_DIR}/googletest/include")
+    add_library(libgtest STATIC IMPORTED GLOBAL)
+    set_target_properties(libgtest PROPERTIES
+        "IMPORTED_LOCATION" "$ENV{GTEST_DIR}/googletest/lib/libgtest.a"
+        "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
+    )
+else (DEFINED ENV{GTEST_DIR})
 ## Download and install googletest
 ExternalProject_Add(
     gtest
@@ -60,6 +72,7 @@ set_target_properties(libgtest PROPERTIES
 
 ## Include the googletest headers
 include_directories("${SOURCE_DIR}/googletest/include")
+endif (DEFINED ENV{GTEST_DIR})
 
 ## Include the hiCL headers
 include_directories(${CMAKE_SOURCE_DIR}/include)

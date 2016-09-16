@@ -132,10 +132,18 @@ else ()
 	message(STATUS "... OpenCL libraries     : ${OPENCL_LIBRARIES}")
 endif ()
 
-
 ##
-## Download and install ulist as an external project
+## Use the ulist library if the user sets its path 
+## or download and install it as an external project
 ##
+if (DEFINED ENV{ULIST_DIR})
+    include_directories("$ENV{ULIST_DIR}/include")
+    add_library(libulist STATIC IMPORTED GLOBAL)
+    set_target_properties(libulist PROPERTIES
+        "IMPORTED_LOCATION" "$ENV{ULIST_DIR}/lib/libulist.a"
+        "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
+    )
+else (DEFINED ENV{ULIST_DIR})
 ExternalProject_Add(
     ulist
     GIT_REPOSITORY https://github.com/issamsaid/ulist.git
@@ -159,10 +167,20 @@ set_target_properties(libulist PROPERTIES
 
 ## Include ulist headers
 include_directories("${SOURCE_DIR}/include")
+endif (DEFINED ENV{ULIST_DIR})
 
 ##
-## Download and install urb_tree as an external project
+## Use the urb_tree library if the user sets its path 
+## or download and install it as an external project
 ##
+if (DEFINED ENV{URB_TREE_DIR})
+    include_directories("$ENV{URB_TREE_DIR}/include")
+    add_library(liburb_tree STATIC IMPORTED GLOBAL)
+    set_target_properties(liburb_tree PROPERTIES
+        "IMPORTED_LOCATION" "$ENV{URB_TREE_DIR}/lib/liburb_tree.a"
+        "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
+    )
+else (DEFINED ENV{URB_TREE_DIR})
 ExternalProject_Add(
     urb_tree
     GIT_REPOSITORY https://github.com/issamsaid/urb_tree.git
@@ -186,7 +204,7 @@ set_target_properties(liburb_tree PROPERTIES
 
 ## Include urb_tree headers
 include_directories("${SOURCE_DIR}/include")
-
+endif (DEFINED ENV{URB_TREE_DIR})
 
 ## Build the hiCL C/C++ library.
 add_subdirectory(src)
