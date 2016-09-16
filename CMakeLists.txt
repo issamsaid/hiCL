@@ -138,7 +138,7 @@ endif ()
 ##
 ExternalProject_Add(
     ulist
-    URL https://github.com/issamsaid/ulist/archive/master.zip
+    GIT_REPOSITORY https://github.com/issamsaid/ulist.git
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/ulist
     INSTALL_COMMAND ""
 )
@@ -164,7 +164,7 @@ include_directories("${SOURCE_DIR}/include")
 ##
 ExternalProject_Add(
     urb_tree
-    URL https://github.com/issamsaid/urb_tree/archive/master.zip
+    GIT_REPOSITORY https://github.com/issamsaid/urb_tree.git
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/urb_tree
     INSTALL_COMMAND ""
 )
