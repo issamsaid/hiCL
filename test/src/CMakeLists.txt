@@ -42,6 +42,7 @@ ExternalProject_Add(
     GIT_REPOSITORY https://github.com/google/googletest.git
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/gtest
     INSTALL_COMMAND ""
+    UPDATE_COMMAND  ""
 )
 
 ## Get googletest source and binary directories from CMake project
