@@ -39,7 +39,7 @@ cmake_minimum_required (VERSION 2.8)
 ## Download and install googletest
 ExternalProject_Add(
     gtest
-    URL https://github.com/google/googletest/archive/master.zip
+    GIT_REPOSITORY https://github.com/google/googletest.git
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/gtest
     INSTALL_COMMAND ""
 )
