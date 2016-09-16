@@ -141,6 +141,7 @@ ExternalProject_Add(
     GIT_REPOSITORY https://github.com/issamsaid/ulist.git
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/ulist
     INSTALL_COMMAND ""
+    UPDATE_COMMAND  ""
 )
 
 ## Get uilst source and binary directories
@@ -167,6 +168,7 @@ ExternalProject_Add(
     GIT_REPOSITORY https://github.com/issamsaid/urb_tree.git
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/urb_tree
     INSTALL_COMMAND ""
+    UPDATE_COMMAND  ""
 )
 
 ## Get urb_tree source and binary directories
@@ -200,4 +202,3 @@ add_subdirectory(examples EXCLUDE_FROM_ALL)
 
 ## Build the hiCL documentation.
 add_subdirectory(doc EXCLUDE_FROM_ALL)
-
