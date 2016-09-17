@@ -185,20 +185,13 @@ void hicl_mem_htod(address_t h, cl_bool blocking) {
     himem_t m = (himem_t)urb_tree_find(&hicl->mems, 
                                         h, __api_address_cmp)->value;
     if (__API_FLAGS_HAVE(m->flags, ZERO_COPY)) {
-        //if (__API_MEM_HOST_DIRTY(m->flags) &&
-        //    !__API_MEM_WRITE_ONLY(m->flags)) {
-            __api_mem_unmap(m, CL_TRUE);
+        __api_mem_unmap(m, CL_TRUE);
             __API_MEM_CLEAR_HOST(m->flags);
             if (__API_FLAGS_HAVE(m->flags, READ_ONLY))
                 __api_mem_map(m,
                               __api_mem_map_flags(m->flags, CL_TRUE), CL_TRUE);
-        //}
     } else {
-        //if (__API_MEM_HOST_DIRTY(m->flags) &&
-        //    !__API_MEM_WRITE_ONLY(m->flags)) {
-            __api_mem_htod(m, blocking);
-            __API_MEM_CLEAR_HOST(m->flags);
-        //}
+        __api_mem_htod(m, blocking);
+        __API_MEM_CLEAR_HOST(m->flags);
     }
-    //__api_mem_touch(m);
 }

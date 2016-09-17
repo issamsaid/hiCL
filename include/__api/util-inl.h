@@ -147,6 +147,12 @@ __api_address_cmp(void *cur_ptr, void *otr_ptr) {
 }
 
 PRIVATE int
+__api_mem_cmp(void *cur_ptr, void *otr_ptr) {
+    if((himem_t)cur_ptr == (himem_t)otr_ptr) return 0;
+    else return -1;
+}
+
+PRIVATE int
 __api_int_cmp(void *cur, void *otr) {
     return *(int*)cur - *(int*)otr;
 }

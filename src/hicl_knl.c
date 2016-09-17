@@ -73,7 +73,7 @@ inline void hicl_knl_build(const char *name, const char *options) {
     HICL_CHECK(cl_ret, "failed to create OpenCL program");
     ids   = __api_knl_create_from_program(program, options, &num_kernels);
     if (clReleaseKernel(k->id) != CL_SUCCESS)
-        HICL_FAIL("failed to release OpenCL kernel");
+        HICL_FAIL("failed to release Openx`CL kernel");
     k->id = ids[0];
     free(ids);
     HICL_CHECK(clReleaseProgram(program), "failed to release OpenCL program");
@@ -110,17 +110,25 @@ inline void hicl_knl_set_mem(const char *name, int index, address_t h) {
     m = (himem_t)i->value;
     if ((n = urb_tree_find(&k->mems, &index, __api_int_cmp)) == 
          &urb_sentinel) {
-        HICL_DEBUG("mem insert {h=%p, id=%p} for kernel %s", m->h, m->id, name);
         ikey  = (int*)malloc(sizeof(int));
         *ikey = index;
         urb_tree_put(&k->mems, urb_tree_create(ikey, m), __api_int_cmp);
         m->refs++;
         __api_knl_set_arg_cl_mem(k->id, index, &m->id);
+        HICL_DEBUG("mem insert {h=%p, id=%p, refs = %d} for kernel %s", 
+                    m->h, m->id, m->refs, name);
     } else {
-        if (m != n->value) {
-            HICL_DEBUG("mem modify {h=%p, id=%p} for kernel %s", m->h, m->id, name);
+        if (m != (himem_t)n->value) {
+            ((himem_t)n->value)->refs = ((himem_t)n->value)->refs-1;
+            if (! urb_tree_has(&k->mems, m, __api_mem_cmp, NULL)) m->refs++;
             n->value = m; 
             __api_knl_set_arg_cl_mem(k->id, index, &m->id);
+            HICL_DEBUG("mem modify {h=%p, id=%p, refs = %d} to"
+                       " {h=%p, id=%p, refs = %d} for kernel %s", 
+                        ((himem_t)n->value)->h, 
+                        ((himem_t)n->value)->id, 
+                        ((himem_t)n->value)->refs, 
+                        m->h, m->id, m->refs, name);
         }
     }
 }

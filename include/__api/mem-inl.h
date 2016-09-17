@@ -62,18 +62,6 @@ CPPGUARD_BEGIN();
 #define __API_MEM_INFO_LEVEL_2(fmt, ...) \
     fprintf(hicl->fdout, "\t %-22s "fmt"\n", " ", ##__VA_ARGS__)
 
-// #define __API_MEM_READ_ONLY(flags)        (flags & READ_ONLY)
-// #define __API_MEM_WRITE_ONLY(flags)       (flags & WRITE_ONLY)
-// #define __API_MEM_READ_WRITE(flags)       (flags & READ_WRITE)
-// #define __API_MEM_READ_WRITE_OR_WRITE_ONLY(flags) \
-//     (flags & (READ_WRITE | WRITE_ONLY))
-
-// #define __API_MEM_CPU(flags)              (flags & CPU)
-// #define __API_MEM_HWA(flags)              (flags & HWA)
-// #define __API_MEM_PINNED(flags)           (flags & PINNED)
-// #define __API_MEM_ZERO_COPY(flags)        (flags & ZERO_COPY)
-// #define __API_MEM_HOST_ALLOCATED(flags)   (flags & HOST_ALLOCATED)
-
 #define __API_MEM_CHAR(flags)             (flags & CHAR)
 #define __API_MEM_INT(flags)              (flags & INT)
 #define __API_MEM_UNSIGNED_INT(flags)     (flags & UNSIGNED_INT)
