@@ -342,12 +342,12 @@ __api_mem_find(address_t h) {
 PRIVATE 
 void __api_mem_release(void *pointer) {
     himem_t m = (himem_t)pointer;
-    if (m != NULL) {   
-        m->refs--; 
-        HICL_DEBUG("mem refs -- {h=%p, id=%p} (refs %u => %u)", 
-                    m->h, m->id, m->refs+1, m->refs);
+    if ((m != NULL) && (m->refs >= 0)) {   
+        HICL_DEBUG("mem refs-- {h=%p, id=%p} (refs %d => %d)", 
+                    m->h, m->id, m->refs, m->refs-1);
+        m->refs = m->refs-1; 
         if (m->refs == 0) {
-            HICL_DEBUG("mem release {h=%p, id=%p} (refs count = %u)", 
+            HICL_DEBUG("mem release {h=%p, id=%p} (refs count = %d)", 
                        m->h, m->id, m->refs);
             if (__API_FLAGS_HAVE(m->flags, CPU)) {
                 if (__API_FLAGS_HAVE(m->flags, ZERO_COPY)) {

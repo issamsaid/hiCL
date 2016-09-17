@@ -99,9 +99,10 @@ himem_t hicl_mem_wrap(hidev_t d, void *h, size_t size, flags_t flags) {
         }
         __API_MEM_CLEAR(m->flags);
         urb_tree_put(&hicl->mems, urb_tree_create(h, m), __api_address_cmp);
-        m->refs = 0;
-        HICL_DEBUG("mem wrap   {h=%p, id=%p} (size= %12.5f MB)", 
-                   m->h, m->id, (double)m->size*m->unit_size/1024./1024.);
+        m->refs = 1;
+        HICL_DEBUG("mem wrap   {h=%p, id=%p} (size= %12.5f MB, refs= %d)", 
+                   m->h, m->id, 
+                   (double)m->size*m->unit_size/1024./1024., m->refs);
         return m;
     }
 }

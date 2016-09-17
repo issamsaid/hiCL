@@ -1,5 +1,5 @@
 set(CMAKE_Fortran_FLAGS_DEBUG   
-    "${CMAKE_Fortran_FLAGS_DEBUG} -g -O0 -debug all")
+    "${CMAKE_Fortran_FLAGS_DEBUG} -D__API_DEBUG -g -O0 -debug all")
 set(CMAKE_Fortran_FLAGS_DEBUG   
     "${CMAKE_Fortran_FLAGS_DEBUG} -check uninit -fp-stack-check -fp-model strict")
 set(CMAKE_Fortran_FLAGS_RELEASE 

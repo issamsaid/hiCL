@@ -198,6 +198,7 @@ void hicl_release() {
     /// This test ensures that hiCL is released only once.
     ///
     if (hicl != NULL) {
+        HICL_DEBUG("releasing OpenCL resources");
         ulist_delete(&hicl->knls, __api_knl_release);
         urb_tree_delete(&hicl->mems, NULL, __api_mem_release);
         ulist_delete(&hicl->devs, __api_dev_release);

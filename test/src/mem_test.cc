@@ -71,6 +71,7 @@ namespace {
         ASSERT_EQ(m->size*m->unit_size, N*sizeof(float));
         ASSERT_TRUE(__API_FLAGS_HAVE(m->flags, HWA));
         ASSERT_TRUE(__API_FLAGS_HAVE(m->flags, FLOAT));
+        __api_mem_release(m);
         free(h);
     }
 
