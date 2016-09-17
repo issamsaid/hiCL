@@ -285,8 +285,14 @@ __api_knl_set_args_valist(hiknl_t k, va_list list) {
                 __api_knl_set_arg_cl_mem(k->id, a, &m->id);
             } else {
                 if (m != (himem_t)n->value) {
-                    HICL_DEBUG("mem modify {h=%p, id=%p} for kernel %s",
-                               m->h, m->id, __api_knl_name(k->id));
+                    ((himem_t)n->value)->refs = ((himem_t)n->value)->refs-1;
+                    m->refs++;
+                    HICL_DEBUG("mem modify {h=%p, id=%p, refs = %d} to"
+                               " {h=%p, id=%p, refs = %d} for kernel %s", 
+                                ((himem_t)n->value)->h, 
+                                ((himem_t)n->value)->id, 
+                                ((himem_t)n->value)->refs, 
+                                m->h, m->id, m->refs, __api_knl_name(k->id));
                     n->value = m; 
                     __api_knl_set_arg_cl_mem(k->id, a, &m->id);
                 }
@@ -343,15 +349,18 @@ __api_knl_set_args_valist(hiknl_t k, va_list list) {
                 *ikey = a;
                 urb_tree_put(&k->mems, urb_tree_create(ikey, (void*)m), 
                              __api_int_cmp);
-                //ival  = (int*)malloc(sizeof(int));
-                //*ival = a;
-                //urb_tree_put(&m->knls, urb_tree_create(k, ival), __api_knl_cmp);
                 m->refs++;
                 __api_knl_set_arg_cl_mem(k->id, a, &m->id);
             } else {
-                if (m != n->value) {
-                    HICL_DEBUG("modify {h=%p, id=%p} for kernel %s",
-                                m->h, m->id, __api_knl_name(k->id));
+                if (m != (himem_t)n->value) {
+                    ((himem_t)n->value)->refs = ((himem_t)n->value)->refs-1;
+                    m->refs++;
+                    HICL_DEBUG("mem modify {h=%p, id=%p, refs = %d} to"
+                               " {h=%p, id=%p, refs = %d} for kernel %s", 
+                                ((himem_t)n->value)->h, 
+                                ((himem_t)n->value)->id, 
+                                ((himem_t)n->value)->refs, 
+                                m->h, m->id, m->refs, __api_knl_name(k->id));
                     n->value = m; 
                     __api_knl_set_arg_cl_mem(k->id, a, &m->id);
                 }

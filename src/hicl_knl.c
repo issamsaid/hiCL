@@ -120,15 +120,15 @@ inline void hicl_knl_set_mem(const char *name, int index, address_t h) {
     } else {
         if (m != (himem_t)n->value) {
             ((himem_t)n->value)->refs = ((himem_t)n->value)->refs-1;
-            if (! urb_tree_has(&k->mems, m, __api_mem_cmp, NULL)) m->refs++;
-            n->value = m; 
-            __api_knl_set_arg_cl_mem(k->id, index, &m->id);
+            m->refs++;
             HICL_DEBUG("mem modify {h=%p, id=%p, refs = %d} to"
                        " {h=%p, id=%p, refs = %d} for kernel %s", 
                         ((himem_t)n->value)->h, 
                         ((himem_t)n->value)->id, 
                         ((himem_t)n->value)->refs, 
                         m->h, m->id, m->refs, name);
+            n->value = m; 
+            __api_knl_set_arg_cl_mem(k->id, index, &m->id);
         }
     }
 }

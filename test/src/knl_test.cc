@@ -213,6 +213,13 @@ namespace {
         for (i = 0; i <N; ++i) ASSERT_FLOAT_EQ(hdst2[i], i);
         ASSERT_EQ(urb_tree_size(&k1->mems), 2);
         ASSERT_EQ(urb_tree_size(&hicl->mems), 3);
+
+        hicl_knl_sync_run("test_hicl_1", d, hdst2, hsrc, N);
+        hicl_mem_update(hsrc, READ_ONLY);
+        for (i = 0; i <N; ++i) ASSERT_FLOAT_EQ(hsrc[i], i);
+        ASSERT_EQ(urb_tree_size(&k1->mems), 2);
+        ASSERT_EQ(urb_tree_size(&hicl->mems), 3);
+
         free(hsrc);
         free(hdst1);
         free(hdst2);
