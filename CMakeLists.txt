@@ -57,7 +57,7 @@ if (NOT CMAKE_BUILD_TYPE)
    set (CMAKE_BUILD_TYPE Release)
 endif ()
 if (hicl_debug)
-	set (CMAKE_BUILD_TYPE Debug)
+	 set (CMAKE_BUILD_TYPE Debug)
 endif ()
 message(STATUS "... CMAKE_BUILD_TYPE : ${CMAKE_BUILD_TYPE}")
 
@@ -94,9 +94,11 @@ endif()
 
 if (hicl_verbose)
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__API_VERBOSE")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__API_VERBOSE")
 endif (hicl_verbose)
 if (hicl_use_tty)
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__API_LOG_STD")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__API_LOG_STD")
 endif (hicl_use_tty)
 if (hicl_roundup_wrk)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__API_ROUNDUP_WRK")
@@ -155,7 +157,7 @@ ExternalProject_Add(
 ## Get uilst source and binary directories
 ExternalProject_Get_Property(ulist SOURCE_DIR BINARY_DIR)
 
-## Create a libulist target to be used as a dependency by hiCL
+## Create a libulist target to be used as a endency by hiCL
 add_library(libulist STATIC IMPORTED GLOBAL)
 add_dependencies(libulist ulist)
 

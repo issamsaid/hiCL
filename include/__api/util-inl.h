@@ -53,23 +53,23 @@ extern hienv_t hicl;
 extern void hicl_release();
 
 #ifdef  __API_DEBUG
-#define HICL_DEBUG(fmt,...)                                              \
+#define HICL_DEBUG(fmt,...)                                                \
     fprintf(hicl->fdout, HICL_PURPLE"[HICL DBG]: "fmt".\n"HICL_END, ##__VA_ARGS__)
 #else 
 #define HICL_DEBUG(fmt,...) 
 #endif  // __API_DEBUG
 
 #ifdef __API_VERBOSE                             
-#define HICL_PRINT(fmt,...)                                             \
-    fprintf(hicl->fdout,                                                  \
+#define HICL_PRINT(fmt,...)                                                \
+    fprintf(hicl->fdout,                                                   \
             HICL_GREEN"[HICL MSG]: "fmt".\n"HICL_END, ##__VA_ARGS__)
-#define HICL_WARN(fmt,...)                                              \
-    fprintf(hicl->fdout,                                                  \
+#define HICL_WARN(fmt,...)                                                 \
+    fprintf(hicl->fdout,                                                   \
             HICL_YELLOW"[HICL WRN]: "fmt".\n"HICL_END, ##__VA_ARGS__)
-#define HICL_WARN_IF(predicate, fmt,...)                                \
-    if (predicate) {                                                    \
-        fprintf(hicl->fdout,                                              \
-                HICL_YELLOW"[HICL WRN]: "fmt".\n"HICL_END, ##__VA_ARGS__);    \
+#define HICL_WARN_IF(predicate, fmt,...)                                   \
+    if (predicate) {                                                       \
+        fprintf(hicl->fdout,                                               \
+                HICL_YELLOW"[HICL WRN]: "fmt".\n"HICL_END, ##__VA_ARGS__); \
     }
 #else 
 #define HICL_PRINT(fmt,...) 
@@ -79,14 +79,14 @@ extern void hicl_release();
 
 #define HICL_FAIL(fmt,...)                                              \
     {                                                                   \
-        fprintf(stderr, HICL_RED"[HICL FATAL]: "fmt" @%s:%d.\n"HICL_END,      \
+        fprintf(stderr, HICL_RED"[HICL FATAL]: "fmt" @%s:%d.\n"HICL_END,\
                 ##__VA_ARGS__, __FILE__, __LINE__);                     \
         exit(EXIT_FAILURE);                                             \
     }
 
 #define HICL_FAIL_IF(predicate, fmt,...)                                \
     if (predicate) {                                                    \
-        fprintf(stderr, HICL_RED"[HICL FATAL]: "fmt" @%s:%d.\n"HICL_END,      \
+        fprintf(stderr, HICL_RED"[HICL FATAL]: "fmt" @%s:%d.\n"HICL_END,\
                 ##__VA_ARGS__, __FILE__, __LINE__);                     \
         exit(EXIT_FAILURE);                                             \
     }

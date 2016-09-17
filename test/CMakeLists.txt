@@ -36,8 +36,6 @@
 project (build_tests)
 cmake_minimum_required (VERSION 2.8)
 
-## Build googletest/googletest first
-
 ## Build the hiCL C/C++ unit tests.
 add_subdirectory(src)
 

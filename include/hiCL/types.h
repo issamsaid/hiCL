@@ -82,8 +82,7 @@ struct __himem_t {
     cl_mem pinned;          ///< an memory object used if the memory is pinned.
     cl_command_queue queue; ///< a queue used to manipulate the memory object.
     void *h;                ///< a pointer to the host memory.
-    unsigned int refs;
-    //urb_t *knls;            ///< a red-black tree of the kernels using this memory.
+    int refs;               ///< the number of kernels using this memory.
 };
 
 ///
