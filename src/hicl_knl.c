@@ -72,6 +72,8 @@ inline void hicl_knl_build(const char *name, const char *options) {
                                         &const_code, NULL, &cl_ret);
     HICL_CHECK(cl_ret, "failed to create OpenCL program");
     ids   = __api_knl_create_from_program(program, options, &num_kernels);
+    if (clReleaseKernel(k->id) != CL_SUCCESS)
+        HICL_FAIL("failed to release OpenCL kernel");
     k->id = ids[0];
     free(ids);
     HICL_CHECK(clReleaseProgram(program), "failed to release OpenCL program");
