@@ -476,16 +476,18 @@ PRIVATE hiknl_t __api_knl_init(cl_kernel id) {
 PRIVATE void
 __api_knl_release(void *pointer) {
     hiknl_t k = (hiknl_t)pointer;
+    if (k != NULL) {
 #ifdef __API_DEBUG
-    unsigned int nb_refs;
-    __API_KNL_GET(k->id, CL_KERNEL_REFERENCE_COUNT, nb_refs);
-    HICL_DEBUG("releasing OpenCL kernel %s (mem count = %lu)", 
-                __api_knl_name(k->id), urb_tree_size(&k->mems));
+        unsigned int nb_refs;
+        __API_KNL_GET(k->id, CL_KERNEL_REFERENCE_COUNT, nb_refs);
+        HICL_DEBUG("releasing OpenCL kernel %s (mem count = %lu)", 
+                   __api_knl_name(k->id), urb_tree_size(&k->mems));
 #endif // __API_DEBUG
-    urb_tree_delete(&k->mems, __api_int_del, __api_mem_release);
-    if (clReleaseKernel(k->id) != CL_SUCCESS)
-        HICL_FAIL("failed to release OpenCL kernel");
-    free(k); k = NULL;
+        urb_tree_delete(&k->mems, __api_int_del, __api_mem_release);
+        if (clReleaseKernel(k->id) != CL_SUCCESS)
+            HICL_FAIL("failed to release OpenCL kernel");
+        free(k); k = NULL;
+    }
 }
 
 CPPGUARD_END();
