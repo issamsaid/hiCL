@@ -164,6 +164,27 @@ contains
         deallocate(h3d)
     end function access_buffer_3d
 
+    logical function access_buffer_4d() result(status)
+        real, allocatable, target         :: h4d(:,:,:,:)
+        real, pointer, dimension(:,:,:,:) :: hptr
+        integer, parameter                :: TH=16, TW=16, TD=16, TK=32
+        real                              :: h(TH,TW,TD,TK)
+        
+        allocate(hptr(4,4,4,4))
+        allocate(h4d(-3:TH+4, -3:TW+4, -3:TD+4, -3:TK+4))
+        h4d = 0.
+        h4d(1:TH, 1:TW, 1:TD, 1:TK) = 1.2
+        call hicl_mem_wrap(h4d, d, READ_WRITE)
+        call hicl_mem_wrap(hptr, d, READ_WRITE)
+        call hicl_mem_wrap(h, d, TH, TW, TD, TK, READ_WRITE)
+        call hicl_mem_update(h4d, READ_ONLY)
+        call hicl_mem_update(hptr, READ_ONLY)
+        call hicl_mem_update(h, TH, TW, TD, TK, READ_ONLY)
+        
+        status = (hicl_mem_count() == 3)
+        deallocate(h4d)
+        deallocate(hptr)
+    end function access_buffer_4d
 
     subroutine setup()
         call hicl_init(ALL)
@@ -193,6 +214,8 @@ contains
               "mem_test.access_buffer_2d")
         call run(setup, teardown, access_buffer_3d, &
               "mem_test.access_buffer_3d")
+        call run(setup, teardown, access_buffer_4d, &
+              "mem_test.access_buffer_4d")
     end subroutine mem_test
 
 end module m_mem_test

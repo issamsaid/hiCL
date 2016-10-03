@@ -146,6 +146,7 @@ module m_hicl_knl
         module procedure hicl_knl_set_int64
         module procedure hicl_knl_set_float
         module procedure hicl_knl_set_double
+        
         !! hicl_knl_set_mem
         module procedure hicl_knl_set_mem_int32_1d
         module procedure hicl_knl_set_mem_int32_1d_pointer
@@ -159,6 +160,7 @@ module m_hicl_knl
         module procedure hicl_knl_set_mem_double_1d
         module procedure hicl_knl_set_mem_double_1d_pointer
         module procedure hicl_knl_set_mem_double_1d_allocatable
+        
         module procedure hicl_knl_set_mem_int32_2d
         module procedure hicl_knl_set_mem_int32_2d_pointer
         module procedure hicl_knl_set_mem_int32_2d_allocatable
@@ -171,6 +173,7 @@ module m_hicl_knl
         module procedure hicl_knl_set_mem_double_2d
         module procedure hicl_knl_set_mem_double_2d_pointer
         module procedure hicl_knl_set_mem_double_2d_allocatable
+        
         module procedure hicl_knl_set_mem_int32_3d
         module procedure hicl_knl_set_mem_int32_3d_pointer
         module procedure hicl_knl_set_mem_int32_3d_allocatable
@@ -183,6 +186,19 @@ module m_hicl_knl
         module procedure hicl_knl_set_mem_double_3d
         module procedure hicl_knl_set_mem_double_3d_pointer
         module procedure hicl_knl_set_mem_double_3d_allocatable
+
+        module procedure hicl_knl_set_mem_int32_4d
+        module procedure hicl_knl_set_mem_int32_4d_pointer
+        module procedure hicl_knl_set_mem_int32_4d_allocatable
+        module procedure hicl_knl_set_mem_int64_4d
+        module procedure hicl_knl_set_mem_int64_4d_pointer
+        module procedure hicl_knl_set_mem_int64_4d_allocatable
+        module procedure hicl_knl_set_mem_float_4d
+        module procedure hicl_knl_set_mem_float_4d_pointer
+        module procedure hicl_knl_set_mem_float_4d_allocatable
+        module procedure hicl_knl_set_mem_double_4d
+        module procedure hicl_knl_set_mem_double_4d_pointer
+        module procedure hicl_knl_set_mem_double_4d_allocatable
     end interface hicl_knl_set
     
     public :: hicl_knl_exec
@@ -348,7 +364,7 @@ contains
     subroutine hicl_knl_set_mem_int32_2d_pointer(name, index, arg)
         character(len=*),                         intent(in) :: name
         integer(kind=4),                          intent(in) :: index
-        integer(kind=4), pointer, dimension(:,:), intent(in) :: arg(:,:)
+        integer(kind=4), pointer, dimension(:,:), intent(in) :: arg
         call c_hicl_knl_set_mem(name // c_null_char, index, &
                                 c_loc(arg(lbound(arg, 1),   &
                                           lbound(arg, 2))))
@@ -371,9 +387,9 @@ contains
     end subroutine hicl_knl_set_mem_int64_2d
 
     subroutine hicl_knl_set_mem_int64_2d_pointer(name, index, arg)
-        character(len=*),                     intent(in) :: name
-        integer(kind=4),                      intent(in) :: index
-        integer(kind=8), pointer, dimension(:,:), intent(in) :: arg(:,:)
+        character(len=*),                         intent(in) :: name
+        integer(kind=4),                          intent(in) :: index
+        integer(kind=8), pointer, dimension(:,:), intent(in) :: arg
         call c_hicl_knl_set_mem(name // c_null_char, index, &
                                 c_loc(arg(lbound(arg, 1),   &
                                           lbound(arg, 2))))
@@ -396,9 +412,9 @@ contains
     end subroutine hicl_knl_set_mem_float_2d
 
     subroutine hicl_knl_set_mem_float_2d_pointer(name, index, arg)
-        character(len=*),                     intent(in) :: name
-        integer(kind=4),                      intent(in) :: index
-        real(kind=4), pointer, dimension(:,:), intent(in) :: arg(:,:)
+        character(len=*),                      intent(in) :: name
+        integer(kind=4),                       intent(in) :: index
+        real(kind=4), pointer, dimension(:,:), intent(in) :: arg
         call c_hicl_knl_set_mem(name // c_null_char, index, &
                                 c_loc(arg(lbound(arg, 1),   &
                                           lbound(arg, 2))))
@@ -423,7 +439,7 @@ contains
     subroutine hicl_knl_set_mem_double_2d_pointer(name, index, arg)
         character(len=*),                      intent(in) :: name
         integer(kind=4),                       intent(in) :: index
-        real(kind=8), pointer, dimension(:,:), intent(in) :: arg(:,:)
+        real(kind=8), pointer, dimension(:,:), intent(in) :: arg
         call c_hicl_knl_set_mem(name // c_null_char, index, &
                                 c_loc(arg(lbound(arg, 1),   &
                                           lbound(arg, 2))))
@@ -451,7 +467,7 @@ contains
     subroutine hicl_knl_set_mem_int32_3d_pointer(name, index, arg)
         character(len=*),                           intent(in) :: name
         integer(kind=4),                            intent(in) :: index
-        integer(kind=4), pointer, dimension(:,:,:), intent(in) :: arg(:,:,:)
+        integer(kind=4), pointer, dimension(:,:,:), intent(in) :: arg
         call c_hicl_knl_set_mem(name // c_null_char, index, &
                                 c_loc(arg(lbound(arg, 1),   &
                                           lbound(arg, 2),   &
@@ -479,7 +495,7 @@ contains
     subroutine hicl_knl_set_mem_int64_3d_pointer(name, index, arg)
         character(len=*),                           intent(in) :: name
         integer(kind=4),                            intent(in) :: index
-        integer(kind=8), pointer, dimension(:,:,:), intent(in) :: arg(:,:,:)
+        integer(kind=8), pointer, dimension(:,:,:), intent(in) :: arg
         call c_hicl_knl_set_mem(name // c_null_char, index, &
                                 c_loc(arg(lbound(arg, 1),   &
                                           lbound(arg, 2),   &
@@ -507,7 +523,7 @@ contains
     subroutine hicl_knl_set_mem_float_3d_pointer(name, index, arg)
         character(len=*),                        intent(in) :: name
         integer(kind=4),                         intent(in) :: index
-        real(kind=4), pointer, dimension(:,:,:), intent(in) :: arg(:,:,:)
+        real(kind=4), pointer, dimension(:,:,:), intent(in) :: arg
         call c_hicl_knl_set_mem(name // c_null_char, index, &
                                 c_loc(arg(lbound(arg, 1),   &
                                           lbound(arg, 2),   &
@@ -535,7 +551,7 @@ contains
     subroutine hicl_knl_set_mem_double_3d_pointer(name, index, arg)
         character(len=*),                        intent(in) :: name
         integer(kind=4),                         intent(in) :: index
-        real(kind=8), pointer, dimension(:,:,:), intent(in) :: arg(:,:,:)
+        real(kind=8), pointer, dimension(:,:,:), intent(in) :: arg
         call c_hicl_knl_set_mem(name // c_null_char, index, &
                                 c_loc(arg(lbound(arg, 1),   &
                                           lbound(arg, 2),   &
@@ -543,30 +559,153 @@ contains
     end subroutine hicl_knl_set_mem_double_3d_pointer
 
     subroutine hicl_knl_set_mem_double_3d_allocatable(name, index, arg)
-        character(len=*),                     intent(in) :: name
-        integer(kind=4),                      intent(in) :: index
-        real(kind=8),    allocatable, target, intent(in) :: arg(:,:,:)
+        character(len=*),                  intent(in) :: name
+        integer(kind=4),                   intent(in) :: index
+        real(kind=8), allocatable, target, intent(in) :: arg(:,:,:)
         call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
     end subroutine hicl_knl_set_mem_double_3d_allocatable
+
+
+    subroutine hicl_knl_set_mem_int32_4d(name, index, arg, &
+                                         size_x, size_y, size_z, size_w)
+        character(len=*),        intent(in) :: name
+        integer(kind=4),         intent(in) :: index
+        integer(kind=4),         intent(in) :: size_x
+        integer(kind=4),         intent(in) :: size_y
+        integer(kind=4),         intent(in) :: size_z
+        integer(kind=4),         intent(in) :: size_w
+        integer(kind=4), target, intent(in) :: arg(size_x, size_y, &
+                                                   size_z, size_w)
+        call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
+    end subroutine hicl_knl_set_mem_int32_4d
+
+    subroutine hicl_knl_set_mem_int32_4d_pointer(name, index, arg)
+        character(len=*),                             intent(in) :: name
+        integer(kind=4),                              intent(in) :: index
+        integer(kind=4), pointer, dimension(:,:,:,:), intent(in) :: arg
+        call c_hicl_knl_set_mem(name // c_null_char, index, &
+                                c_loc(arg(lbound(arg, 1),   &
+                                          lbound(arg, 2),   &
+                                          lbound(arg, 3),   &
+                                          lbound(arg, 4))))
+    end subroutine hicl_knl_set_mem_int32_4d_pointer
+
+    subroutine hicl_knl_set_mem_int32_4d_allocatable(name, index, arg)
+        character(len=*),                     intent(in) :: name
+        integer(kind=4),                      intent(in) :: index
+        integer(kind=4), allocatable, target, intent(in) :: arg(:,:,:,:)
+        call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
+    end subroutine hicl_knl_set_mem_int32_4d_allocatable
+
+    subroutine hicl_knl_set_mem_int64_4d(name, index, arg, &
+                                         size_x, size_y, size_z, size_w)
+        character(len=*),        intent(in) :: name
+        integer(kind=4),         intent(in) :: index
+        integer(kind=4),         intent(in) :: size_x
+        integer(kind=4),         intent(in) :: size_y
+        integer(kind=4),         intent(in) :: size_z
+        integer(kind=4),         intent(in) :: size_w
+        integer(kind=8), target, intent(in) :: arg(size_x, size_y, &
+                                                   size_z, size_w)
+        call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
+    end subroutine hicl_knl_set_mem_int64_4d
+
+    subroutine hicl_knl_set_mem_int64_4d_pointer(name, index, arg)
+        character(len=*),                             intent(in) :: name
+        integer(kind=4),                              intent(in) :: index
+        integer(kind=8), pointer, dimension(:,:,:,:), intent(in) :: arg
+        call c_hicl_knl_set_mem(name // c_null_char, index, &
+                                c_loc(arg(lbound(arg, 1),   &
+                                          lbound(arg, 2),   &
+                                          lbound(arg, 3),   &
+                                          lbound(arg, 4))))
+    end subroutine hicl_knl_set_mem_int64_4d_pointer
+
+    subroutine hicl_knl_set_mem_int64_4d_allocatable(name, index, arg)
+        character(len=*),                     intent(in) :: name
+        integer(kind=4),                      intent(in) :: index
+        integer(kind=8), allocatable, target, intent(in) :: arg(:,:,:,:)
+        call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
+    end subroutine hicl_knl_set_mem_int64_4d_allocatable
+
+    subroutine hicl_knl_set_mem_float_4d(name, index, arg, &
+                                         size_x, size_y, size_z, size_w)
+        character(len=*),     intent(in) :: name
+        integer(kind=4),      intent(in) :: index
+        integer(kind=4),      intent(in) :: size_x
+        integer(kind=4),      intent(in) :: size_y
+        integer(kind=4),      intent(in) :: size_z
+        integer(kind=4),      intent(in) :: size_w
+        real(kind=4), target, intent(in) :: arg(size_x, size_y, size_z, size_w)
+        call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
+    end subroutine hicl_knl_set_mem_float_4d
+
+    subroutine hicl_knl_set_mem_float_4d_pointer(name, index, arg)
+        character(len=*),                          intent(in) :: name
+        integer(kind=4),                           intent(in) :: index
+        real(kind=4), pointer, dimension(:,:,:,:), intent(in) :: arg
+        call c_hicl_knl_set_mem(name // c_null_char, index, &
+                                c_loc(arg(lbound(arg, 1),   &
+                                          lbound(arg, 2),   &
+                                          lbound(arg, 3),   &
+                                          lbound(arg, 4))))
+    end subroutine hicl_knl_set_mem_float_4d_pointer
+
+    subroutine hicl_knl_set_mem_float_4d_allocatable(name, index, arg)
+        character(len=*),                     intent(in) :: name
+        integer(kind=4),                      intent(in) :: index
+        real(kind=4),    allocatable, target, intent(in) :: arg(:,:,:,:)
+        call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
+    end subroutine hicl_knl_set_mem_float_4d_allocatable
+
+    subroutine hicl_knl_set_mem_double_4d(name, index, arg, &
+                                          size_x, size_y, size_z, size_w)
+        character(len=*),     intent(in) :: name
+        integer(kind=4),      intent(in) :: index
+        integer(kind=4),      intent(in) :: size_x
+        integer(kind=4),      intent(in) :: size_y
+        integer(kind=4),      intent(in) :: size_z
+        integer(kind=4),      intent(in) :: size_w
+        real(kind=8), target, intent(in) :: arg(size_x, size_y, size_z, size_w)
+        call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
+    end subroutine hicl_knl_set_mem_double_4d
+
+    subroutine hicl_knl_set_mem_double_4d_pointer(name, index, arg)
+        character(len=*),                          intent(in) :: name
+        integer(kind=4),                           intent(in) :: index
+        real(kind=8), pointer, dimension(:,:,:,:), intent(in) :: arg
+        call c_hicl_knl_set_mem(name // c_null_char, index, &
+                                c_loc(arg(lbound(arg, 1),   &
+                                          lbound(arg, 2),   &
+                                          lbound(arg, 3),   &
+                                          lbound(arg, 4))))
+    end subroutine hicl_knl_set_mem_double_4d_pointer
+
+    subroutine hicl_knl_set_mem_double_4d_allocatable(name, index, arg)
+        character(len=*),                     intent(in) :: name
+        integer(kind=4),                      intent(in) :: index
+        real(kind=8),    allocatable, target, intent(in) :: arg(:,:,:,:)
+        call c_hicl_knl_set_mem(name // c_null_char, index, c_loc(arg))
+    end subroutine hicl_knl_set_mem_double_4d_allocatable
 
     !!
     !! exec
     !!
     subroutine hicl_knl_timed_exec(name, d, elapsed)
-        character(len=*),   intent(in) :: name
+        character(len=*),       intent(in) :: name
         type(hidev_t), pointer, intent(in) :: d
         real(kind=8),      intent(out) :: elapsed
         elapsed = c_hicl_knl_timed_exec(name // c_null_char, c_loc(d))
     end subroutine hicl_knl_timed_exec
 
     subroutine hicl_knl_sync_exec(name, d)
-        character(len=*),   intent(in) :: name
+        character(len=*),       intent(in) :: name
         type(hidev_t), pointer, intent(in) :: d
         call c_hicl_knl_sync_exec(name // c_null_char, c_loc(d))
     end subroutine hicl_knl_sync_exec
 
     subroutine hicl_knl_exec(name, d)
-        character(len=*),   intent(in) :: name
+        character(len=*),       intent(in) :: name
         type(hidev_t), pointer, intent(in) :: d
         call c_hicl_knl_exec(name // c_null_char, c_loc(d))
     end subroutine hicl_knl_exec
