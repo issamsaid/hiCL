@@ -37,7 +37,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
-#include "hiCL/hiCL.h"
+#include <hiCL/hiCL.h>
 
 #define N 320
 
