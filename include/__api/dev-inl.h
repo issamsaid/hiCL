@@ -535,7 +535,7 @@ __api_dev_info(void *pointer) {
                               preferred_vector_width_double);
     __API_DEV_INFO_LEVEL_1(fdout, "%u", "max clock frequency",
                               max_clock_frequency);
-    __API_DEV_INFO_LEVEL_1(fdout, "%u", "address_t bits",
+    __API_DEV_INFO_LEVEL_1(fdout, "%u", "address bits",
                               address_t_bits);
     __API_DEV_INFO_LEVEL_1(fdout, "%s", "image support",
                               image_support ? "yes" : "no");
@@ -559,29 +559,29 @@ __api_dev_info(void *pointer) {
     }
     __API_DEV_INFO_LEVEL_1(fdout, "%ld", "max paramater size",
                               max_parameter_size);
-    __API_DEV_INFO_LEVEL_1(fdout, "%u", "himem_t base addr align",
+    __API_DEV_INFO_LEVEL_1(fdout, "%u", "mem base addr align",
                               mem_base_addr_align);
     __API_DEV_INFO_LEVEL_1(fdout, "%u", "min data type align size",
                               min_data_type_align_size);
     __API_DEV_INFO_LEVEL_1(fdout, "", "single fp cpnfig");
     __api_dev_single_fp_config_str(single_fp_config, fdout);
-    __API_DEV_INFO_LEVEL_1(fdout, "%s", "global himem_t cache type",
+    __API_DEV_INFO_LEVEL_1(fdout, "%s", "global mem cache type",
           __API_DEV_GLOBAL_MEM_CACHE_TYPE_STR(global_mem_cache_type));
-    __API_DEV_INFO_LEVEL_1(fdout, "%u Bytes", "global himem_t cacheline size",
+    __API_DEV_INFO_LEVEL_1(fdout, "%u Bytes", "global mem cacheline size",
                               global_mem_cacheline_size);
-    __API_DEV_INFO_LEVEL_1(fdout, "%lu"" Bytes", "global himem_t cache size",
+    __API_DEV_INFO_LEVEL_1(fdout, "%lu"" Bytes", "global mem cache size",
                               global_mem_cache_size);
-    __API_DEV_INFO_LEVEL_1(fdout, "%lu"" MB", "global himem_t size",
+    __API_DEV_INFO_LEVEL_1(fdout, "%lu"" MB", "global mem size",
                               global_mem_size/1024/1024);
-    __API_DEV_INFO_LEVEL_1(fdout, "%lu"" MB", "global himem_t max alloc",
+    __API_DEV_INFO_LEVEL_1(fdout, "%lu"" MB", "global mem max alloc",
 			               max_mem_alloc_size/1024/1024);	
     __API_DEV_INFO_LEVEL_1(fdout, "%lu"" KB", "max constant buffer size",
                               max_constant_buffer_size/1024);
     __API_DEV_INFO_LEVEL_1(fdout, "%u", "max constant args",
                               max_constant_args);
-    __API_DEV_INFO_LEVEL_1(fdout, "%s", "local himem_t type",
+    __API_DEV_INFO_LEVEL_1(fdout, "%s", "local mem type",
                               __API_DEV_LOCAL_MEM_TYPE_STR(local_mem_type));
-    __API_DEV_INFO_LEVEL_1(fdout, "%lu"" KB", "local himem_t size",
+    __API_DEV_INFO_LEVEL_1(fdout, "%lu"" KB", "local mem size",
                               local_mem_size/1024);
     __API_DEV_INFO_LEVEL_1(fdout, "%s", "error correction support",
                               error_correction_support ? "yes" : "no");
