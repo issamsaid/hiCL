@@ -42,4 +42,15 @@ set(CMAKE_Fortran_MODULE_DIRECTORY "${CMAKE_SOURCE_DIR}/modules")
 add_library(hicl_fortran STATIC ${F_SRCS})
 set_target_properties(hicl_fortran PROPERTIES OUTPUT_NAME "hiCL_fortran")
 add_dependencies(hicl_fortran hicl)
-install(TARGETS hicl_fortran ARCHIVE DESTINATION lib OPTIONAL)
+
+##
+## Workaround to install this target simultaneously with the main target.
+## This is due to a cmake restriction: 
+##  - Installing a target with the EXCLUDE_FROM_ALL target property 
+##    set to TRUE has undefined behavior. 
+##  
+## First: inform the build location of the target. 
+get_target_property(HICL_FORTRAN_BUILD_LIB hicl_fortran LOCATION)
+
+## Then : inform the location where the target is to be installed. 
+set(HICL_FORTRAN_INSTALL_DIR ${CMAKE_SOURCE_DIR}/lib)

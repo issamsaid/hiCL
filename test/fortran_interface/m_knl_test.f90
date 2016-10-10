@@ -246,7 +246,7 @@ contains
         cpu = 0.
         call init_buffer(src, nt)
 
-        call hicl_load("data/add_source_2d.cl")
+        call hicl_load(PREFIX//"/data/add_source_2d.cl")
         call hicl_dev_find(DEFAULT, d)
         call hicl_mem_wrap(src, d, ior(HWA, READ_ONLY))
         call hicl_mem_wrap(fld, d, ior(HWA, READ_WRITE))
@@ -296,8 +296,8 @@ contains
     subroutine setup()
         call hicl_init(ALL)
         call hicl_dev_find(DEFAULT, d)
-        call hicl_load("data/foo.cl", "-D STENCIL=4")
-        call hicl_load("data/bar.cl", "-D STENCIL=4")
+        call hicl_load(PREFIX//"/data/foo.cl", "-D STENCIL=4")
+        call hicl_load(PREFIX//"/data/bar.cl", "-D STENCIL=4")
     end subroutine setup
 
     subroutine teardown()

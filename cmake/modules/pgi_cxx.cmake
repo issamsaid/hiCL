@@ -1,0 +1,8 @@
+set(CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG}  -Mpreprocess -w -Mextend  -D__API_DEBUG -O0 -Mbounds -Mchkptr -Mchkstk -DLOG_DEBUG")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Mpreprocess -O3")
+find_package(OpenMP)
+if (OPENMP_FOUND)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mp=numa")
+else (OPENMP_FOUND)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Munknown-pragmas")
+endif (OPENMP_FOUND)

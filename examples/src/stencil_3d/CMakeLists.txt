@@ -37,13 +37,21 @@ project (stencil_3d C)
 cmake_minimum_required (VERSION 2.8)
 
 file(GLOB C_SRCS "*.c")
+add_definitions(-DPREFIX=\"${CMAKE_CURRENT_SOURCE_DIR}\")
 
 add_executable(stencil_3d ${C_SRCS})
 target_link_libraries (stencil_3d LINK_PUBLIC hicl)
 target_link_libraries (stencil_3d LINK_PUBLIC OpenCL)
 target_link_libraries (stencil_3d LINK_PUBLIC libulist)
 target_link_libraries (stencil_3d LINK_PUBLIC liburb_tree)
-
 add_dependencies(stencil_3d hicl)
-install(TARGETS stencil_3d DESTINATION examples/bin OPTIONAL)
-install(FILES stencil_3d.cl DESTINATION examples/bin OPTIONAL)
+
+##
+## Workaround to install this target simultaneously with the main target.
+## This is due to a cmake restriction: 
+##  - Installing a target with the EXCLUDE_FROM_ALL target property 
+##    set to TRUE has undefined behavior. 
+##  
+## Inform the build location of the target. 
+get_target_property(VAR stencil_3d LOCATION)
+set (HICL_C_EXAMPLES_FILES "${HICL_C_EXAMPLES_FILES}" "${VAR}" PARENT_SCOPE)

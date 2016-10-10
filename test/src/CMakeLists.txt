@@ -48,37 +48,35 @@ if (DEFINED ENV{GTEST_DIR})
         "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
     )
 else (DEFINED ENV{GTEST_DIR})
-## Download and install googletest
-ExternalProject_Add(
-    gtest
-    GIT_REPOSITORY https://github.com/google/googletest.git
-    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/gtest
-    INSTALL_COMMAND ""
-    UPDATE_COMMAND  ""
-)
+    ## Download and install googletest
+    ExternalProject_Add(
+        gtest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        PREFIX ${CMAKE_CURRENT_BINARY_DIR}/gtest
+        INSTALL_COMMAND ""
+        UPDATE_COMMAND  "")
 
-## Get googletest source and binary directories from CMake project
-ExternalProject_Get_Property(gtest SOURCE_DIR BINARY_DIR)
+    ## Get googletest source and binary directories from CMake project
+    ExternalProject_Get_Property(gtest SOURCE_DIR BINARY_DIR)
 
-## Create a libgtest target to be used as a dependency by test programs
-add_library(libgtest IMPORTED STATIC GLOBAL)
-add_dependencies(libgtest gtest)
+    ## Create a libgtest target to be used as a dependency by test programs
+    add_library(libgtest IMPORTED STATIC GLOBAL)
+    add_dependencies(libgtest gtest)
 
-## Set libgtest properties
-set_target_properties(libgtest PROPERTIES
-    "IMPORTED_LOCATION" "${BINARY_DIR}/googlemock/gtest/libgtest.a"
-    "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
-)
+    ## Set libgtest properties
+    set_target_properties(libgtest PROPERTIES
+        "IMPORTED_LOCATION" "${BINARY_DIR}/googlemock/gtest/libgtest.a"
+        "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}")
 
-## Include the googletest headers
-include_directories("${SOURCE_DIR}/googletest/include")
+    ## Include the googletest headers
+    include_directories("${SOURCE_DIR}/googletest/include")
 endif (DEFINED ENV{GTEST_DIR})
 
 ## Include the hiCL headers
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
 file(GLOB CXX_SRCS "*.cc")
-
+add_definitions(-DPREFIX=\"${CMAKE_CURRENT_SOURCE_DIR}/..\")
 add_executable(hicl_test ${CXX_SRCS})
 
 ## Link the executable to the hiCL, OpenCL, ulist and urb_tree and gtest
@@ -88,4 +86,15 @@ target_link_libraries (hicl_test LINK_PUBLIC liburb_tree)
 target_link_libraries (hicl_test LINK_PUBLIC OpenCL)
 target_link_libraries (hicl_test LINK_PUBLIC libgtest)
 add_dependencies(hicl_test hicl)
-install(TARGETS hicl_test DESTINATION test/bin OPTIONAL)
+
+##
+## Workaround to install this target simultaneously with the main target.
+## This is due to a cmake restriction: 
+##  - Installing a target with the EXCLUDE_FROM_ALL target property 
+##    set to TRUE has undefined behavior. 
+##  
+## First: inform the build location of the target. 
+get_target_property(HICL_TEST_BUILD_EXE hicl_test LOCATION)
+
+## Then : inform the location where the target is to be installed. 
+set (HICL_TEST_INSTALL_DIR ${CMAKE_SOURCE_DIR}/test/bin)

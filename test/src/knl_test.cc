@@ -67,8 +67,8 @@ namespace {
     };
 
     TEST_F(KnlTest, build) {
-        hicl_load("data/foo.cl", "-DSTENCIL=9");
-        hicl_load("data/bar.cl", "-DSTENCIL=19");
+        hicl_load(PREFIX"/data/foo.cl", "-DSTENCIL=9");
+        hicl_load(PREFIX"/data/bar.cl", "-DSTENCIL=19");
         hicl_knl_build("test_hicl_1", "-DSTENCIL=29");
         hicl_knl_build("test_hicl_2", "-DSTENCIL=29");
         hicl_knl_build("test_hicl_6", "-DSTENCIL=29");
@@ -119,7 +119,7 @@ namespace {
  
         hicl_mem_update(hsrc, WRITE_ONLY);
         populate(hsrc, N);
-        hicl_load("data/foo.cl", "-DSTENCIL=9");
+        hicl_load(PREFIX"/data/foo.cl", "-DSTENCIL=9");
         hicl_knl_set_wrk("test_hicl_1", 1, &g, &l);
         hicl_knl_set_wrk("test_hicl_2", 1, &g, &l);
         
@@ -194,7 +194,7 @@ namespace {
         
         populate(hsrc, N);
         
-        hicl_load("data/foo.cl", "-DSTENCIL=9");
+        hicl_load(PREFIX"/data/foo.cl", "-DSTENCIL=9");
         k1 = hicl_knl_find("test_hicl_1");
         hicl_knl_set_wrk("test_hicl_1", 1, &g, &l);
         hicl_knl_set_mem("test_hicl_1", 0, hsrc);
@@ -243,7 +243,7 @@ namespace {
         hicl_mem_wrap(d, hdst, N, HWA | WRITE_ONLY);
         hicl_mem_update(hsrc, WRITE_ONLY);
         populate(hsrc, N);
-        hicl_load("data/foo.cl", "-DSTENCIL=9");
+        hicl_load(PREFIX"/data/foo.cl", "-DSTENCIL=9");
         hicl_knl_set_wrk("test_hicl_1", 1, &g, &l);
         
         hicl_timer_tick();
@@ -272,7 +272,7 @@ namespace {
         hicl_mem_wrap(d, hdst, N, HWA | WRITE_ONLY);
         hicl_mem_update(hsrc, WRITE_ONLY);
         populate(hsrc, N);
-        hicl_load("data/foo.cl", "-DSTENCIL=9");
+        hicl_load(PREFIX"/data/foo.cl", "-DSTENCIL=9");
         hicl_knl_set_wrk("test_hicl_1", 1, &g, &l);
         hicl_knl_set_mem("test_hicl_1", 0, hsrc);
         hicl_knl_set_mem("test_hicl_1", 1, hdst);
@@ -364,7 +364,7 @@ namespace {
         size   = (2*s[0] + dim[0])*(2*s[1] + dim[1])*(2*s[2] + dim[2]);
         flops  = 2+(3*s[0]+1)+(3*s[1]+1)+(3*s[2]+1);
         
-        hicl_load("data/stencil_v_3d.cl", 
+        hicl_load(PREFIX"/data/stencil_v_3d.cl", 
                   "-DSTENCIL=%d -DLX=%lu -DLY=%lu", 
                   s[0], l[0], l[1]);
         
@@ -442,7 +442,7 @@ namespace {
                 "-DSTENCIL=%d -DLX=%lu -DLY=%lu", 
                 s[0], l[0], l[1]);
                         
-        hicl_load("data/stencil_v_3d.cl", options);
+        hicl_load(PREFIX"/data/stencil_v_3d.cl", options);
         
         float *ui;
         float *uo;
@@ -518,7 +518,7 @@ namespace {
                 "-DSTENCIL=%d -DLX=%lu -DLY=%lu", 
                 s[0], l[0], l[1]);
                         
-        hicl_load("data/stencil_v_3d.cl", options);
+        hicl_load(PREFIX"/data/stencil_v_3d.cl", options);
         
         float *ui;
         float *uo;
@@ -594,7 +594,7 @@ namespace {
                 "-DSTENCIL=%d -DLX=%lu -DLY=%lu", 
                 s[0], l[0], l[1]);
                         
-        hicl_load("data/stencil_v_3d.cl", options);
+        hicl_load(PREFIX"/data/stencil_v_3d.cl", options);
         
         float *ui;
         float *uo;
@@ -670,7 +670,7 @@ namespace {
                 "-DSTENCIL=%d -DLX=%lu -DLY=%lu", 
                 s[0], l[0], l[1]);
                         
-        hicl_load("data/stencil_v_3d.cl", options);
+        hicl_load(PREFIX"/data/stencil_v_3d.cl", options);
         
         float *ui;
         float *uo;
@@ -746,7 +746,7 @@ namespace {
                 "-DSTENCIL=%d -DLX=%lu -DLY=%lu", 
                 s[0], l[0], l[1]);
                         
-        hicl_load("data/stencil_v_3d.cl", options);
+        hicl_load(PREFIX"/data/stencil_v_3d.cl", options);
         
         float *ui;
         float *uo;
@@ -820,9 +820,9 @@ namespace {
                 "-DSTENCIL=%d -DLX=%lu -DLY=%lu", 
                 s[0], l[0], l[1]);
               
-        hicl_load("data/foo.cl", "-DSTENCIL=9");
-        hicl_load("data/bar.cl", "-DSTENCIL=19");  
-        hicl_load("data/stencil_v_3d.cl", options);
+        hicl_load(PREFIX"/data/foo.cl", "-DSTENCIL=9");
+        hicl_load(PREFIX"/data/bar.cl", "-DSTENCIL=19");  
+        hicl_load(PREFIX"/data/stencil_v_3d.cl", options);
         
         float *ui;
         float *uo;
