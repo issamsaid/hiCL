@@ -21,29 +21,31 @@ on late April 2016.
 # Content
 <!-- MarkdownTOC depth=2 -->
 
-- [Getting started][getting-started]
-    - [Branches and cloning][branches-and-cloning]
-    - [Setting up][setting-up]
-    - [Dependencies][dependencies]
-    - [Building the C/C++ interface][building-the-cc-interface]
-    - [Building the Fortran interface][building-the-fortran-interface]
-    - [Building the unit tests][building-the-unit-tests]
-    - [Building the examples][building-the-examples]
-    - [Generating the documentation][generating-the-documentation]
-    - [Installing][installing]
-    - [Continuous integration][continuous-integration]
-- [Using hiCL][using-hicl]
-- [How to contribute][how-to-contribute]
-- [License][license]
-- [Contact][contact]
+- [Getting started](#getting-started)
+    - [Branches and cloning](#branches-and-cloning)
+    - [Setting up](#setting-up)
+    - [Dependencies](#dependencies)
+    - [Building the C/C++ interface](#building-the-cc-interface)
+    - [Building the Fortran interface](#building-the-fortran-interface)
+    - [Building the unit tests](#building-the-unit-tests)
+    - [Building the examples](#building-the-examples)
+    - [Generating the documentation](#generating-the-documentation)
+    - [Installing](#installing)
+    - [Continuous integration](#continuous-integration)
+- [Using hiCL](#using-hicl)
+- [How to contribute](#how-to-contribute)
+- [License](#license)
+- [Contact](#contact)
 
 <!-- /MarkdownTOC -->
 
+<a name="getting-started"></a>
 # Getting started
 The following section is a step by step guide that will take you from fetching
 the source code from the repository branches to running your <b>hiCL</b> first 
 examples on your machine.
 
+<a name="branches-and-cloning"></a>
 ## Branches and cloning
 The project contains two git main branches: **master** and **develop**. 
 The **master** branch only contains the major releases, and 
@@ -79,6 +81,7 @@ the library. To get started, you can clone this branch as follows:
 git clone -b develop https://github.com/issamsaid/hiCL.git
 ```
 
+<a name="setting-up"></a>
 ## Setting up
 The <b>hiCL</b> project has multiple components, each in a subdirectory of the
 root directory (hiCL):
@@ -117,6 +120,7 @@ popd
 In addition, it is to be noted that <b>hiCL</b> is not yet compatible with
 the PGI Fortran compiler. We are working on solving this issue.
 
+<a name="dependencies"></a>
 ## Dependencies
 It goes without saying that <b>hiCL</b> depends on OpenCL.
 If your installed OpenCL implementation is not found by our `cmake` 
@@ -144,6 +148,7 @@ export URB_TREE_DIR="YOUR_PATH_TO_URB_TREE"
 export GTEST_DIR="YOUR_PATH_TO_GTEST"
 ```
 
+<a name="building-the-cc-interface"></a>
 ## Building the C/C++ interface
 To build the <b>hiCL</b> C static library you can run the default Makefile 
 target as follows:
@@ -163,6 +168,7 @@ make
 popd 
 ```
 
+<a name="building-the-fortran-interface"></a>
 ## Building the Fortran interface
 If you would like to build the Fortran interface additionally, 
 you can do so as follows:
@@ -177,6 +183,7 @@ Fortran source files present in the
 an additional layer based on the Fortran 2003 standard (ISO/IEC 1539-1:2004(E)),
 which generates procedure and derived-type declarations and global variables that are interoperable with C. Therefor, if the C/C++ interface is not built this target will build it as well.
 
+<a name="building-the-unit-tests"></a>
 ## Building the unit tests
 The library comes with a set of unit tests and performance 
 tests to validate the new features. You can check the unit testing 
@@ -197,6 +204,7 @@ Fortran interface.
 Tests should be written for any new code, and changes should be verified to not 
 break existing tests before they are submitted for review. 
 
+<a name="building-the-examples"></a>
 ## Building the examples
 The project comes with a set of C/C++ and Fortran samples that you can browse in the   
 [examples](https://github.com/issamsaid/hiCL/tree/master/examples) subdirectory. 
@@ -209,6 +217,7 @@ pupd
 Alternatively `make c_examples` will only build and 
 install the C/C++ examples, and `make fortran_examples` will build and install the Fortran examples.
 
+<a name="generating-the-documentation"></a>
 ## Generating the documentation
 The documentation of the library can be generated, in the [doc](https://github.com/issamsaid/hiCL/tree/master/doc) subdirectory,
 with the help of [doxygen](http://www.stack.nl/~dimitri/doxygen/) by simply running:
@@ -218,6 +227,7 @@ make doc
 popd
 ```
 
+<a name="installing"></a>
 ## Installing 
 In order to install the <b>hiCL</b> project you can invoke the classic 
 Makefile install target:
@@ -229,6 +239,7 @@ popd
 This target mainly installs the <b>hiCL</b> C/C++ static library in the `lib` subdirectory on the project root directory. If the Fortran static library, the unit tests binaries and the examples binaries are built, they will be installed 
 respectively in the `lib`, `test/bin` and `examples/bin` subdirectories.
 
+<a name="continuous-integration"></a>
 ## Continuous integration
 We use [Travis CI](https://travis-ci.org/issamsaid/hiCL) for the continuous 
 integration of the <b>hiCL</b> library. The image on the top of the page is a
@@ -237,6 +248,7 @@ A build is launched after each pull request with respect to the Travis CI
 configuration file (.travis.yml).
 
 
+<a name="using-hicl"></a>
 # Using hiCL
 In order to use the <b>hiCL</b> C/C++ link your code against libhiCL.a 
 additionally to the OpenCL library (by adding 
@@ -265,6 +277,7 @@ export HICL_BUILD_OPTIONS="YOUR_OPENCL_BUILD_OPTIONS" // examples: -cl-denorms-a
 See the [Khronos](https://www.khronos.org/registry/cl/sdk/1.2/docs/man/xhtml/clBuildProgram.html) registry for more OpenCL kernels build options. 
 
 
+<a name="how-to-contribute"></a>
 # How to contribute
 We believe that <b>hiCL</b> can be used by scientific programmers very 
 efficiently. We tend to extend the functionalities of the library. For this to 
@@ -273,12 +286,14 @@ If you are willing to contribute please visit the contributors guide
 [CONTRIBUTING](https://github.com/issamsaid/hiCL/tree/master/CONTRIBUTING.md),
 or feel free to contact us.
 
+<a name="license"></a>
 # License
 <b>hiCL</b> is a free software licensed under 
 [BSD](https://github.com/issamsaid/hiCL/tree/master/LICENSE.md) 
 and was put together in a computer science laboratory at the [UPMC](http://www.upmc.fr). 
 The project was initially funded by [Total](http://www.total.com) which is acknowledged.
 
+<a name="contact"></a>
 # Contact
 For bug report, feature requests or if you willing to contribute please 
 feel free to contact Issam SAID by dropping a line to said.issam@gmail.com.

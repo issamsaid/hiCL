@@ -26,8 +26,8 @@ script:
   - make hicl hicl_fortran build_tests
   - make install
   - popd
-  - ./bin/hicl_test
-  - ./bin/hicl_test_fortran
+  - ./test/bin/hicl_test
+  - ./test/bin/hicl_test_fortran
 
 #notifications:
 #  email:
