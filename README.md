@@ -18,12 +18,25 @@ published at the
 [International OpenCL Workshop](http://www.iwocl.org/) in Vienna, Austria 
 on late April 2016.
 
-# Content
-- [Getting started](# Getting started)
-- [Using hiCL](# Using hiCL)
-- [How to contribute](# How to contribute)
-- [License](# License)
-- [Contact](# Contact)
+<!-- MarkdownTOC depth=2 -->
+
+- Getting started
+    - Branches and cloning
+    - Setting up
+    - Dependencies
+    - Building the C/C++ interface
+    - Building the Fortran interface
+    - Building the unit tests
+    - Building the examples
+    - Generating the documentation
+    - Installing
+    - Continuous integration
+- Using hiCL
+- How to contribute
+- License
+- Contact
+
+<!-- /MarkdownTOC -->
 
 # Getting started
 The following section is a step by step guide that will take you from fetching
