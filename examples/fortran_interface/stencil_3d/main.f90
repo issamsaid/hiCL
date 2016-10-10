@@ -62,7 +62,7 @@ program stencil_3d_fortran
     !!< Note the '-cl-kernel-arg-info' that is added for NVIDIA GPUs to 
     !!< use some OpenCL 1.2 features.
     !! 
-    call hicl_load("stencil_3d.cl", "-cl-kernel-arg-info");
+    call hicl_load(PREFIX//"/stencil_3d.cl", "-cl-kernel-arg-info");
 
 	!!
     !!< Get a pointer to the desired device (in this case the default GPU).

@@ -38,12 +38,23 @@ cmake_minimum_required (VERSION 2.8)
 
 include_directories(${CMAKE_SOURCE_DIR}/modules)
 file(GLOB F_SRCS "*.f90")
+add_definitions(-DPREFIX=\"${CMAKE_CURRENT_SOURCE_DIR}/..\")
 add_executable(hicl_test_fortran ${F_SRCS})
 target_link_libraries (hicl_test_fortran LINK_PUBLIC hicl_fortran)
 target_link_libraries (hicl_test_fortran LINK_PUBLIC hicl)
 target_link_libraries (hicl_test_fortran LINK_PUBLIC libulist)
 target_link_libraries (hicl_test_fortran LINK_PUBLIC liburb_tree)
 target_link_libraries (hicl_test_fortran LINK_PUBLIC OpenCL)
-
 add_dependencies(hicl_test_fortran hicl_fortran)
-install(TARGETS hicl_test_fortran DESTINATION test/bin OPTIONAL)
+
+##
+## Workaround to install this target simultaneously with the main target.
+## This is due to a cmake restriction: 
+##  - Installing a target with the EXCLUDE_FROM_ALL target property 
+##    set to TRUE has undefined behavior. 
+##  
+## First: inform the build location of the target. 
+get_target_property(HICL_TEST_FORTRAN_BUILD_EXE hicl_test_fortran LOCATION)
+
+## Then : inform the location where the target is to be installed. 
+set (HICL_TEST_FORTRAN_INSTALL_DIR ${CMAKE_SOURCE_DIR}/test/bin)

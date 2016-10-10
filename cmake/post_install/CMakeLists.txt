@@ -29,29 +29,9 @@
 ## NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ## SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ##
-## @file examples/src/sgemm/CMakeLists.txt
+## @file cmake/post_install/CMakeLists.txt
 ## @author Issam SAID
-## @brief CMake build script for the hiCL C/C++ sgemm.
+## @brief CMake post-install build script for hiCL.
 ##
-project (sgemm C)
-cmake_minimum_required (VERSION 2.8)
-
-file(GLOB C_SRCS "*.c")
-add_definitions(-DPREFIX=\"${CMAKE_CURRENT_SOURCE_DIR}\")
-
-add_executable(sgemm ${C_SRCS})
-target_link_libraries (sgemm LINK_PUBLIC hicl)
-target_link_libraries (sgemm LINK_PUBLIC OpenCL)
-target_link_libraries (sgemm LINK_PUBLIC libulist)
-target_link_libraries (sgemm LINK_PUBLIC liburb_tree)
-add_dependencies(sgemm hicl)
-
-##
-## Workaround to install this target simultaneously with the main target.
-## This is due to a cmake restriction: 
-##  - Installing a target with the EXCLUDE_FROM_ALL target property 
-##    set to TRUE has undefined behavior. 
-##  
-## Inform the build location of the target. 
-get_target_property(VAR sgemm LOCATION)
-set (HICL_C_EXAMPLES_FILES "${HICL_C_EXAMPLES_FILES}" "${VAR}" PARENT_SCOPE)
+install(SCRIPT "${CMAKE_SOURCE_DIR}/cmake/post_install/MergeDependLibs.cmake")
+install(SCRIPT "${CMAKE_SOURCE_DIR}/cmake/post_install/InstallSubdirs.cmake")

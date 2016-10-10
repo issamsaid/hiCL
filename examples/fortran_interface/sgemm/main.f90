@@ -62,7 +62,7 @@ program sgemm_fortran
     !!< Note the '-cl-kernel-arg-info' that is added for NVIDIA GPUs to 
     !!< use some OpenCL 1.2 features.
     !! 
-    call hicl_load("sgemm.cl");
+    call hicl_load(PREFIX//"/sgemm.cl");
 
 	!!
     !!< Get a pointer to the desired device (in this case the default GPU).

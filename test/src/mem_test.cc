@@ -191,7 +191,7 @@ namespace {
 
         ASSERT_EQ(m->size, (nw+8)*(nh+8)*(nd+8));
         ASSERT_EQ(m->h, buf);
-        hicl_load("data/select.cl", NULL);
+        hicl_load(PREFIX"/data/select.cl", NULL);
         hicl_knl_set_wrk("kselect", 2, g, l);
         hicl_mem_update(buf, WRITE_ONLY);
         for (z=0; z < nd+8; ++z)
@@ -428,7 +428,7 @@ namespace {
         hicl_mem_wrap(d, tab_front, (nd)*(nw)*(4),  READ_WRITE);
         hicl_mem_wrap(d, tab_back,  (nd)*(nw)*(4),  READ_WRITE);
         
-        hicl_load("data/select.cl", NULL);
+        hicl_load(PREFIX"/data/select.cl", NULL);
         hicl_knl_set_wrk("kselect", 2, g, l);
         hicl_mem_update(buf, WRITE_ONLY);
         for (z=0; z < nd+8; ++z)
@@ -709,7 +709,7 @@ namespace {
         hicl_mem_wrap(d, tab_back,  (nd)*(nw)*(4),  
                       CPU | ZERO_COPY | READ_WRITE);
         
-        hicl_load("data/select.cl", NULL);
+        hicl_load(PREFIX"/data/select.cl", NULL);
         hicl_knl_set_wrk("kselect", 2, g, l);
         hicl_mem_update(buf, WRITE_ONLY);
         for (z=0; z < nd+8; ++z)

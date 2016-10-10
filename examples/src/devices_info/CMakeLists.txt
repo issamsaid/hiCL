@@ -43,7 +43,14 @@ target_link_libraries (devices_info LINK_PUBLIC hicl)
 target_link_libraries (devices_info LINK_PUBLIC OpenCL)
 target_link_libraries (devices_info LINK_PUBLIC libulist)
 target_link_libraries (devices_info LINK_PUBLIC liburb_tree)
-
 add_dependencies(devices_info hicl)
-install(TARGETS devices_info DESTINATION examples/bin OPTIONAL)
-install(FILES devices_info.cl DESTINATION examples/bin OPTIONAL)
+
+##
+## Workaround to install this target simultaneously with the main target.
+## This is due to a cmake restriction: 
+##  - Installing a target with the EXCLUDE_FROM_ALL target property 
+##    set to TRUE has undefined behavior. 
+##  
+## Inform the build location of the target. 
+get_target_property(VAR devices_info LOCATION)
+set (HICL_C_EXAMPLES_FILES "${HICL_C_EXAMPLES_FILES}" "${VAR}" PARENT_SCOPE)

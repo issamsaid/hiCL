@@ -50,3 +50,15 @@ foreach(dir ${sub_dirs})
         add_dependencies(c_examples ${dir})
 	endif()
 endforeach()
+
+##
+## Workaround to install this target simultaneously with the main target.
+## This is due to a cmake restriction: 
+##  - Installing a target with the EXCLUDE_FROM_ALL target property 
+##    set to TRUE has undefined behavior. 
+##  
+## First: inform the build location of the target. 
+set (HICL_C_EXAMPLES_FILES ${HICL_C_EXAMPLES_FILES})
+
+## Then : inform the location where the target is to be installed. 
+set (HICL_C_EXAMPLES_INSTALL_DIR ${CMAKE_SOURCE_DIR}/examples/bin)

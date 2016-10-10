@@ -36,13 +36,20 @@
 project (hicl C)
 cmake_minimum_required (VERSION 2.8)
 
-
 ## Build the hiCL C static library.
 include_directories(${CMAKE_SOURCE_DIR}/include)
 file(GLOB C_SRCS "*.c")
 add_library(hicl STATIC ${C_SRCS})
 add_dependencies(hicl libulist)
 add_dependencies(hicl liburb_tree)
-
 set_target_properties(hicl PROPERTIES OUTPUT_NAME "hiCL")
 install(TARGETS hicl ARCHIVE DESTINATION lib)
+
+## Add the pathes to hicl which we need during post install.
+get_target_property(HICL_BUILD_LIB hicl LOCATION)
+get_filename_component(HICL_BUILD_DIR ${HICL_BUILD_LIB} DIRECTORY)
+string(REPLACE ${HICL_BUILD_DIR} ${CMAKE_SOURCE_DIR}/lib HICL_INSTALL_LIB 
+       ${HICL_BUILD_LIB})
+
+install(CODE "set(HICL_BUILD_LIB \"${HICL_BUILD_LIB}\")")
+install(CODE "set(HICL_INSTALL_LIB \"${HICL_INSTALL_LIB}\")")

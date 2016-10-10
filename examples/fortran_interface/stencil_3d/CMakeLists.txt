@@ -37,6 +37,7 @@ project (stencil_3d_fortran Fortran)
 cmake_minimum_required (VERSION 2.8)
 
 file(GLOB F_SRCS "*.f90")
+add_definitions(-DPREFIX=\"${CMAKE_CURRENT_SOURCE_DIR}\")
 
 add_executable(stencil_3d_fortran ${F_SRCS})
 target_link_libraries (stencil_3d_fortran LINK_PUBLIC hicl_fortran)
@@ -44,7 +45,15 @@ target_link_libraries (stencil_3d_fortran LINK_PUBLIC hicl)
 target_link_libraries (stencil_3d_fortran LINK_PUBLIC OpenCL)
 target_link_libraries (stencil_3d_fortran LINK_PUBLIC libulist)
 target_link_libraries (stencil_3d_fortran LINK_PUBLIC liburb_tree)
-
 add_dependencies(stencil_3d_fortran hicl_fortran)
-install(TARGETS stencil_3d_fortran DESTINATION examples/bin OPTIONAL)
-install(FILES stencil_3d.cl DESTINATION examples/bin OPTIONAL)
+
+##
+## Workaround to install this target simultaneously with the main target.
+## This is due to a cmake restriction: 
+##  - Installing a target with the EXCLUDE_FROM_ALL target property 
+##    set to TRUE has undefined behavior. 
+##  
+## Inform the build location of the target. 
+get_target_property(VAR stencil_3d_fortran LOCATION)
+set (HICL_FORTRAN_EXAMPLES_FILES 
+     "${HICL_FORTRAN_EXAMPLES_FILES}" "${VAR}" PARENT_SCOPE)
