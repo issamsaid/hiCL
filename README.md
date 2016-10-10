@@ -18,6 +18,7 @@ published at the
 [International OpenCL Workshop](http://www.iwocl.org/) in Vienna, Austria 
 on late April 2016.
 
+# Content
 <!-- MarkdownTOC depth=2 -->
 
 - Getting started
