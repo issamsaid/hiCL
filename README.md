@@ -21,21 +21,21 @@ on late April 2016.
 # Content
 <!-- MarkdownTOC depth=2 -->
 
-- Getting started
-    - Branches and cloning
-    - Setting up
-    - Dependencies
-    - Building the C/C++ interface
-    - Building the Fortran interface
-    - Building the unit tests
-    - Building the examples
-    - Generating the documentation
-    - Installing
-    - Continuous integration
-- Using hiCL
-- How to contribute
-- License
-- Contact
+- [Getting started][getting-started]
+    - [Branches and cloning][branches-and-cloning]
+    - [Setting up][setting-up]
+    - [Dependencies][dependencies]
+    - [Building the C/C++ interface][building-the-cc-interface]
+    - [Building the Fortran interface][building-the-fortran-interface]
+    - [Building the unit tests][building-the-unit-tests]
+    - [Building the examples][building-the-examples]
+    - [Generating the documentation][generating-the-documentation]
+    - [Installing][installing]
+    - [Continuous integration][continuous-integration]
+- [Using hiCL][using-hicl]
+- [How to contribute][how-to-contribute]
+- [License][license]
+- [Contact][contact]
 
 <!-- /MarkdownTOC -->
 
