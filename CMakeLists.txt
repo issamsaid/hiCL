@@ -165,10 +165,6 @@ else (DEFINED ENV{ULIST_DIR})
         "IMPORTED_LOCATION" "${BINARY_DIR}/src/libulist.a"
         "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}")
 
-    ## Add the path to ulist which we need during post-install.
-    get_target_property(ULIST_LIB libulist IMPORTED_LOCATION)
-    install(CODE "set(ULIST_LIB \"${ULIST_LIB}\")")
-
     ## Include ulist headers.
     include_directories("${SOURCE_DIR}/include")
 endif (DEFINED ENV{ULIST_DIR})
@@ -203,10 +199,6 @@ else (DEFINED ENV{URB_TREE_DIR})
         "IMPORTED_LOCATION" "${BINARY_DIR}/src/liburb_tree.a"
         "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}")
 
-    ## Add the path to urb_tree which we need during post install.
-    get_target_property(URB_TREE_LIB liburb_tree IMPORTED_LOCATION)
-    install(CODE "set(URB_TREE_LIB \"${URB_TREE_LIB}\")")
-
     ## Include urb_tree headers.
     include_directories("${SOURCE_DIR}/include")
 endif (DEFINED ENV{URB_TREE_DIR})
@@ -229,6 +221,14 @@ add_subdirectory(doc EXCLUDE_FROM_ALL)
 ##
 ## Workarounds for the lack of post_install steps:
 ##
+## Add the path to ulist which we need during post-install.
+get_target_property(ULIST_LIB libulist IMPORTED_LOCATION)
+install(CODE "set(ULIST_LIB \"${ULIST_LIB}\")")
+
+## Add the path to urb_tree which we need during post install.
+get_target_property(URB_TREE_LIB liburb_tree IMPORTED_LOCATION)
+install(CODE "set(URB_TREE_LIB \"${URB_TREE_LIB}\")")
+
 ## Add the paths of the hicl_fortran target which we need during post-install.
 get_directory_property(HICL_FORTRAN_BUILD_LIB DIRECTORY 
                        fortran_interface DEFINITION HICL_FORTRAN_BUILD_LIB)
