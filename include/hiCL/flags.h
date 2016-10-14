@@ -1,5 +1,5 @@
-#ifndef HICL_FLAGS_H_
-#define HICL_FLAGS_H_
+#ifndef __HICL_FLAGS_H_
+#define __HICL_FLAGS_H_
 ///
 /// @copyright Copyright (c) 2013-2016, Univrsité Pierre et Marie Curie
 /// All rights reserved.
@@ -86,4 +86,4 @@
 /// Macro to check whether a set of flags contains a given mask.
 #define __API_FLAGS_HAVE(flags, mask) ((flags & (mask)) == (mask))
 
-#endif  // HICL_FLAGS_H_
+#endif  // __HICL_FLAGS_H_

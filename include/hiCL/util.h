@@ -1,5 +1,5 @@
-#ifndef HICL_UTIL_H_
-#define HICL_UTIL_H_
+#ifndef __HICL_UTIL_H_
+#define __HICL_UTIL_H_
 ///
 /// @copyright Copyright (c) 2013-2016, Univrsité Pierre et Marie Curie
 /// All rights reserved.
@@ -100,4 +100,4 @@ unsigned int hicl_mem_count();
 
 CPPGUARD_END();
 
-#endif  // HICL_UTIL_H_
+#endif  // __HICL_UTIL_H_

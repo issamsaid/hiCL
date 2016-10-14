@@ -72,7 +72,7 @@ contains
     logical function wrap_pointer() result(status)
         real, pointer, dimension(:) :: h
         allocate(h(N)) 
-        call hicl_mem_wrap(h, d, FLOAT)
+        call hicl_mem_wrap_ptr(h, d, FLOAT)
         status = associated(d) .and. (hicl_mem_count() == 1)
         deallocate(h)
     end function wrap_pointer
@@ -115,8 +115,8 @@ contains
         h(-3:N-4) = 0.0
         h(-3)     = 1.2
         h(N-10)   = -1.2
-        call hicl_mem_wrap(h, d, READ_WRITE)        
-        call hicl_mem_update(h, READ_ONLY)
+        call hicl_mem_wrap_ptr(h, d, READ_WRITE)        
+        call hicl_mem_update_ptr(h, READ_ONLY)
         status = h(-3).eq.1.2
         status = status .and. h(N-10).eq.-1.2
         status = status .and. (hicl_mem_count() == 1)
@@ -175,10 +175,10 @@ contains
         h4d = 0.
         h4d(1:TH, 1:TW, 1:TD, 1:TK) = 1.2
         call hicl_mem_wrap(h4d, d, READ_WRITE)
-        call hicl_mem_wrap(hptr, d, READ_WRITE)
+        call hicl_mem_wrap_ptr(hptr, d, READ_WRITE)
         call hicl_mem_wrap(h, d, TH, TW, TD, TK, READ_WRITE)
         call hicl_mem_update(h4d, READ_ONLY)
-        call hicl_mem_update(hptr, READ_ONLY)
+        call hicl_mem_update_ptr(hptr, READ_ONLY)
         call hicl_mem_update(h, TH, TW, TD, TK, READ_ONLY)
         
         status = (hicl_mem_count() == 3)

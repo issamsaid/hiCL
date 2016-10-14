@@ -1,5 +1,5 @@
-#ifndef HICL_DEV_H_
-#define HICL_DEV_H_
+#ifndef __HICL_DEV_H_
+#define __HICL_DEV_H_
 ///
 /// @copyright Copyright (c) 2013-2016, Univrsité Pierre et Marie Curie
 /// All rights reserved.
@@ -76,4 +76,4 @@ bool hicl_dev_support(hidev_t d, char* extension);
 
 CPPGUARD_END()
 
-#endif  // HICL_DEV_H_
+#endif  // __HICL_DEV_H_

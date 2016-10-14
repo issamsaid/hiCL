@@ -83,7 +83,14 @@ module m_hicl_mem_update
         module procedure hicl_mem_update_float_4d_allocatable
         module procedure hicl_mem_update_double_4d
         module procedure hicl_mem_update_double_4d_allocatable
+    end interface hicl_mem_update
 
+    !! NOTE: With the CRAY and PGI compilers, subroutines
+    !! with the same signature except the arrays for one are allocatable
+    !! and pointers for the other, are TKR incompatible and thus ambiguous.
+    !! In order to remove the ambiguity, the _ptr extension is added.    
+    public :: hicl_mem_update_ptr
+    interface hicl_mem_update_ptr
         module procedure hicl_mem_update_int32_1d_pointer
         module procedure hicl_mem_update_int64_1d_pointer
         module procedure hicl_mem_update_float_1d_pointer
@@ -103,7 +110,7 @@ module m_hicl_mem_update
         module procedure hicl_mem_update_int64_4d_pointer
         module procedure hicl_mem_update_float_4d_pointer
         module procedure hicl_mem_update_double_4d_pointer
-    end interface hicl_mem_update
+    end interface hicl_mem_update_ptr
 
 contains
     
@@ -138,8 +145,10 @@ contains
     end subroutine hicl_mem_pop
 
     !!
-    !!  hicl_mem_update 1d
+    !! hicl_mem_update 
     !!
+
+    !! 1d
     subroutine hicl_mem_update_int32_1d(h, size_x, flags)
         integer(kind=4),         intent(in) :: size_x
         integer(kind=4), target, intent(in) :: h(size_x)
@@ -192,9 +201,7 @@ contains
         call c_hicl_mem_update(c_loc(h), flags)
     end subroutine hicl_mem_update_double_1d_allocatable
     
-    !!
-    !!  hicl_mem_update 2d
-    !!
+    !! 2d
     subroutine hicl_mem_update_int32_2d(h, size_x, size_y, flags)
         integer(kind=4),         intent(in) :: size_x
         integer(kind=4),         intent(in) :: size_y
@@ -251,9 +258,7 @@ contains
         call c_hicl_mem_update(c_loc(h), flags)
     end subroutine hicl_mem_update_double_2d_allocatable
 
-    !!
-    !!  hicl_mem_update 3d
-    !!
+    !! 3d
     subroutine hicl_mem_update_int32_3d(h, size_x, size_y, size_z, flags)
         integer(kind=4),         intent(in) :: size_x
         integer(kind=4),         intent(in) :: size_y
@@ -314,9 +319,7 @@ contains
         call c_hicl_mem_update(c_loc(h), flags)
     end subroutine hicl_mem_update_double_3d_allocatable
 
-    !!
-    !!  hicl_mem_update 4d
-    !!
+    !! 4d
     subroutine hicl_mem_update_int32_4d(h, size_x, size_y, &
                                            size_z, size_w, flags)
         integer(kind=4),         intent(in) :: size_x
@@ -387,8 +390,10 @@ contains
     end subroutine hicl_mem_update_double_4d_allocatable
 
     !!
-    !!  hicl_mem_update pointers
+    !! hicl_mem_update_ptr
     !!
+
+    !! 1d
     subroutine hicl_mem_update_int32_1d_pointer(h, flags)
         integer(kind=4), pointer, dimension(:), intent(in) :: h
         integer(kind=c_int64_t),                intent(in) :: flags
@@ -413,7 +418,7 @@ contains
         call c_hicl_mem_update(c_loc(h(lbound(h, 1))), flags)
     end subroutine hicl_mem_update_double_1d_pointer
 
-
+    !! 2d
     subroutine hicl_mem_update_int32_2d_pointer(h, flags)
         integer(kind=4), pointer, dimension(:,:), intent(in) :: h
         integer(kind=c_int64_t),                  intent(in) :: flags
@@ -442,7 +447,7 @@ contains
                                        lbound(h, 2))), flags)
     end subroutine hicl_mem_update_double_2d_pointer
 
-
+    !! 3d
     subroutine hicl_mem_update_int32_3d_pointer(h, flags)
         integer(kind=4), pointer, dimension(:,:,:), intent(in) :: h
         integer(kind=c_int64_t),                    intent(in) :: flags
@@ -475,7 +480,7 @@ contains
                                        lbound(h, 3))), flags)
     end subroutine hicl_mem_update_double_3d_pointer
 
- 
+    !! 4d
     subroutine hicl_mem_update_int32_4d_pointer(h, flags)
         integer(kind=4), pointer, dimension(:,:,:,:), intent(in) :: h
         integer(kind=c_int64_t),                      intent(in) :: flags
