@@ -1,5 +1,5 @@
-#ifndef HICL_TIMER_H_
-#define HICL_TIMER_H_
+#ifndef __HICL_TIMER_H_
+#define __HICL_TIMER_H_
 ///
 /// @copyright Copyright (c) 2013-2016, Univrsité Pierre et Marie Curie
 /// All rights reserved.
@@ -101,4 +101,4 @@ double hicl_timer_coef();
 
 CPPGUARD_END();
 
-#endif  // HICL_TIMER_H_
+#endif  // __HICL_TIMER_H_

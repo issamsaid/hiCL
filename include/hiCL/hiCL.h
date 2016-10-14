@@ -1,5 +1,5 @@
-#ifndef HICL_H_
-#define HICL_H_
+#ifndef __HICL_H_
+#define __HICL_H_
 ///
 /// @copyright Copyright (c) 2013-2016, Univrsité Pierre et Marie Curie
 /// All rights reserved.
@@ -46,4 +46,4 @@
 #include "hiCL/base.h"
 #include "hiCL/util.h"
 
-#endif  // HICL_H_
+#endif  // __HICL_H_

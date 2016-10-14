@@ -1,5 +1,5 @@
-#ifndef HICL_TYPES_H_
-#define HICL_TYPES_H_
+#ifndef __HICL_TYPES_H_
+#define __HICL_TYPES_H_
 ///
 /// @copyright Copyright (c) 2013-2016, Univrsité Pierre et Marie Curie
 /// All rights reserved.
@@ -118,4 +118,4 @@ struct __hienv_t {
 
 CPPGUARD_END();
 
-#endif  // HICL_TYPES_H_
+#endif  // __HICL_TYPES_H_

@@ -1,5 +1,5 @@
-#ifndef HICL_KNL_H_
-#define HICL_KNL_H_
+#ifndef __HICL_KNL_H_
+#define __HICL_KNL_H_
 ///
 /// @copyright Copyright (c) 2013-2016, Univrsité Pierre et Marie Curie
 /// All rights reserved.
@@ -245,4 +245,4 @@ double  hicl_knl_timed_exec(const char *name, hidev_t d);
 
 CPPGUARD_END();
 
-#endif  // HICL_KNL_H_
+#endif  // __HICL_KNL_H_

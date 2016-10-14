@@ -1,5 +1,5 @@
-#ifndef HICL_MEM_H_
-#define HICL_MEM_H_
+#ifndef __HICL_MEM_H_
+#define __HICL_MEM_H_
 ///
 /// @copyright Copyright (c) 2013-2016, Univrsité Pierre et Marie Curie
 /// All rights reserved.
@@ -150,4 +150,4 @@ void    hicl_mem_htod(address_t h, cl_bool blocking);
 
 CPPGUARD_END();
 
-#endif  // HICL_MEM_H_
+#endif  // __HICL_MEM_H_
