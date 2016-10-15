@@ -1,6 +1,6 @@
 
 !>
-!! @copyright Copyright (c) 2013-2016, Univrsité Pierre et Marie Curie
+!! @copyright Copyright (c) 2013-2016, Université Pierre et Marie Curie
 !! All rights reserved.
 !!
 !! <b>hiCL</b> is owned by Université Pierre et Marie Curie (UPMC),
