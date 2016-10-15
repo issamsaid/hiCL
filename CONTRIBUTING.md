@@ -16,7 +16,7 @@ We are planning to improve the following features of the **hiCL** library:
   objects).
 * The Fortran calls to run and execute kernels.
 * Coverage tests and functional tests.
-* A C++ templated version of the library: hiCL++.
+* A C++ templated version of the library: (hiCL-plusplus)[https://github.com/issamsaid/hiCL-plusplus].
 This is a non-exhaustive list of features and it is subject to changes constantly.
 
 ## How can I contribute
