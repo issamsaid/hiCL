@@ -57,50 +57,50 @@ if (NOT CMAKE_BUILD_TYPE)
    set (CMAKE_BUILD_TYPE Release)
 endif (NOT CMAKE_BUILD_TYPE)
 if (hicl_debug)
-	 set (CMAKE_BUILD_TYPE Debug)
+	set (CMAKE_BUILD_TYPE Debug)
 endif (hicl_debug)
 message(STATUS "... CMAKE_BUILD_TYPE : ${CMAKE_BUILD_TYPE}")
 
 ## Set the compilation flags 
 if ("${CMAKE_C_COMPILER_ID}"     MATCHES "Cray")
-  	# using Cray C
+  	include(${CMAKE_MODULE_PATH}/cray_c.cmake)
 elseif ("${CMAKE_C_COMPILER_ID}" MATCHES "GNU")
-    include(${CMAKE_MODULE_PATH}/gnu_c.cmake)
+   include(${CMAKE_MODULE_PATH}/gnu_c.cmake)
 elseif ("${CMAKE_C_COMPILER_ID}" MATCHES "Intel")
-    include(${CMAKE_MODULE_PATH}/intel_c.cmake)
+   include(${CMAKE_MODULE_PATH}/intel_c.cmake)
 elseif ("${CMAKE_C_COMPILER_ID}" MATCHES "PGI")
-    include(${CMAKE_MODULE_PATH}/pgi_c.cmake)
+   include(${CMAKE_MODULE_PATH}/pgi_c.cmake)
 elseif ("${CMAKE_C_COMPILER_ID}" MATCHES "MSVC")
-  	# using Visual Studio 
-endif ("${CMAKE_C_COMPILER_ID}"     MATCHES "Cray")
+  	include(${CMAKE_MODULE_PATH}/msvc_c.cmake)
+endif ("${CMAKE_C_COMPILER_ID}"  MATCHES "Cray")
 
 if ("${CMAKE_Fortran_COMPILER_ID}"     MATCHES "Cray")
-  	# using Cray Fortran
+  	include(${CMAKE_MODULE_PATH}/cray_fortran.cmake)
 elseif ("${CMAKE_Fortran_COMPILER_ID}" MATCHES "GNU")
 	include(${CMAKE_MODULE_PATH}/gnu_fortran.cmake)
 elseif ("${CMAKE_Fortran_COMPILER_ID}" MATCHES "Intel")
   	include(${CMAKE_MODULE_PATH}/intel_fortran.cmake)
 elseif ("${CMAKE_Fortran_COMPILER_ID}" MATCHES "PGI")
-    	include(${CMAKE_MODULE_PATH}/pgi_fortran.cmake)
+   include(${CMAKE_MODULE_PATH}/pgi_fortran.cmake)
 elseif ("${CMAKE_Fortran_COMPILER_ID}" MATCHES "MSVC")
-  	# using Visual Studio Fortran
-endif ("${CMAKE_Fortran_COMPILER_ID}"     MATCHES "Cray")
+  	include(${CMAKE_MODULE_PATH}/msvc_fortran.cmake)
+endif ("${CMAKE_Fortran_COMPILER_ID}"  MATCHES "Cray")
 
 if ("${CMAKE_CXX_COMPILER_ID}"     MATCHES "Cray")
-  	# using Cray C++
+  	include(${CMAKE_MODULE_PATH}/cray_cxx.cmake)
 elseif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
 	include(${CMAKE_MODULE_PATH}/gnu_cxx.cmake)
 elseif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Intel")
-    include(${CMAKE_MODULE_PATH}/intel_cxx.cmake)
+   include(${CMAKE_MODULE_PATH}/intel_cxx.cmake)
 elseif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "PGI")
-    include(${CMAKE_MODULE_PATH}/pgi_cxx.cmake)
+   include(${CMAKE_MODULE_PATH}/pgi_cxx.cmake)
 elseif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")
-  	# using Visual Studio C++
-endif ("${CMAKE_CXX_COMPILER_ID}"     MATCHES "Cray")
+  	include(${CMAKE_MODULE_PATH}/msvc_cxx.cmake)
+endif ("${CMAKE_CXX_COMPILER_ID}"  MATCHES "Cray")
 
 if (hicl_verbose)
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__API_VERBOSE")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__API_VERBOSE")
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__API_VERBOSE")
 endif (hicl_verbose)
 if (hicl_use_tty)
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__API_LOG_STD")
@@ -113,10 +113,11 @@ endif (hicl_roundup_wrk)
 ## Check whether OpenCL is detected:
 ## - The OpenCL library queered in usual directories
 ## - This behavior can be changed with env setting:
-##   OPENCL_INCLUDE_DIR: contains the OpenCL headers
-##   OPENCL_LIBRARY_DIR: contains the OpenCL library
+##   OPENCL_INCLUDE_DIRS   : contain the OpenCL headers
+##   OPENCL_LIBRARIES_DIRS : contain the OpenCL library
 find_package (OpenCL)
 if (OPENCL_FOUND)
+   message(STATUS "... OpenCL package found")
 	message(STATUS "... OpenCL headers paths : ${OPENCL_INCLUDE_DIRS}")
 	include_directories(${OPENCL_INCLUDE_DIRS})
 else (OPENCL_FOUND)
@@ -127,11 +128,11 @@ endif (OPENCL_FOUND)
 	
 if (${OPENCL_LIBRARIES} EQUAL 'OPENCL_LIBRARIES-NOTFOUND')
 	message(FATAL_ERROR 
-			"... Unable to find your OpenCL implementation library:\n"
-			"... Set the OPENCL_LIB_DIRS variable to locate the library.\n"
+			"... Unable to find your OpenCL implementation libraries:\n"
+			"... Set the OPENCL_LIBRARIES_DIRS variable to locate the libraries.\n"
 			"... You may also add the library path to the LD_LIBRARY_PATH env.")
 else (${OPENCL_LIBRARIES} EQUAL 'OPENCL_LIBRARIES-NOTFOUND')
-	message(STATUS "... OpenCL library paths : ${OPENCL_LIBRARY_DIRS}")
+	message(STATUS "... OpenCL library paths : ${OPENCL_LIBRARIES_DIRS}")
 	message(STATUS "... OpenCL libraries     : ${OPENCL_LIBRARIES}")
 endif (${OPENCL_LIBRARIES} EQUAL 'OPENCL_LIBRARIES-NOTFOUND')
 
