@@ -48,7 +48,7 @@
 ## behavior of the package locater:
 ## @param OPENCL_INCLUDE_DIRS if is set by the user it will be used instead of 
 ## script hints, to locate the directories of the OpenCL headers.
-## @param OPENCL_LIBRARY_DIRS if is set by the user it will be used to locate 
+## @param OPENCL_LIBRARIES_DIRS if is set by the user it will be used to locate 
 ## the OpenCL library. Note that the OpenCL library path can be manually added 
 ## to the variable LD_LIBRARY_PATH.
 ##     
@@ -102,10 +102,10 @@ find_library(OPENCL_LIBRARIES
       /usr/local/cuda/lib
       /opt/cuda/lib
   )
-if (NOT OPENCL_LIBRARY_DIRS)
-  get_filename_component(OPENCL_LIBRARY_DIRS ${OPENCL_LIBRARIES} DIRECTORY)
+if (NOT OPENCL_LIBRARIES_DIRS)
+    get_filename_component(OPENCL_LIBRARIES_DIRS ${OPENCL_LIBRARIES} DIRECTORY)
 endif ()
-link_directories(${OPENCL_LIBRARY_DIRS})
+link_directories(${OPENCL_LIBRARIES_DIRS})
 mark_as_advanced(OPENCL_LIBRARIES)
 
 include(FindPackageHandleStandardArgs)
