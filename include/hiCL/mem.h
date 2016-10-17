@@ -63,16 +63,6 @@ CPPGUARD_BEGIN();
 himem_t hicl_mem_wrap(hidev_t d, address_t h, size_t size, flags_t flags);
 
 ///
-/// @brief Release a given hiCL memory descriptor.
-///
-/// This routine frees the OpenCL resources related to a hiCL memory descriptor,
-/// identified by a host pointer, which include the OpenCL memory identifier.
-/// @param h is the host memory pointer that identifies the descriptor.
-/// @return Nothing.
-///
-void    hicl_mem_release(address_t h);
-
-///
 /// @brief Set the access mode before altering a hiCL memory.
 ///
 /// This routine is used to inform that a given hiCL memory is altered by the 
