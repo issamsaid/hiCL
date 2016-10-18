@@ -226,14 +226,6 @@ void    hicl_knl_exec(const char *name, hidev_t d);
 void    hicl_knl_sync_exec(const char *name, hidev_t d);
 
 ///
-/// @brief
-///
-///
-/// @param name is the string that identifies the kernel descriptor.
-/// @return
-///
-
-///
 /// @brief Run (and time the execution) only a given kernel on a given device.
 ///
 /// This routine simply runs and times the execution of a given OpenCL kernel 
