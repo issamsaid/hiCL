@@ -62,15 +62,6 @@ CPPGUARD_BEGIN();
 #define __API_MEM_INFO_LEVEL_2(fmt, ...) \
     fprintf(hicl->fdout, "\t %-22s "fmt"\n", " ", ##__VA_ARGS__)
 
-#define __API_MEM_CHAR(flags)             (flags & CHAR)
-#define __API_MEM_INT(flags)              (flags & INT)
-#define __API_MEM_UNSIGNED_INT(flags)     (flags & UNSIGNED_INT)
-#define __API_MEM_LONG(flags)             (flags & LONG)
-#define __API_MEM_UNSIGNED_LONG(flags)    (flags & UNSIGNED_LONG)
-#define __API_MEM_SIZET(flags)            (flags & SIZET)
-#define __API_MEM_FLOAT(flags)            (flags & FLOAT)
-#define __API_MEM_DOUBLE(flags)           (flags & DOUBLE)
-
 #define __API_MEM_HOST_DIRTY(flags)       (flags & HOST_DIRTY)
 #define __API_MEM_DEVICE_DIRTY(flags)     (flags & DEVICE_DIRTY)
 
