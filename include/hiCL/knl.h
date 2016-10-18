@@ -44,16 +44,6 @@
 CPPGUARD_BEGIN();
 
 ///
-/// @brief Return a kernel descriptor provided a string.
-///
-/// This routine performs a lookup in the list of hiCL kernel descriptors based 
-/// on a string provided by the user
-/// @param name is the string that identifies the kernel descriptor.
-/// @return
-///
-hiknl_t hicl_knl_find(const char *name);
-
-///
 /// @brief Build the OpenCL kernel related to a hiCL descriptor.
 ///
 /// This routine invoques the OpenCL compiler in order to build an OpenCL

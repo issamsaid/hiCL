@@ -44,13 +44,6 @@ module m_hicl_knl
     private
 
     interface        
-        type(c_ptr) &
-        function c_hicl_knl_find(name) &
-            bind(c, name="hicl_knl_find")
-            use, intrinsic :: iso_c_binding, only: c_ptr, c_char
-            character(kind=c_char), intent(in) :: name
-        end function c_hicl_knl_find
-
         subroutine c_hicl_knl_build(name, options) &
             bind(c, name="hicl_knl_build")
             use, intrinsic :: iso_c_binding, only: c_char, c_char
