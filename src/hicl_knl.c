@@ -42,21 +42,6 @@
 #include "__api/mem-inl.h"
 #include "__api/knl-inl.h"
 
-inline hiknl_t hicl_knl_find(const char *name) {
-    ulist_t *i_knl;
-    hiknl_t      k;
-    char tmp[__API_STR_SIZE];
-    HICL_EXIT_IF((name == NULL) || (strlen(name) == 0),
-                 "OpenCL kernel name not valid");
-    for (i_knl=hicl->knls; i_knl != NULL; i_knl=i_knl->next) {
-        k = (hiknl_t)i_knl->data;
-        __API_KNL_GET(k->id, CL_KERNEL_FUNCTION_NAME, tmp); 
-        if (!strcmp(name, tmp)) break;
-    }
-    HICL_EXIT_IF(i_knl == NULL, "OpenCL kernel '%s' not found", name);
-    return k;
-}
-
 inline void hicl_knl_build(const char *name, const char *options) {
     cl_int cl_ret;
     char tmp[__API_BUFFER_SIZE];
@@ -64,7 +49,7 @@ inline void hicl_knl_build(const char *name, const char *options) {
     cl_program program;
     size_t num_kernels;
     cl_kernel *ids;
-    hiknl_t k = hicl_knl_find(name);
+    hiknl_t k = __api_knl_find(name);
     HICL_EXIT_IF(__api_knl_extract_code(k->id, name, tmp), 
                  "failed to extract kernel code in order to re-build it");
     const_code = tmp;
@@ -80,27 +65,27 @@ inline void hicl_knl_build(const char *name, const char *options) {
 }
 
 inline void hicl_knl_set_int32(const char *name, int index, int32_t i32) {
-    hiknl_t k = hicl_knl_find(name);
+    hiknl_t k = __api_knl_find(name);
     __api_knl_set_arg_int32(k->id, index, &i32);
 }
 
 inline void hicl_knl_set_int64(const char *name, int index, int64_t i64) {
-    hiknl_t k = hicl_knl_find(name);
+    hiknl_t k = __api_knl_find(name);
     __api_knl_set_arg_int64(k->id, index, &i64);
 }
 
 inline void hicl_knl_set_float(const char *name, int index, float f) {
-    hiknl_t k = hicl_knl_find(name);
+    hiknl_t k = __api_knl_find(name);
     __api_knl_set_arg_float(k->id, index, &f);
 }
 
 inline void hicl_knl_set_double(const char *name, int index, double d) {
-    hiknl_t k = hicl_knl_find(name);
+    hiknl_t k = __api_knl_find(name);
     __api_knl_set_arg_double(k->id, index, &d);
 }
 
 inline void hicl_knl_set_mem(const char *name, int index, address_t h) {
-    hiknl_t k = hicl_knl_find(name);
+    hiknl_t k = __api_knl_find(name);
     urb_t *n, *i;
     int *ikey;
     himem_t m;
@@ -135,7 +120,7 @@ inline void hicl_knl_set_mem(const char *name, int index, address_t h) {
 
 inline void hicl_knl_set_args(const char *name, ...) {
     va_list list;
-    hiknl_t k = hicl_knl_find(name);
+    hiknl_t k = __api_knl_find(name);
     va_start(list, name);
     __api_knl_set_args_valist(k, list);
     va_end(list);
@@ -144,7 +129,7 @@ inline void hicl_knl_set_args(const char *name, ...) {
 inline void hicl_knl_set_wrk(const char *name, 
                              cl_uint wrk, size_t *gws, size_t *lws) {
     cl_uint idx;
-    hiknl_t k = hicl_knl_find(name);
+    hiknl_t k = __api_knl_find(name);
     k->wrk = wrk;
     for(idx=0; idx<3; ++idx) {
         if (idx < wrk) {
@@ -165,7 +150,7 @@ inline void hicl_knl_set_wrk(const char *name,
 
 inline void hicl_knl_set_ofs(const char *name, size_t *ofs) {
     cl_uint idx;
-    hiknl_t k = hicl_knl_find(name);
+    hiknl_t k = __api_knl_find(name);
     for(idx=0; idx<3; ++idx) k->ofs[idx] = ofs[idx];
     HICL_DEBUG("call hicl_knl_set_ofs: ofs[%lux%lux%lu]", 
 	     k->ofs[0], k->ofs[1], k->ofs[2]);
@@ -178,7 +163,7 @@ inline void hicl_knl_set_ofs(const char *name, size_t *ofs) {
 //   - timed run     : timed synchronous execution
 //
 inline void hicl_knl_run(const char *name, hidev_t d, ...) {
-    hiknl_t k = hicl_knl_find(name);
+    hiknl_t k = __api_knl_find(name);
     va_list list;
     va_start(list, d);
     __api_knl_set_args_valist(k, list);
@@ -190,7 +175,7 @@ inline void hicl_knl_run(const char *name, hidev_t d, ...) {
 }
 
 inline void hicl_knl_sync_run(const char *name, hidev_t d, ...) {
-    hiknl_t k = hicl_knl_find(name);
+    hiknl_t k = __api_knl_find(name);
     va_list list;
     va_start(list, d);
     __api_knl_set_args_valist(k, list);
@@ -202,7 +187,7 @@ inline void hicl_knl_sync_run(const char *name, hidev_t d, ...) {
 }
 
 inline double hicl_knl_timed_run(const char *name, hidev_t d, ...) {
-    hiknl_t k = hicl_knl_find(name);
+    hiknl_t k = __api_knl_find(name);
     va_list list;
     va_start(list, d);
     __api_knl_set_args_valist(k, list);
@@ -216,7 +201,7 @@ inline double hicl_knl_timed_run(const char *name, hidev_t d, ...) {
 }
 
 inline void hicl_knl_exec(const char *name, hidev_t d) {
-    hiknl_t k = hicl_knl_find(name);
+    hiknl_t k = __api_knl_find(name);
     HICL_DEBUG("exec (async) kernel : %s", name);
     urb_tree_walk(&k->mems, NULL, __api_mem_sync);
     __api_knl_async_run(k->id, d->queue, k->wrk, k->gws, k->lws, k->ofs);
@@ -224,7 +209,7 @@ inline void hicl_knl_exec(const char *name, hidev_t d) {
 }
 
 inline void hicl_knl_sync_exec(const char *name, hidev_t d) {
-    hiknl_t k = hicl_knl_find(name);
+    hiknl_t k = __api_knl_find(name);
     HICL_DEBUG("exec (sync) kernel  : %s", name);
     urb_tree_walk(&k->mems, NULL, __api_mem_sync);
     __api_knl_sync_run(k->id, d->queue, k->wrk, k->gws, k->lws, k->ofs);
@@ -232,7 +217,7 @@ inline void hicl_knl_sync_exec(const char *name, hidev_t d) {
 }
 
 inline double hicl_knl_timed_exec(const char *name, hidev_t d) {
-    hiknl_t k = hicl_knl_find(name);
+    hiknl_t k = __api_knl_find(name);
     HICL_DEBUG("exec (timed) kernel : %s", name);
     urb_tree_walk(&k->mems, NULL, __api_mem_sync);
     hicl_timer_tick();

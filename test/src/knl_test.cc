@@ -143,8 +143,8 @@ namespace {
         for (i = 0; i < dst1->size; ++i) ASSERT_FLOAT_EQ(hdst1[i], i);
         for (i = 0; i < dst2->size; ++i) ASSERT_FLOAT_EQ(hdst2[i], i);
         
-        k1 = hicl_knl_find("test_hicl_1");
-        k2 = hicl_knl_find("test_hicl_2");
+        k1 = __api_knl_find("test_hicl_1");
+        k2 = __api_knl_find("test_hicl_2");
 
         ASSERT_EQ(2, urb_tree_size(&k1->mems));
         ASSERT_EQ(5, urb_tree_size(&k2->mems));
@@ -195,7 +195,7 @@ namespace {
         populate(hsrc, N);
         
         hicl_load(PREFIX"/data/foo.cl", "-DSTENCIL=9");
-        k1 = hicl_knl_find("test_hicl_1");
+        k1 = __api_knl_find("test_hicl_1");
         hicl_knl_set_wrk("test_hicl_1", 1, &g, &l);
         hicl_knl_set_mem("test_hicl_1", 0, hsrc);
         hicl_knl_set_mem("test_hicl_1", 1, hdst1);
@@ -859,7 +859,7 @@ namespace {
         hicl_mem_wrap(d, coefz, s[2]+1, READ_ONLY);
         
         hicl_timer_tick();
-        k = hicl_knl_find("stencil_v_3d");      
+        k = __api_knl_find("stencil_v_3d");      
         hicl_fknl_set_wrk(k, 2, g, l);
         for (i = 0; i < 5; ++i)
             hicl_fknl_sync_run(k, d, ui, uo, coefx, coefy, coefz,

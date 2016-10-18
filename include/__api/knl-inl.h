@@ -433,6 +433,72 @@ __api_knl_async_run(cl_kernel kernel, cl_command_queue queue,
     }
 }
 
+///
+/// @brief Create a hiCL kernel descriptor.
+///
+/// This routine creates a hiCL kernel descriptor, provided an OpenCL cl_kernel,
+/// which contains information about the work size and also the offset, see 
+/// types.h. 
+/// @param id is the OpenCL cl_kernel.
+/// @return a hiCL kernel descriptor.
+///
+PRIVATE hiknl_t 
+__api_knl_init(cl_kernel id) {
+    size_t idx;
+    hiknl_t k = (hiknl_t)malloc(sizeof(struct __hiknl_t));
+    k->id  = id;
+    k->wrk = 0;
+    for(idx=0; idx<__API_KNL_MAX_WORK_SIZE; ++idx) {
+        k->gws[idx]=1;
+        k->lws[idx]=1;
+        k->ofs[idx]=0;
+    }
+    k->mems = &urb_sentinel;
+    __API_KNL_GET(id, CL_KERNEL_NUM_ARGS, k->num_args);
+    return k;
+}
+
+///
+/// @brief Return a kernel descriptor provided a string.
+///
+/// This routine performs a lookup in the list of hiCL kernel descriptors based 
+/// on a string provided by the user
+/// @param name is the string that identifies the kernel descriptor.
+/// @return
+///
+PRIVATE hiknl_t
+__api_knl_find(const char *name) {
+    ulist_t *i_knl;
+    hiknl_t      k;
+    char tmp[__API_STR_SIZE];
+    HICL_EXIT_IF((name == NULL) || (strlen(name) == 0),
+                 "OpenCL kernel name not valid");
+    for (i_knl=hicl->knls; i_knl != NULL; i_knl=i_knl->next) {
+        k = (hiknl_t)i_knl->data;
+        __API_KNL_GET(k->id, CL_KERNEL_FUNCTION_NAME, tmp);
+        if (!strcmp(name, tmp)) break;
+    }
+    HICL_EXIT_IF(i_knl == NULL, "OpenCL kernel '%s' not found", name);
+    return k;
+}
+
+PRIVATE void
+__api_knl_release(void *pointer) {
+    hiknl_t k = (hiknl_t)pointer;
+    if (k != NULL) {
+#ifdef __API_DEBUG
+        unsigned int nb_refs;
+        __API_KNL_GET(k->id, CL_KERNEL_REFERENCE_COUNT, nb_refs);
+        HICL_DEBUG("releasing OpenCL kernel %s (mem count = %lu)", 
+                   __api_knl_name(k->id), urb_tree_size(&k->mems));
+#endif // __API_DEBUG
+        urb_tree_delete(&k->mems, __api_int_del, __api_mem_release);
+        if (clReleaseKernel(k->id) != CL_SUCCESS)
+            HICL_FAIL("failed to release OpenCL kernel");
+        free(k); k = NULL;
+    }
+}
+
 PRIVATE void
 __api_knl_info(void *pointer) {
     hiknl_t k = (hiknl_t)pointer;
@@ -456,47 +522,6 @@ __api_knl_info(void *pointer) {
 #endif // CL_VERSION_1_2
     __API_KNL_INFO_LEVEL_0("kernel %s has %lu memory objects", 
                            __api_knl_name(k->id), urb_tree_size(&k->mems));
-}
-
-///
-/// @brief Create a hiCL kernel descriptor.
-///
-/// This routine creates a hiCL kernel descriptor, provided an OpenCL cl_kernel,
-/// which contains information about the work size and also the offset, see 
-/// types.h. 
-/// @param id is the OpenCL cl_kernel.
-/// @return a hiCL kernel descriptor.
-///
-PRIVATE hiknl_t __api_knl_init(cl_kernel id) {
-    size_t idx;
-    hiknl_t k = (hiknl_t)malloc(sizeof(struct __hiknl_t));
-    k->id  = id;
-    k->wrk = 0;
-    for(idx=0; idx<__API_KNL_MAX_WORK_SIZE; ++idx) {
-        k->gws[idx]=1;
-        k->lws[idx]=1;
-        k->ofs[idx]=0;
-    }
-    k->mems = &urb_sentinel;
-    __API_KNL_GET(id, CL_KERNEL_NUM_ARGS, k->num_args);
-    return k;
-}
-
-PRIVATE void
-__api_knl_release(void *pointer) {
-    hiknl_t k = (hiknl_t)pointer;
-    if (k != NULL) {
-#ifdef __API_DEBUG
-        unsigned int nb_refs;
-        __API_KNL_GET(k->id, CL_KERNEL_REFERENCE_COUNT, nb_refs);
-        HICL_DEBUG("releasing OpenCL kernel %s (mem count = %lu)", 
-                   __api_knl_name(k->id), urb_tree_size(&k->mems));
-#endif // __API_DEBUG
-        urb_tree_delete(&k->mems, __api_int_del, __api_mem_release);
-        if (clReleaseKernel(k->id) != CL_SUCCESS)
-            HICL_FAIL("failed to release OpenCL kernel");
-        free(k); k = NULL;
-    }
 }
 
 CPPGUARD_END();
