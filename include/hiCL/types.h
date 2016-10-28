@@ -105,6 +105,8 @@ struct __hiknl_t {
 /// @brief The hiCL envirenment descriptor.
 ///
 /// This sturcture represents the hiCL resources manager.
+/// RCSP are used to track the resources used by hiCL and
+/// prevent memory leaks. 
 ///
 struct __hienv_t {
     cl_platform_id platform_id; ///< the OpenCL platform, we only handle one platform.  

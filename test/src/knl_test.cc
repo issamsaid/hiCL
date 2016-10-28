@@ -803,7 +803,7 @@ namespace {
     }
 
     TEST_F(KnlTest, find_performance) {
-        double time = 0.;
+        double dtime=0., ltime = 0.;
         unsigned int i, n=1000;
         size_t size;
         char options[128];
@@ -866,8 +866,7 @@ namespace {
                                dim[0], dim[1], dim[2], s[0], s[1], s[2]);
         for (i=0; i<n; ++i) hicl_fknl_exec(k, d);
         hicl_dev_wait(d);
-        time = hicl_timer_read();
-        fprintf(stdout, "... direct  time: %8.2f %s\n", time, hicl_timer_uget());
+        dtime = hicl_timer_read();
 
         hicl_timer_tick();     
         hicl_knl_set_wrk("stencil_v_3d", 2, g, l);
@@ -876,8 +875,11 @@ namespace {
                               dim[0], dim[1], dim[2], s[0], s[1], s[2]);
         for (i=0; i<n; ++i) hicl_knl_exec("stencil_v_3d", d);
         hicl_dev_wait(d);
-        time = hicl_timer_read();
-        fprintf(stdout, "... loockup time: %8.2f %s\n", time, hicl_timer_uget());
+        ltime = hicl_timer_read();
+        fprintf(stdout, "... direct  time: %8.2f %s\n", dtime, hicl_timer_uget());
+        fprintf(stdout, "... loockup time: %8.2f %s\n", ltime, hicl_timer_uget());
+        fprintf(stdout, "... overhead    : %8.2f %s (%4.1f %%)\n", ltime-dtime, 
+                hicl_timer_uget(), 100.0*(ltime-dtime)/dtime);
     }    
 
 }  // namespace
